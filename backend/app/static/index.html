@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>⚡ Continuum Engine — 3D Quantum Vault & State Guardian</title>
+  <meta name="description" content="Continuum Engine: Enterprise 3D Quantum State Vault, Stale Asset Zero-Data-Loss Interceptor, and Gemini AI Assistant.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700;800&family=Outfit:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/styles.css">
+  <!-- Three.js CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+</head>
+<body>
+
+  <!-- Fullscreen 3D WebGL Canvas Layer -->
+  <div id="threeCanvasContainer"></div>
+
+  <!-- Dynamic Magnetic Aurora Light Animation Background -->
+  <div class="magnetic-aurora-bg" id="magneticAuroraBg">
+    <div class="aurora-blob blob-1"></div>
+    <div class="aurora-blob blob-2"></div>
+    <div class="aurora-blob blob-3"></div>
+  </div>
+
+  <!-- Cyber Scanline & Vignette Overlay -->
+  <div class="cyber-overlay"></div>
+
+  <!-- Top App Navigation Header / HUD -->
+  <header class="app-header">
+    <div class="brand-container">
+      <div class="brand-icon">⚡</div>
+      <div class="brand-text">
+        <h1>Continuum Engine</h1>
+        <p>3D Quantum State Guardian</p>
+      </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <div class="tab-switch">
+      <button class="tab-btn active" id="tabWizardBtn" onclick="switchView('wizard')">
+        <span>📝</span> Quantum Wizard
+      </button>
+      <button class="tab-btn" id="tabDashboardBtn" onclick="switchView('dashboard')">
+        <span>📊</span> Telemetry Stream
+      </button>
+      <button class="tab-btn" id="tabVaultInspectorBtn" onclick="openVaultModal()">
+        <span>🔐</span> State Vault
+      </button>
+    </div>
+
+    <!-- Controls Group: Guidance, Theme & Audio -->
+    <div class="hud-controls-group">
+      <!-- User Guidance Tour Button -->
+      <button class="btn btn-secondary" onclick="openGuideModal()" style="padding: 0.35rem 0.75rem; font-size: 0.78rem;">
+        <span>💡</span> User Guide
+      </button>
+
+      <!-- Theme Switcher (Light / Dark) -->
+      <button class="icon-btn" id="themeToggleBtn" onclick="toggleThemeMode()" title="Toggle Light / Dark Mode">
+        ☀️
+      </button>
+
+      <!-- Audio Visualizer & Synth Toggle -->
+      <div class="hud-audio-box">
+        <button class="icon-btn" id="audioToggleBtn" onclick="toggleCyberAudio()" title="Toggle Sci-Fi Audio Synthesis" style="padding: 0.15rem 0.35rem;">
+          🔊
+        </button>
+        <canvas id="audioVisualizerCanvas" width="70" height="22"></canvas>
+      </div>
+    </div>
+
+    <!-- Live Status Indicators & Action Buttons -->
+    <div class="nav-controls" style="display: flex; align-items: center; gap: 0.75rem;">
+      <span class="badge badge-version" id="clientVerBadge">Client: v1.0.0</span>
+      <span class="badge badge-synced" id="vaultSyncBadge">● State Synced</span>
+      <button class="btn btn-danger" id="simulateCrashBtn" onclick="simulateDeployAndCrash()">
+        <span>💥</span> 404 Crash Simulator
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="main-content">
+
+    <!-- 3D Perspective & Atmospheric Background Switcher Bar -->
+    <div class="camera-controls-bar">
+      <!-- Background Presets -->
+      <div class="preset-group">
+        <span style="font-size: 0.75rem; color: var(--text-muted); font-family: var(--font-mono); margin-right: 0.25rem;">ATMOSPHERE:</span>
+        <button class="cam-btn active" onclick="setBackgroundPreset('aurora', this)">🌌 Aurora</button>
+        <button class="cam-btn" onclick="setBackgroundPreset('studio', this)">🏢 Studio</button>
+        <button class="cam-btn" onclick="setBackgroundPreset('nebula', this)">🔮 Nebula</button>
+      </div>
+
+      <!-- 3D Camera Angles -->
+      <div class="preset-group">
+        <span style="font-size: 0.75rem; color: var(--text-muted); font-family: var(--font-mono); margin-right: 0.25rem;">3D CAMERA:</span>
+        <button class="cam-btn active" onclick="set3DCamera('core', this)">⚛️ Core Focus</button>
+        <button class="cam-btn" onclick="set3DCamera('matrix', this)">🪐 Wide Matrix</button>
+        <button class="cam-btn" onclick="set3DCamera('radar', this)">🛰️ Orbit Radar</button>
+      </div>
+    </div>
+
+    <!-- Active Session & Vault Context Bar -->
+    <div class="vault-banner">
+      <div class="vault-info-group">
+        <div class="vault-stat-item">
+          <span class="label">Quantum Session</span>
+          <span class="val" id="activeSessionIdDisplay">sess-init...</span>
+        </div>
+        <div class="vault-stat-item">
+          <span class="label">Production Version</span>
+          <span class="val" id="activeProdVersionDisplay">v1.0.0</span>
+        </div>
+        <div class="vault-stat-item">
+          <span class="label">Drift Status</span>
+          <span class="val" id="driftStatusDisplay"><span style="color: var(--magnetic-emerald);">● Healthy (v1.0.0)</span></span>
+        </div>
+        <div class="vault-stat-item">
+          <span class="label">Vault Sync</span>
+          <span class="val" id="lastSyncTimeDisplay">Just now</span>
+        </div>
+        <div class="vault-stat-item">
+          <span class="label">Live Stream Ping</span>
+          <span class="val" id="livePingDisplay" style="color: var(--magnetic-cyan);">24.5 ms</span>
+        </div>
+      </div>
+      <div class="vault-actions" style="display: flex; align-items: center; gap: 0.75rem;">
+        <button class="btn btn-secondary" onclick="manualSyncVault()">
+          <span>🔄</span> Force Sync
+        </button>
+        <button class="btn btn-secondary" onclick="resetFormSession()">
+          <span>🗑️</span> Reset
+        </button>
+      </div>
+    </div>
+
+    <!-- VIEW 1: Holographic Loan Wizard Interface -->
+    <section id="wizardView" class="card">
+      <!-- Stepper Indicator -->
+      <div class="stepper-header">
+        <div class="stepper-progress-bar">
+          <div class="stepper-progress-fill" id="stepperProgressFill"></div>
+        </div>
+
+        <button class="step-node active" id="stepNode1" onclick="goToStep(1)">
+          <div class="step-circle" id="stepCircle1">1</div>
+          <span class="step-label">Personal Profile</span>
+        </button>
+        <button class="step-node" id="stepNode2" onclick="goToStep(2)">
+          <div class="step-circle" id="stepCircle2">2</div>
+          <span class="step-label">Financial Matrix</span>
+        </button>
+        <button class="step-node" id="stepNode3" onclick="goToStep(3)">
+          <div class="step-circle" id="stepCircle3">3</div>
+          <span class="step-label">Loan Quantum</span>
+        </button>
+        <button class="step-node" id="stepNode4" onclick="goToStep(4)">
+          <div class="step-circle" id="stepCircle4">4</div>
+          <span class="step-label">Review & Vault</span>
+        </button>
+      </div>
+
+      <!-- Sliding Carousel Track Viewport for Step Panes -->
+      <div class="step-slider-viewport">
+        <div class="step-slider-track" id="stepSliderTrack">
+          <!-- Step 1: Personal Details Form -->
+          <div class="step-pane active" id="stepPane1">
+            <div class="step-heading">
+              <h2>Step 1: Applicant Identity Profile</h2>
+              <p>All inputs trigger quantum state serialization and real-time AES-256 vaulting.</p>
+            </div>
+            <form id="formStep1" onsubmit="event.preventDefault(); nextStep();">
+              <div class="form-grid">
+                <div class="form-group full-width">
+                  <label for="fullName">Full Legal Name <span class="required">*</span></label>
+                  <input type="text" id="fullName" class="form-control" placeholder="e.g. Johnathan Alexander Doe" required>
+                </div>
+                <div class="form-group">
+                  <label for="dateOfBirth">Date of Birth <span class="required">*</span></label>
+                  <input type="date" id="dateOfBirth" class="form-control" required>
+                </div>
+                <div class="form-group">
+                  <label for="email">Encrypted Email Address <span class="required">*</span></label>
+                  <input type="email" id="email" class="form-control" placeholder="john.doe@example.com" required>
+                </div>
+                <div class="form-group">
+                  <label for="phoneNumber">Secure Phone Number <span class="required">*</span></label>
+                  <input type="tel" id="phoneNumber" class="form-control" placeholder="+1 (555) 234-5678" required>
+                </div>
+                <div class="form-group">
+                  <label for="ssn">Social Security Number / Tax ID <span class="required">*</span></label>
+                  <input type="password" id="ssn" class="form-control" placeholder="•••-••-••••" required>
+                </div>
+              </div>
+            </form>
+          </div>
+
+          <!-- Step 2: Financial Details Form -->
+          <div class="step-pane" id="stepPane2">
+            <div class="step-heading">
+              <h2>Step 2: Financial Stream & Employment Matrix</h2>
+              <p>Declare your current enterprise employment status and gross income parameters.</p>
+            </div>
+            <form id="formStep2" onsubmit="event.preventDefault(); nextStep();">
+              <div class="form-grid">
+                <div class="form-group full-width">
+                  <label for="employmentStatus">Employment Status <span class="required">*</span></label>
+                  <select id="employmentStatus" class="form-control">
+                    <option value="Employed">Employed (Full-Time / Executive)</option>
+                    <option value="Self-Employed">Self-Employed / Founder</option>
+                    <option value="Unemployed">Unemployed / Seeking</option>
+                    <option value="Retired">Retired</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="annualIncome">Annual Gross Income ($) <span class="required">*</span></label>
+                  <div class="input-with-prefix">
+                    <span class="input-prefix">$</span>
+                    <input type="number" id="annualIncome" class="form-control" placeholder="85,000" min="0" step="1000" required>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="monthlyDebt">Monthly Liabilities ($) <span class="required">*</span></label>
+                  <div class="input-with-prefix">
+                    <span class="input-prefix">$</span>
+                    <input type="number" id="monthlyDebt" class="form-control" placeholder="1,200" min="0" step="50" required>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+
+          <!-- Step 3: Loan Options Form -->
+          <div class="step-pane" id="stepPane3">
+            <div class="step-heading">
+              <h2>Step 3: Quantum Loan Configuration</h2>
+              <p>Adjust funding capital, amortization duration, and allocation purpose.</p>
+            </div>
+            <form id="formStep3" onsubmit="event.preventDefault(); nextStep();">
+              <div class="form-grid">
+                <div class="form-group full-width">
+                  <label>Requested Quantum Capital <span class="required">*</span></label>
+                  <div class="slider-container">
+                    <div class="slider-val-display">
+                      <span style="color: var(--text-muted); font-size: 0.85rem;">Select from $1,000 to $1,000,000</span>
+                      <span class="slider-amount" id="loanAmountDisplay">$50,000</span>
+                    </div>
+                    <input type="range" id="loanAmount" min="1000" max="1000000" step="5000" value="50000" oninput="updateLoanSlider(this.value)">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="repaymentTerm">Repayment Term <span class="required">*</span></label>
+                  <select id="repaymentTerm" class="form-control">
+                    <option value="12">12 Months (1 Year)</option>
+                    <option value="24">24 Months (2 Years)</option>
+                    <option value="36" selected>36 Months (3 Years)</option>
+                    <option value="48">48 Months (4 Years)</option>
+                    <option value="60">60 Months (5 Years)</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="loanPurpose">Loan Purpose <span class="required">*</span></label>
+                  <select id="loanPurpose" class="form-control">
+                    <option value="Debt Consolidation" selected>Debt Consolidation</option>
+                    <option value="Home Improvement">Home Improvement</option>
+                    <option value="Business Expansion">Business Expansion / AI Compute</option>
+                    <option value="Auto / Vehicle">Auto / Mobility</option>
+                    <option value="Other">Other Purpose</option>
+                  </select>
+                </div>
+              </div>
+            </form>
+          </div>
+
+          <!-- Step 4: Review & Submit Form -->
+          <div class="step-pane" id="stepPane4">
+            <div class="step-heading">
+              <h2>Step 4: Quantum Underwriting Verification</h2>
+              <p>Verify vaulted snapshot parameters prior to automated consensus submission.</p>
+            </div>
+            
+            <div class="summary-container">
+              <div class="summary-section">
+                <h4>👤 Identity Matrix</h4>
+                <div class="summary-row"><span class="s-label">Full Name:</span><span class="s-val" id="revFullName">-</span></div>
+                <div class="summary-row"><span class="s-label">DOB:</span><span class="s-val" id="revDob">-</span></div>
+                <div class="summary-row"><span class="s-label">Email:</span><span class="s-val" id="revEmail">-</span></div>
+                <div class="summary-row"><span class="s-label">Phone:</span><span class="s-val" id="revPhone">-</span></div>
+                <div class="summary-row"><span class="s-label">SSN:</span><span class="s-val">••••••••••</span></div>
+              </div>
+
+              <div class="summary-section">
+                <h4>💼 Financial & Loan Package</h4>
+                <div class="summary-row"><span class="s-label">Employment:</span><span class="s-val" id="revEmployment">-</span></div>
+                <div class="summary-row"><span class="s-label">Annual Income:</span><span class="s-val" id="revIncome">-</span></div>
+                <div class="summary-row"><span class="s-label">Monthly Debt:</span><span class="s-val" id="revDebt">-</span></div>
+                <div class="summary-row"><span class="s-label">Requested Capital:</span><span class="s-val" id="revLoanAmount" style="color: var(--magnetic-cyan);">-</span></div>
+                <div class="summary-row"><span class="s-label">Term & Purpose:</span><span class="s-val" id="revTermPurpose">-</span></div>
+              </div>
+            </div>
+
+            <label class="consent-box" for="consentChecked">
+              <input type="checkbox" id="consentChecked" required>
+              <span>I certify that all information submitted is true, complete, and authorized for cryptographic state recording.</span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Wizard Navigation Controls -->
+      <div class="wizard-footer">
+        <button class="btn btn-secondary" id="prevStepBtn" onclick="prevStep()" style="visibility: hidden;">
+          <span>←</span> Back
+        </button>
+        <button class="btn btn-primary" id="nextStepBtn" onclick="nextStep()">
+          Next Step <span>→</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- VIEW 2: Telemetry Operator Dashboard & Live Stream -->
+    <section id="dashboardView" class="dashboard-view">
+      <!-- Operator Login Banner (if not logged in) -->
+      <div id="operatorLoginCard" class="card" style="display: none; max-width: 480px; margin: 0 auto;">
+        <div class="step-heading" style="text-align: center;">
+          <h2>🔐 Operator Portal Login</h2>
+          <p>Enter administrator credentials to access live telemetry stream & crash analytics.</p>
+        </div>
+        <form onsubmit="event.preventDefault(); performAdminLogin();">
+          <div class="form-group" style="margin-bottom: 1rem;">
+            <label for="adminUsername">Username</label>
+            <input type="text" id="adminUsername" class="form-control" value="admin" required>
+          </div>
+          <div class="form-group" style="margin-bottom: 1.5rem;">
+            <label for="adminPassword">Password</label>
+            <input type="password" id="adminPassword" class="form-control" value="password123" required>
+          </div>
+          <button type="submit" class="btn btn-primary" style="width: 100%;">
+            Authenticate Access
+          </button>
+        </form>
+      </div>
+
+      <!-- Dashboard Contents (Visible when logged in) -->
+      <div id="operatorDashboardContent">
+        <!-- KPI Metrics Grid -->
+        <div class="metrics-grid">
+          <div class="kpi-card">
+            <div class="kpi-icon" style="background: rgba(225, 29, 72, 0.12); color: var(--magnetic-rose);">💥</div>
+            <div class="kpi-details">
+              <span class="kpi-label">Total Crash Events</span>
+              <span class="kpi-val" id="metricTotalCrashes">0</span>
+            </div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-icon" style="background: rgba(245, 158, 11, 0.12); color: var(--magnetic-amber);">⚠️</div>
+            <div class="kpi-details">
+              <span class="kpi-label">Version Drifts</span>
+              <span class="kpi-val" id="metricDrifted">0</span>
+            </div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-icon" style="background: rgba(2, 132, 199, 0.12); color: var(--magnetic-cyan);">👥</div>
+            <div class="kpi-details">
+              <span class="kpi-label">Impacted Sessions</span>
+              <span class="kpi-val" id="metricImpacted">0</span>
+            </div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-icon" style="background: rgba(16, 185, 129, 0.12); color: var(--magnetic-emerald);">🚀</div>
+            <div class="kpi-details">
+              <span class="kpi-label">Active Prod Version</span>
+              <span class="kpi-val" id="metricProdVersion">v1.0.0</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="dashboard-columns" style="margin-top: 1.5rem;">
+          <!-- Version Drift Analysis Panel -->
+          <div class="dash-panel">
+            <div class="panel-header">
+              <h3>📦 Client Version Health</h3>
+              <button class="btn btn-secondary" onclick="loadTelemetryDashboard()" style="padding: 0.35rem 0.75rem; font-size: 0.75rem;">
+                Refresh
+              </button>
+            </div>
+            <div id="versionBreakdownContainer" style="display: flex; flex-direction: column; gap: 1rem;">
+              <!-- Dynamic version items -->
+            </div>
+            <div class="info-note-box">
+              <strong style="color: var(--magnetic-teal);">Continuum 3D Resilience Engine:</strong> 100% of intercepted 404 Chunk Load failures are automatically recovered without dropping unsubmitted user fields.
+            </div>
+          </div>
+
+          <!-- Raw Telemetry Ingestion Logs Table -->
+          <div class="dash-panel">
+            <div class="panel-header">
+              <h3>📡 Live Ingested Crash Telemetry</h3>
+              <span style="font-size: 0.8rem; color: var(--text-muted);" id="logsCountLabel">0 logs</span>
+            </div>
+            <div class="table-container">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Timestamp</th>
+                    <th>Session ID</th>
+                    <th>Client Ver</th>
+                    <th>Target Chunk Asset</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="telemetryLogsTableBody">
+                  <tr>
+                    <td colspan="5" style="text-align: center; color: var(--text-muted); padding: 2rem;">
+                      No crash incidents logged yet. Click "404 Crash Simulator" to test recovery!
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ========================================================== -->
+  <!-- AUTHENTIC GEMINI AI ASSISTANT TRIGGER & DRAWER -->
+  <!-- ========================================================== -->
+  <button class="floating-ai-trigger" onclick="toggleAiDrawer()">
+    <span class="gemini-sparkle-icon">✨</span>
+    <span>Gemini AI Assistant</span>
+  </button>
+
+  <!-- Gemini AI Drawer Panel -->
+  <div id="aiDrawerBackdrop" class="ai-drawer-backdrop hidden">
+    <div class="ai-drawer-panel">
+      <!-- Gemini Header -->
+      <div class="gemini-header">
+        <div class="gemini-brand-badge">
+          <div class="gemini-sparkle-avatar">✨</div>
+          <div class="gemini-title">
+            <h3>Gemini AI</h3>
+            <p>Quantum Underwriting Intelligence</p>
+          </div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 0.5rem;">
+          <button class="icon-btn" onclick="clearGeminiChat()" title="Clear Chat History">🗑️</button>
+          <button class="close-btn" onclick="toggleAiDrawer()">&times;</button>
+        </div>
+      </div>
+
+      <!-- Gemini Chat Body -->
+      <div class="gemini-chat-body" id="geminiChatBody">
+        <!-- Hero Greeting -->
+        <div class="gemini-hero-greeting" id="geminiHeroGreeting">
+          <h2>Hello, Applicant</h2>
+          <p>How can I assist your loan configuration or state vaulting today?</p>
+        </div>
+
+        <!-- Gemini Prompt Suggestion Cards -->
+        <div class="gemini-prompt-grid" id="geminiPromptGrid">
+          <div class="gemini-prompt-chip" onclick="sendAiQuickQuery('How does 404 zero-data-loss protection work?')">
+            <span class="chip-icon">💡</span>
+            <span class="chip-text">Explain 404 zero-data-loss crash recovery</span>
+          </div>
+          <div class="gemini-prompt-chip" onclick="toggleInlineCamera()">
+            <span class="chip-icon">📷</span>
+            <span class="chip-text">Scan my ID / KYC document with camera</span>
+          </div>
+          <div class="gemini-prompt-chip" onclick="sendAiQuickQuery('What are my optimal loan terms and DTI ratio?')">
+            <span class="chip-icon">📊</span>
+            <span class="chip-text">Calculate loan terms and debt ratio</span>
+          </div>
+          <div class="gemini-prompt-chip" onclick="sendAiQuickQuery('How is my personal data encrypted at rest?')">
+            <span class="chip-icon">🔐</span>
+            <span class="chip-text">Audit AES-256 encrypted MongoDB state vault</span>
+          </div>
+        </div>
+
+        <!-- Inline Live Camera Scanner (inside chat) -->
+        <div class="gemini-inline-cam-container" id="geminiInlineCamContainer">
+          <video id="webcamVideo" autoplay playsinline muted></video>
+          <div class="camera-scan-laser"></div>
+          <canvas id="snapshotCanvas" style="display: none;"></canvas>
+          <div style="position: absolute; bottom: 10px; left: 0; right: 0; display: flex; justify-content: center; gap: 0.5rem; z-index: 5;">
+            <button class="btn btn-success" style="padding: 0.4rem 0.9rem; font-size: 0.8rem;" onclick="captureLiveSnapshot()">📸 Capture & Attach</button>
+            <button class="btn btn-secondary" style="padding: 0.4rem 0.9rem; font-size: 0.8rem;" onclick="toggleInlineCamera()">Cancel</button>
+          </div>
+        </div>
+
+        <!-- Chat Messages Thread -->
+        <div class="gemini-messages-thread" id="aiChatMessagesContainer">
+          <div class="gemini-msg-row bot">
+            <div class="gemini-msg-avatar">✨</div>
+            <div>
+              <div class="gemini-msg-bubble">
+                Welcome to <strong>Continuum Engine</strong>! I'm your Gemini AI assistant. You can ask me questions about loan qualification, test 404 stale asset interception, or attach verification documents using the camera/attachment icons below.
+              </div>
+              <div class="gemini-msg-actions">
+                <button class="gemini-action-btn" onclick="copyGeminiMsg(this)">📋 Copy</button>
+                <button class="gemini-action-btn" onclick="this.style.color='#00ff9d'">👍 Helpful</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Gemini Multimodal Omni-Input Pill Bar -->
+      <div class="gemini-input-wrapper">
+        <!-- Attachment preview pill -->
+        <div class="attachment-pill-preview" id="attachmentPillPreview">
+          <img id="attachedThumbImg" src="" alt="Thumbnail">
+          <span id="attachedFileName">document.png</span>
+          <button style="background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 0.9rem;" onclick="removeAttachment()">&times;</button>
+        </div>
+
+        <input type="file" id="geminiFileInput" accept="image/*,.pdf" style="display: none;" onchange="handleGeminiAttachment(event)">
+
+        <div class="gemini-pill-box">
+          <input type="text" id="aiUserInput" placeholder="Ask Gemini, attach document, or scan ID..." onkeydown="if(event.key==='Enter') sendAiMessage()">
+          
+          <div class="gemini-pill-tools">
+            <!-- Camera Scan Tool -->
+            <button class="gemini-tool-btn" onclick="toggleInlineCamera()" title="Live Webcam ID Scanner">
+              📷
+            </button>
+
+            <!-- Attach Document Tool -->
+            <button class="gemini-tool-btn" onclick="document.getElementById('geminiFileInput').click()" title="Attach Document / Image">
+              📎
+            </button>
+
+            <!-- Gemini Submit Button -->
+            <button class="gemini-send-btn" onclick="sendAiMessage()" title="Send to Gemini">
+              ➤
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================== -->
+  <!-- USER GUIDANCE ONBOARDING TOUR MODAL -->
+  <!-- ========================================================== -->
+  <div id="userGuideModal" class="modal-backdrop hidden">
+    <div class="guide-card">
+      <div class="modal-header">
+        <div style="display: flex; align-items: center; gap: 0.75rem;">
+          <div style="font-size: 1.75rem;">💡</div>
+          <div>
+            <h3 style="font-size: 1.25rem; font-weight: 800; color: var(--text-primary);">Continuum Engine — User Guide</h3>
+            <p style="font-size: 0.8rem; color: var(--text-secondary);">How our 3D State Guardian guarantees Zero Data Loss</p>
+          </div>
+        </div>
+        <button class="close-btn" onclick="closeGuideModal()">&times;</button>
+      </div>
+
+      <div class="guide-step-grid">
+        <div class="guide-step-box">
+          <div class="g-icon">📝</div>
+          <h4>1. Fill Out Wizard</h4>
+          <p>Every keystroke you type is instantly serialized and encrypted with AES-256 in the background without lag.</p>
+        </div>
+        <div class="guide-step-box">
+          <div class="g-icon">💥</div>
+          <h4>2. Simulate 404 Crash</h4>
+          <p>Click the red <strong>404 Crash Simulator</strong> button to test how the engine intercepts stale deployment errors.</p>
+        </div>
+        <div class="guide-step-box">
+          <div class="g-icon">🔄</div>
+          <h4>3. Zero Data Loss</h4>
+          <p>The app hot-reloads to the latest version and restores every uncommitted field with 100% precision!</p>
+        </div>
+      </div>
+
+      <div class="info-note-box">
+        <strong style="color: var(--magnetic-cyan);">✨ Gemini AI Assistant:</strong> Click the floating <strong>"✨ Gemini AI Assistant"</strong> button at the bottom-right anytime to scan documents with live vision or get instant underwriting insights.
+      </div>
+
+      <div style="display: flex; justify-content: flex-end; gap: 0.75rem;">
+        <button class="btn btn-primary" onclick="closeGuideModal()">Got It, Let's Start! 🚀</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Crash & Recovery Interception Overlay -->
+  <div id="crashOverlay" class="overlay-screen hidden">
+    <div class="crash-box">
+      <div class="crash-icon">⚡</div>
+      <h2 style="font-size: 1.35rem; font-weight: 800; color: var(--text-primary);">STALE CLIENT ASSET INTERCEPTED</h2>
+      <p style="color: var(--text-secondary); font-size: 0.875rem;" id="crashSubtitle">
+        Continuum Engine has prevented application failure. Performing zero-data-loss state vaulting.
+      </p>
+
+      <div class="crash-steps-list">
+        <div class="crash-step-item active" id="cStep1">
+          <span>●</span> 1. Intercepted 404 ChunkLoadError: main.part.js
+        </div>
+        <div class="crash-step-item" id="cStep2">
+          <span>○</span> 2. Serializing current form fields and Step index...
+        </div>
+        <div class="crash-step-item" id="cStep3">
+          <span>○</span> 3. Encrypting & Vaulting state to MongoDB...
+        </div>
+        <div class="crash-step-item" id="cStep4">
+          <span>○</span> 4. Dispatching crash telemetry to /api/v1/telemetry/log...
+        </div>
+        <div class="crash-step-item" id="cStep5">
+          <span>○</span> 5. Hot-reloading app bundle to v1.0.1 & Rehydrating state...
+        </div>
+      </div>
+
+      <div style="width: 100%; height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden;">
+        <div id="crashProgressBar" style="width: 20%; height: 100%; background: linear-gradient(90deg, var(--magnetic-rose), var(--magnetic-cyan)); transition: width 0.4s ease;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Rehydration Loading Modal -->
+  <div id="rehydrateOverlay" class="overlay-screen hidden">
+    <div class="card" style="max-width: 420px; text-align: center; padding: 2.5rem;">
+      <div style="font-size: 3rem; margin-bottom: 1rem; animation: spin 1s linear infinite;">⚛️</div>
+      <h3 style="font-size: 1.3rem; font-weight: 800; margin-bottom: 0.5rem; color: var(--magnetic-cyan);">Rehydrating Application Progress</h3>
+      <p style="color: var(--text-secondary); font-size: 0.875rem;">Fetching decrypted snapshot from Continuum Engine Vault...</p>
+    </div>
+  </div>
+
+  <!-- Vault Inspector Modal -->
+  <div id="vaultModal" class="modal-backdrop hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>🔐 State Vault Data Inspector</h3>
+        <button class="close-btn" onclick="closeVaultModal()">&times;</button>
+      </div>
+      <div>
+        <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1rem;">
+          Continuum Engine stores encrypted AES-256 snapshots at rest in MongoDB. Below is the live session payload:
+        </p>
+        <div class="code-box" id="vaultJsonInspector">
+          Loading snapshot...
+        </div>
+      </div>
+      <div style="display: flex; justify-content: flex-end; gap: 0.75rem;">
+        <button class="btn btn-secondary" onclick="closeVaultModal()">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stack Trace Inspector Modal -->
+  <div id="stackTraceModal" class="modal-backdrop hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 id="stackTraceTitle">Error Diagnostics</h3>
+        <button class="close-btn" onclick="closeStackTraceModal()">&times;</button>
+      </div>
+      <div>
+        <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem;">Stack Trace Output:</div>
+        <div class="code-box" id="stackTraceBody" style="color: var(--magnetic-rose);">No details available.</div>
+      </div>
+      <div style="display: flex; justify-content: flex-end;">
+        <button class="btn btn-secondary" onclick="closeStackTraceModal()">Dismiss</button>
+      </div>
+    </div>
+  </div>
+
+  <style>
+    @keyframes spin {
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+
+  <!-- Application Logic & Engines -->
+  <script src="/static/cyber_audio.js"></script>
+  <script src="/static/three_core.js"></script>
+  <script src="/static/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: continuum-engine
+    env: docker
+    dockerfilePath: ./Dockerfile
+    plan: free
+    region: oregon
+    healthCheckPath: /
+    envVars:
+      - key: APP_VERSION
+        value: 1.0.1

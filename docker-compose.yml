@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  continuum-engine:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: continuum_engine_app
+    restart: always
+    ports:
+      - "8000:8000"
+    environment:
+      - MONGODB_URL=mongodb://mongo:27017
+      - DATABASE_NAME=continuum_engine
+      - APP_VERSION=1.0.1
+      - PORT=8000
+    depends_on:
+      - mongo
+
+  mongo:
+    image: mongo:latest
+    container_name: continuum_engine_mongo
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+volumes:
+  mongo_data:
