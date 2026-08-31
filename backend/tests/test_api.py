@@ -22,6 +22,14 @@ def test_read_root():
     assert response.status_code == 200
     assert response.json()["status"] == "online"
 
+def test_health_check():
+    response = client.get("/api/v1/health")
+    assert response.status_code == 200
+    data = response.json()
+    assert data["status"] == "healthy"
+    assert data["service"] == "Continuum Engine API"
+    assert "version" in data
+
 def test_web_app_serving():
     response = client.get("/app")
     assert response.status_code == 200

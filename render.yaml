@@ -5,7 +5,8 @@ services:
     dockerfilePath: ./Dockerfile
     plan: free
     region: oregon
-    healthCheckPath: /
+    healthCheckPath: /api/v1/health
     envVars:
       - key: APP_VERSION
         value: 1.0.1
+

@@ -13,6 +13,16 @@ from app.core.encryption import encrypt_data, decrypt_data
 
 router = APIRouter()
 
+@router.get("/health", status_code=status.HTTP_200_OK)
+async def health_check():
+    """Health check endpoint for Docker container and Cloud deployments."""
+    return {
+        "status": "healthy",
+        "service": "Continuum Engine API",
+        "version": settings.APP_VERSION,
+        "timestamp": datetime.now(timezone.utc).isoformat()
+    }
+
 @router.post("/auth/login", status_code=status.HTTP_200_OK)
 async def login(payload: LoginRequest):
     """Authenticate admin/operator credentials and return JWT."""

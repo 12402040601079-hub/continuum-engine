@@ -19,6 +19,7 @@ if (-not $flutterCmd) {
     Write-Host "[*] Flutter not detected in standard PATH. Searching common locations..." -ForegroundColor Yellow
     
     $commonPaths = @(
+        "$PSScriptRoot\flutter\bin",
         "C:\src\flutter\bin",
         "C:\flutter\bin",
         "C:\tools\flutter\bin",
@@ -81,7 +82,10 @@ Write-Host "[*] Validating Flutter Environment..." -ForegroundColor Cyan
 & flutter config --no-analytics | Out-Null
 & flutter config --enable-web | Out-Null
 
-$frontendDir = "c:\unstop hackathon\frontend"
+$frontendDir = Join-Path $PSScriptRoot "frontend"
+if (-not (Test-Path $frontendDir)) {
+    $frontendDir = "c:\unstop hackathon\frontend"
+}
 Set-Location $frontendDir
 
 Write-Host "[*] Installing Frontend Dependencies (flutter pub get)..." -ForegroundColor Cyan

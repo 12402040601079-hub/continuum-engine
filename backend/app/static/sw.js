@@ -35,7 +35,8 @@ self.addEventListener('fetch', (event) => {
   event.respondWith(
     caches.match(event.request).then((cached) => {
       return cached || fetch(event.request).catch(() => {
-        if (event.request.headers.get('accept').includes('text/html')) {
+        const accept = event.request.headers.get('accept');
+        if (accept && accept.includes('text/html')) {
           return caches.match('/app');
         }
       });
