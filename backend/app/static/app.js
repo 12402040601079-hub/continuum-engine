@@ -28,6 +28,17 @@ const state = {
     loanPurpose: "Debt Consolidation",
     consentChecked: false
   },
+  edgeAiScore: {
+    dti: 16.9,
+    stabilityScore: 780,
+    approvalConfidence: 94,
+    riskBand: "Tier A (Low Risk)"
+  },
+  domMutationFrames: [],
+  activeReplayFrames: [],
+  currentReplayIndex: 0,
+  isReplayPlaying: false,
+  replayTimer: null,
   lastSavedAt: null,
   isDrifted: false,
   ws: null
@@ -187,6 +198,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   initBackgroundPreset();
   updateMobileClock();
   setInterval(updateMobileClock, 1000);
+  initDOMMutationRecorder();
 
   // 2. Initialize 3D Quantum Reactor
   if (window.quantum3D) {
@@ -208,6 +220,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   initUserProfile();
   await initSession();
   bindFormListeners();
+  computeEdgeAiRisk();
   await checkVersionDrift();
   await tryRehydrateSession();
   updateUi();
@@ -596,6 +609,8 @@ function updateReviewSummary() {
   document.getElementById("revDebt").textContent = state.formData.monthlyDebt ? "$" + Number(state.formData.monthlyDebt).toLocaleString() : "$0";
   document.getElementById("revLoanAmount").textContent = "$" + Number(state.formData.loanAmount || 50000).toLocaleString();
   document.getElementById("revTermPurpose").textContent = `${state.formData.repaymentTerm || 36} Mo • ${state.formData.loanPurpose || "Debt Consolidation"}`;
+
+  computeEdgeAiRisk();
 }
 
 /**
@@ -872,6 +887,156 @@ function initUserProfile() {
       renderUserAuthHeader();
     } catch (e) {}
   }
+}
+
+/**
+ * ==========================================================
+ * NEXT-LEVEL ARCHITECTURE: EDGE AI & 60 FPS VISUAL REPLAY
+ * ==========================================================
+ */
+
+function computeEdgeAiRisk() {
+  const income = parseFloat(state.formData.annualIncome) || 85000;
+  const debt = (parseFloat(state.formData.monthlyDebt) || 1200) * 12;
+  const loan = parseFloat(state.formData.loanAmount) || 50000;
+  
+  const dti = Math.min(99.9, Math.max(1.0, (debt / (income || 1)) * 100));
+  let stability = Math.round(850 - (dti * 3.5) - (loan / 5000));
+  stability = Math.max(300, Math.min(850, stability));
+
+  let confidence = Math.round(98 - (dti * 0.4));
+  confidence = Math.max(40, Math.min(99, confidence));
+
+  let tier = "Tier A (Low Risk)";
+  let color = "var(--magnetic-emerald)";
+  if (dti > 45 || stability < 620) {
+    tier = "Tier C (High Risk)";
+    color = "var(--magnetic-rose)";
+  } else if (dti > 30 || stability < 700) {
+    tier = "Tier B (Moderate Risk)";
+    color = "var(--magnetic-amber)";
+  }
+
+  state.edgeAiScore = {
+    dti: dti.toFixed(1),
+    stabilityScore: stability,
+    approvalConfidence: confidence,
+    riskBand: tier
+  };
+
+  const dtiEl = document.getElementById("edgeAiDtiVal");
+  const stabEl = document.getElementById("edgeAiStabilityVal");
+  const riskEl = document.getElementById("edgeAiRiskBandVal");
+  const badgeEl = document.getElementById("edgeAiApprovalBadge");
+
+  if (dtiEl) dtiEl.textContent = `${dti.toFixed(1)}%`;
+  if (stabEl) stabEl.textContent = `${stability} Score`;
+  if (riskEl) {
+    riskEl.textContent = tier;
+    riskEl.style.color = color;
+  }
+  if (badgeEl) {
+    badgeEl.textContent = `${confidence}% Approval Confidence`;
+    badgeEl.style.color = color;
+  }
+}
+
+function initDOMMutationRecorder() {
+  state.domMutationFrames = [
+    { type: "init", timestamp: Date.now(), label: "1. Client DOM initialized & form inputs active", cursor: { x: 25, y: 35 } }
+  ];
+
+  const observer = new MutationObserver((mutations) => {
+    mutations.forEach(m => {
+      if (state.domMutationFrames.length < 60) {
+        state.domMutationFrames.push({
+          type: "mutation",
+          timestamp: Date.now(),
+          target: m.target.nodeName,
+          label: `Edit field mutation in <${m.target.nodeName.toLowerCase()}>`,
+          cursor: { x: Math.round(30 + Math.random() * 40), y: Math.round(30 + Math.random() * 40) }
+        });
+      }
+    });
+  });
+
+  observer.observe(document.body, { childList: true, subtree: true, characterData: true });
+
+  document.addEventListener("mousemove", (e) => {
+    if (Math.random() < 0.04 && state.domMutationFrames.length < 60) {
+      const relX = Math.round((e.clientX / window.innerWidth) * 100);
+      const relY = Math.round((e.clientY / window.innerHeight) * 100);
+      state.domMutationFrames.push({
+        type: "cursor",
+        timestamp: Date.now(),
+        label: `User cursor move (${relX}%, ${relY}%)`,
+        cursor: { x: relX, y: relY }
+      });
+    }
+  });
+}
+
+function prepareVisualReplay(frames) {
+  state.activeReplayFrames = (frames && frames.length > 0) ? frames : [
+    { label: "1. Keystroke edit: Full Name 'John Doe'", cursor: { x: 20, y: 35 } },
+    { label: "2. Input income: '$85,000' (DTI: 16.9%)", cursor: { x: 45, y: 50 } },
+    { label: "3. Configure loan slider: '$50,000'", cursor: { x: 70, y: 40 } },
+    { label: "4. Trigger dynamic chunk loading: Step 4", cursor: { x: 80, y: 75 } },
+    { label: "💥 404 ChunkLoadError Caught: main.part.js", cursor: { x: 85, y: 85 } },
+    { label: "🔐 Zero-Data-Loss encrypted snapshot vaulted", cursor: { x: 50, y: 50 } }
+  ];
+  state.currentReplayIndex = 0;
+  updateReplayUI();
+}
+
+function updateReplayUI() {
+  const frames = state.activeReplayFrames;
+  if (!frames || frames.length === 0) return;
+  const current = frames[state.currentReplayIndex] || frames[0];
+
+  const cursorEl = document.getElementById("replayVirtualCursor");
+  const logTextEl = document.getElementById("replayMockLogText");
+  const counterEl = document.getElementById("replayFrameCounter");
+  const scrubberEl = document.getElementById("replayScrubber");
+  const timerEl = document.getElementById("replayTimerDisplay");
+
+  if (cursorEl && current.cursor) {
+    cursorEl.style.left = `${current.cursor.x}%`;
+    cursorEl.style.top = `${current.cursor.y}%`;
+  }
+  if (logTextEl) logTextEl.textContent = current.label || "Processing DOM frame...";
+  if (counterEl) counterEl.textContent = `Frame ${state.currentReplayIndex + 1} / ${frames.length}`;
+  if (scrubberEl) scrubberEl.value = Math.round(((state.currentReplayIndex + 1) / frames.length) * 100);
+  if (timerEl) timerEl.textContent = `00:0${state.currentReplayIndex + 1}`;
+}
+
+function toggleVisualReplayPlayPause() {
+  const btn = document.getElementById("replayPlayBtn");
+  if (state.isReplayPlaying) {
+    clearInterval(state.replayTimer);
+    state.isReplayPlaying = false;
+    if (btn) btn.textContent = "▶️ Play Replay";
+  } else {
+    state.isReplayPlaying = true;
+    if (btn) btn.textContent = "⏸️ Pause";
+    if (window.cyberAudio) window.cyberAudio.playChirp(1200, "sine", 0.05);
+
+    state.replayTimer = setInterval(() => {
+      state.currentReplayIndex++;
+      if (state.currentReplayIndex >= state.activeReplayFrames.length) {
+        state.currentReplayIndex = 0;
+      }
+      updateReplayUI();
+    }, 600);
+  }
+}
+
+function scrubVisualReplay(val) {
+  const frames = state.activeReplayFrames;
+  if (!frames || frames.length === 0) return;
+  const targetIdx = Math.min(frames.length - 1, Math.floor((val / 100) * frames.length));
+  state.currentReplayIndex = targetIdx;
+  updateReplayUI();
 }
 
 

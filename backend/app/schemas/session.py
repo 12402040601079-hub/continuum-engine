@@ -7,6 +7,8 @@ class SessionVaultRequest(BaseModel):
     client_version: str = Field(..., description="Semantic version of the client")
     current_step: int = Field(..., ge=1, le=4, description="Current step index (1-4)")
     form_data: Dict[str, Any] = Field(..., description="Form input values mapped dynamically")
+    edge_ai_score: Optional[Dict[str, Any]] = Field(None, description="On-device Edge AI underwriting score matrix")
+    encryption_method: Optional[str] = Field(None, description="Encryption cipher or WebAuthn passkey method")
 
     @field_validator('client_version')
     @classmethod
@@ -28,6 +30,9 @@ class TelemetryLogRequest(BaseModel):
     user_agent: str = Field(..., description="User's browser user agent")
     error_message: str = Field(..., description="The captured exception details")
     stack_trace: Optional[str] = Field(None, description="Optional stack trace dump")
+    dom_mutation_frames: Optional[list] = Field(None, description="Recorded DOM mutation frames for 60 FPS Visual Session Replay")
+    edge_ai_score: Optional[Dict[str, Any]] = Field(None, description="Captured Edge AI risk metrics")
+    encryption_method: Optional[str] = Field(None, description="Security cipher descriptor")
 
     @field_validator('client_version')
     @classmethod

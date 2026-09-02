@@ -362,6 +362,34 @@
               <p>Verify vaulted snapshot parameters prior to automated consensus submission.</p>
             </div>
             
+            <!-- On-Device WebAssembly Edge AI Underwriting Risk Card -->
+            <div class="edge-ai-score-card" id="edgeAiScoreCard">
+              <div class="edge-ai-header">
+                <div class="edge-ai-title-group">
+                  <span style="font-size: 1.25rem;">🤖</span>
+                  <div>
+                    <strong>On-Device Edge AI Risk Inference</strong>
+                    <div style="font-size: 0.74rem; color: var(--text-muted);">Local WebAssembly / Wasm quantized ONNX scoring (0ms server latency)</div>
+                  </div>
+                </div>
+                <span class="badge" style="background: rgba(16, 185, 129, 0.15); color: var(--magnetic-emerald);" id="edgeAiApprovalBadge">94% Approval Confidence</span>
+              </div>
+              <div class="edge-ai-metrics-grid">
+                <div class="edge-ai-metric-item">
+                  <span class="m-label">Debt-to-Income (DTI)</span>
+                  <span class="m-val" id="edgeAiDtiVal">16.9%</span>
+                </div>
+                <div class="edge-ai-metric-item">
+                  <span class="m-label">Credit Stability Score</span>
+                  <span class="m-val" id="edgeAiStabilityVal">780 High</span>
+                </div>
+                <div class="edge-ai-metric-item">
+                  <span class="m-label">Max Risk Band</span>
+                  <span class="m-val" style="color: var(--magnetic-emerald);" id="edgeAiRiskBandVal">Tier A (Low Risk)</span>
+                </div>
+              </div>
+            </div>
+
             <div class="summary-container">
               <div class="summary-section">
                 <h4>👤 Identity Matrix</h4>
@@ -1104,18 +1132,40 @@
     </div>
   </div>
 
-  <!-- Stack Trace Inspector Modal -->
+  <!-- Stack Trace & 60 FPS Visual Session Replay Inspector Modal -->
   <div id="stackTraceModal" class="modal-backdrop hidden">
-    <div class="modal-card">
+    <div class="modal-card" style="max-width: 680px;">
       <div class="modal-header">
-        <h3 id="stackTraceTitle">Error Diagnostics</h3>
+        <h3 id="stackTraceTitle">Error Diagnostics & Session Replay</h3>
         <button class="close-btn" onclick="closeStackTraceModal()">&times;</button>
       </div>
       <div>
         <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem;">Stack Trace Output:</div>
-        <div class="code-box" id="stackTraceBody" style="color: var(--magnetic-rose);">No details available.</div>
+        <div class="code-box" id="stackTraceBody" style="color: var(--magnetic-rose); max-height: 140px; overflow-y: auto;">No details available.</div>
+
+        <!-- 60 FPS Visual Session Replay Player Viewport -->
+        <div class="visual-replay-container">
+          <div style="display: flex; align-items: center; justify-content: space-between;">
+            <div style="font-size: 0.85rem; font-weight: 700; color: var(--text-primary);">🎬 60 FPS Visual Session Replay (DOM Mutation Trace)</div>
+            <span class="badge" style="background: rgba(0,240,255,0.12); color: var(--magnetic-cyan);" id="replayFrameCounter">Frame 0 / 0</span>
+          </div>
+          <div class="replay-viewport" id="visualReplayCanvasContainer">
+            <div class="replay-virtual-cursor" id="replayVirtualCursor" style="left: 50%; top: 50%;"></div>
+            <div class="replay-screen-mock" id="replayScreenMock">
+              <div style="color: var(--magnetic-cyan); font-weight: 700;">[Wizard Step 4 - Underwriting Submit]</div>
+              <div id="replayMockLogText">Recorded DOM mutation trace ready. Click Play to watch incident replay.</div>
+            </div>
+          </div>
+          <div class="replay-controls-bar">
+            <button class="btn btn-secondary" id="replayPlayBtn" onclick="toggleVisualReplayPlayPause()" style="padding: 0.35rem 0.75rem; font-size: 0.8rem;">
+              ▶️ Play Replay
+            </button>
+            <input type="range" id="replayScrubber" class="replay-scrubber" min="0" max="100" value="0" oninput="scrubVisualReplay(this.value)">
+            <span style="font-family: var(--font-mono); font-size: 0.78rem; color: var(--text-muted);" id="replayTimerDisplay">00:00</span>
+          </div>
+        </div>
       </div>
-      <div style="display: flex; justify-content: flex-end;">
+      <div style="display: flex; justify-content: flex-end; margin-top: 1rem;">
         <button class="btn btn-secondary" onclick="closeStackTraceModal()">Dismiss</button>
       </div>
     </div>

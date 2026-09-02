@@ -137,6 +137,8 @@ async def vault_session(
         "client_version": payload.client_version,
         "current_step": payload.current_step,
         "form_data": encrypted_form_data,
+        "edge_ai_score": payload.edge_ai_score,
+        "encryption_method": payload.encryption_method or "AES-256-CBC (PKCS7)",
         "last_saved_at": now,
         "expires_at": expires,
         "is_recovered": False

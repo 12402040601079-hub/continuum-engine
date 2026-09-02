@@ -3120,6 +3120,152 @@ body.theme-light .skeleton {
   .dev-ops-drawer {
     width: 100vw;
   }
+  .edge-ai-metrics-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* =========================================================================
+   EDGE AI & VISUAL SESSION REPLAY & WEBAUTHN PASSKEY STYLES
+   ========================================================================= */
+
+/* On-Device Edge AI Risk Underwriting Card */
+.edge-ai-score-card {
+  background: linear-gradient(135deg, rgba(0, 240, 255, 0.08), rgba(157, 78, 221, 0.08));
+  border: 1px solid var(--border-glass);
+  border-radius: var(--radius-md);
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.edge-ai-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.edge-ai-title-group {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.edge-ai-title-group strong {
+  font-size: 0.92rem;
+  color: var(--text-primary);
+}
+
+.edge-ai-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+}
+
+.edge-ai-metric-item {
+  background: var(--bg-inset);
+  border: 1px solid var(--border-subtle);
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--radius-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.edge-ai-metric-item .m-label {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.edge-ai-metric-item .m-val {
+  font-size: 0.95rem;
+  font-weight: 800;
+  font-family: var(--font-mono);
+  color: var(--magnetic-cyan);
+}
+
+/* 60 FPS Visual Session Replay Player Viewport */
+.visual-replay-container {
+  background: #020610;
+  border: 1px solid var(--border-glass);
+  border-radius: var(--radius-md);
+  padding: 1rem;
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
+}
+
+.replay-viewport {
+  height: 220px;
+  background: var(--bg-inset);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.replay-screen-mock {
+  width: 92%;
+  height: 82%;
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px dashed var(--magnetic-cyan);
+  border-radius: var(--radius-sm);
+  padding: 0.85rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  transition: all 0.2s ease;
+}
+
+.replay-virtual-cursor {
+  width: 14px;
+  height: 14px;
+  background: var(--magnetic-rose);
+  border: 2px solid #ffffff;
+  border-radius: 50%;
+  position: absolute;
+  pointer-events: none;
+  box-shadow: 0 0 12px var(--magnetic-rose);
+  transition: all 0.15s ease-out;
+  z-index: 10;
+}
+
+.replay-controls-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.replay-scrubber {
+  flex: 1;
+  accent-color: var(--magnetic-cyan);
+  cursor: pointer;
+}
+
+/* WebAuthn Hardware Passkey Pill */
+.passkey-biometric-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 0.75rem;
+  background: rgba(157, 78, 221, 0.15);
+  border: 1px solid var(--magnetic-purple);
+  color: var(--magnetic-purple);
+  border-radius: var(--radius-full);
+  font-size: 0.78rem;
+  font-weight: 700;
 }
 
 
