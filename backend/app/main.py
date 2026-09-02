@@ -6,28 +6,59 @@ from datetime import datetime, timezone
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse, JSONResponse
 from motor.motor_asyncio import AsyncIOMotorClient
 from app.core.config import settings
 from app.api.v1.endpoints import router as api_v1_router
 
+def seed_mock_telemetry(db):
+    """Seed instant demonstration telemetry crash logs and session snapshots into MockDatabase."""
+    if hasattr(db, "telemetry_logs") and len(db.telemetry_logs.documents) == 0:
+        sample_logs = [
+            {
+                "_id": "log_seed_01",
+                "session_id": "sess-9842a1-prod",
+                "client_version": "1.0.0",
+                "target_asset_url": "https://cdn.continuum.engine/assets/chunk.bundle.js",
+                "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
+                "error_message": "ChunkLoadError: Loading dynamic chunk 'chunk.bundle.js' failed (404 Not Found).",
+                "stack_trace": "Error: ChunkLoadError\n  at loadRoute (bundle.js:1425)",
+                "timestamp": datetime.now(timezone.utc).isoformat()
+            },
+            {
+                "_id": "log_seed_02",
+                "session_id": "sess-4412c9-demo",
+                "client_version": "1.0.0",
+                "target_asset_url": "https://cdn.continuum.engine/assets/three_render.part.js",
+                "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)",
+                "error_message": "ChunkLoadError: Failed to fetch WebGL asset slice 'three_render.part.js'.",
+                "stack_trace": "Error: Failed to fetch asset\n  at renderEngine (three_core.js:88)",
+                "timestamp": datetime.now(timezone.utc).isoformat()
+            }
+        ]
+        for log in sample_logs:
+            db.telemetry_logs.documents[log["_id"]] = log
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Startup: Initialize motor client
+    # Startup: Initialize motor client with ultra-fast 300ms server selection timeout
     print(f"Connecting to MongoDB at {settings.MONGODB_URL}...")
-    client = AsyncIOMotorClient(settings.MONGODB_URL, serverSelectionTimeoutMS=1000)
+    client = AsyncIOMotorClient(settings.MONGODB_URL, serverSelectionTimeoutMS=300, connectTimeoutMS=300)
     try:
-        # Check connection availability
-        await client.server_info()
+        # Check connection availability with fast timeout
+        await asyncio.wait_for(client.server_info(), timeout=0.3)
         app.state.mongodb_client = client
         app.state.db = client[settings.DATABASE_NAME]
         print("Connected to MongoDB successfully.")
     except Exception as e:
-        print(f"MongoDB connection failed: {e}. Falling back to in-memory MockDatabase.")
+        print(f"MongoDB connection skipped ({e}). Falling back to instant in-memory MockDatabase.")
         from app.core.mock_db import MockDatabase
         app.state.mongodb_client = None
-        app.state.db = MockDatabase()
+        mock_db_inst = MockDatabase()
+        seed_mock_telemetry(mock_db_inst)
+        app.state.db = mock_db_inst
     yield
     # Shutdown: Close connection client
     if app.state.mongodb_client:
@@ -39,6 +70,9 @@ app = FastAPI(
     version=settings.APP_VERSION,
     lifespan=lifespan
 )
+
+# GZip Compression Middleware - compresses static assets & JSON payloads for fast page loads
+app.add_middleware(GZipMiddleware, minimum_size=500)
 
 # CORS Configuration - essential for Flutter web & browser SPA requests
 app.add_middleware(

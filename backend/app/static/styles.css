@@ -2312,20 +2312,20 @@ body.theme-light .mobile-bottom-nav {
   flex: 1;
 }
 
-/* Skeleton Loading States */
+/* Skeleton Loading States with Sleek Shimmer Animation */
 .skeleton {
-  background: linear-gradient(90deg, rgba(255, 255, 255, 0.04) 25%, rgba(255, 255, 255, 0.10) 37%, rgba(255, 255, 255, 0.04) 63%);
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.03) 25%, rgba(0, 240, 255, 0.14) 37%, rgba(255, 255, 255, 0.03) 63%);
   background-size: 400% 100%;
-  animation: skeletonPulse 1.4s ease infinite;
+  animation: skeletonShimmer 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   border-radius: var(--radius-sm);
 }
 
 body.theme-light .skeleton {
-  background: linear-gradient(90deg, rgba(15, 23, 42, 0.05) 25%, rgba(15, 23, 42, 0.11) 37%, rgba(15, 23, 42, 0.05) 63%);
+  background: linear-gradient(90deg, rgba(15, 23, 42, 0.04) 25%, rgba(0, 150, 255, 0.14) 37%, rgba(15, 23, 42, 0.04) 63%);
   background-size: 400% 100%;
 }
 
-@keyframes skeletonPulse {
+@keyframes skeletonShimmer {
   0% { background-position: 100% 50%; }
   100% { background-position: 0 50%; }
 }
@@ -2346,6 +2346,13 @@ body.theme-light .skeleton {
 .skeleton-card {
   height: 110px;
   border-radius: var(--radius-md);
+}
+
+.skeleton-mobile-card {
+  height: 130px;
+  border-radius: var(--radius-md);
+  margin-bottom: 0.75rem;
+  width: 100%;
 }
 
 /* Empty State SaaS Component */
@@ -2554,6 +2561,91 @@ body.theme-light .skeleton {
   .table-actions-group {
     width: 100%;
     justify-content: flex-start;
+  }
+
+  /* Mobile Table Card Layout */
+  .mobile-card-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .mobile-data-card {
+    background: var(--bg-inset);
+    border: 1px solid var(--border-glass);
+    border-radius: var(--radius-md);
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
+    transition: transform var(--transition-fast), border-color var(--transition-fast);
+  }
+
+  .mobile-data-card:active {
+    transform: scale(0.99);
+    border-color: var(--magnetic-cyan);
+  }
+
+  .mobile-card-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.82rem;
+  }
+
+  .mobile-card-row .m-label {
+    color: var(--text-muted);
+    font-size: 0.76rem;
+  }
+
+  .mobile-card-row .m-val {
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+
+  .mobile-card-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.35rem;
+    padding-top: 0.65rem;
+    border-top: 1px solid var(--border-subtle);
+  }
+
+  .mobile-card-actions .btn {
+    flex: 1;
+    justify-content: center;
+  }
+
+  /* Mobile Sticky Form Wizard Bottom Bar */
+  .wizard-mobile-sticky-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: fixed;
+    bottom: calc(3.5rem + env(safe-area-inset-bottom, 0px));
+    left: 0;
+    right: 0;
+    z-index: 998;
+    background: rgba(6, 11, 20, 0.92);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    padding: 0.75rem 1rem;
+    border-top: 1px solid var(--border-glass);
+    gap: 0.75rem;
+  }
+
+  body.theme-light .wizard-mobile-sticky-bar {
+    background: rgba(255, 255, 255, 0.94);
+    border-top: 1px solid rgba(15, 23, 42, 0.12);
+  }
+
+  .wizard-mobile-sticky-bar .btn {
+    flex: 1;
+    justify-content: center;
+    font-size: 0.88rem;
+    padding: 0.65rem 1rem;
+    min-height: 48px;
   }
 }
 

@@ -1162,7 +1162,11 @@ async function loadTelemetryDashboard() {
   if (!state.operatorJwt) return;
 
   const tbody = document.getElementById("telemetryLogsTableBody");
-  if (tbody) {
+  
+  // Stale-While-Revalidate: Render cached data immediately for 0ms latency
+  if (telemetryLogsCache.length > 0) {
+    renderTelemetryLogsTable();
+  } else if (tbody) {
     tbody.innerHTML = `
       <tr><td colspan="5" style="padding: 0.75rem;"><div class="skeleton skeleton-row"></div></td></tr>
       <tr><td colspan="5" style="padding: 0.75rem;"><div class="skeleton skeleton-row"></div></td></tr>
@@ -1238,7 +1242,7 @@ async function loadTelemetryDashboard() {
     }
   } catch (e) {
     console.error("Dashboard data load error:", e);
-    if (tbody) {
+    if (tbody && telemetryLogsCache.length === 0) {
       tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color: var(--magnetic-rose); padding: 1.5rem;">Failed to fetch telemetry data: ${e.message}</td></tr>`;
     }
   }
@@ -1350,6 +1354,7 @@ function renderTelemetryLogsTable() {
     return;
   }
 
+  const isMobile = window.innerWidth <= 768;
   const pageSlice = filtered.slice((telemetryPage - 1) * telemetryPageSize, telemetryPage * telemetryPageSize);
   tbody.innerHTML = "";
 
@@ -1359,18 +1364,45 @@ function renderTelemetryLogsTable() {
     const assetName = log.target_asset_url ? log.target_asset_url.split('/').pop() : "chunk";
     const safeError = (log.error_message || "Error").replace(/"/g, '&quot;');
     const safeTrace = (log.stack_trace || "No stack trace").replace(/"/g, '&quot;');
+    const sid = log.session_id || "unknown";
 
-    tr.innerHTML = `
-      <td style="white-space: nowrap; font-size: 0.8rem;">${dateStr}</td>
-      <td class="mono" style="color: var(--magnetic-cyan); font-size: 0.78rem;">${(log.session_id || "").substring(0, 16)}...</td>
-      <td><span class="badge badge-version">v${log.client_version || "1.0.0"}</span></td>
-      <td style="color: var(--magnetic-rose); font-family: var(--font-mono); font-size: 0.78rem;">${assetName}</td>
-      <td>
-        <button class="btn btn-secondary" style="padding: 0.25rem 0.6rem; font-size: 0.75rem;" onclick='openStackTraceModal("${safeError}", "${safeTrace}")'>
-          Inspect
-        </button>
-      </td>
-    `;
+    if (isMobile) {
+      tr.innerHTML = `
+        <td colspan="5" style="padding: 0.4rem 0;">
+          <div class="mobile-data-card">
+            <div class="mobile-card-row">
+              <span class="mono" style="color: var(--magnetic-cyan); font-weight: 700;">${sid.substring(0, 16)}...</span>
+              <span class="badge badge-version">v${log.client_version || "1.0.0"}</span>
+            </div>
+            <div class="mobile-card-row">
+              <span class="m-label">Target Asset:</span>
+              <span class="m-val" style="color: var(--magnetic-rose); font-family: var(--font-mono);">${assetName}</span>
+            </div>
+            <div class="mobile-card-row">
+              <span class="m-label">Timestamp:</span>
+              <span class="m-val">${dateStr}</span>
+            </div>
+            <div class="mobile-card-actions">
+              <button class="btn btn-secondary" style="width: 100%; font-size: 0.82rem;" onclick='openStackTraceModal("${safeError}", "${safeTrace}")'>
+                🔍 Inspect Error Details
+              </button>
+            </div>
+          </div>
+        </td>
+      `;
+    } else {
+      tr.innerHTML = `
+        <td style="white-space: nowrap; font-size: 0.8rem;">${dateStr}</td>
+        <td class="mono" style="color: var(--magnetic-cyan); font-size: 0.78rem;">${sid.substring(0, 16)}...</td>
+        <td><span class="badge badge-version">v${log.client_version || "1.0.0"}</span></td>
+        <td style="color: var(--magnetic-rose); font-family: var(--font-mono); font-size: 0.78rem;">${assetName}</td>
+        <td>
+          <button class="btn btn-secondary" style="padding: 0.25rem 0.6rem; font-size: 0.75rem;" onclick='openStackTraceModal("${safeError}", "${safeTrace}")'>
+            Inspect
+          </button>
+        </td>
+      `;
+    }
     tbody.appendChild(tr);
   });
 }
@@ -1482,7 +1514,11 @@ async function loadAdminSnapshots() {
   if (!state.operatorJwt) return;
 
   const tbody = document.getElementById("adminSnapshotsTableBody");
-  if (tbody) {
+
+  // Stale-While-Revalidate: Render cached snapshots immediately if present
+  if (allAdminSnapshotsCache.length > 0) {
+    renderAdminSnapshots();
+  } else if (tbody) {
     tbody.innerHTML = `
       <tr><td colspan="5" style="padding: 0.75rem;"><div class="skeleton skeleton-row"></div></td></tr>
       <tr><td colspan="5" style="padding: 0.75rem;"><div class="skeleton skeleton-row"></div></td></tr>
@@ -1500,7 +1536,7 @@ async function loadAdminSnapshots() {
     }
   } catch (e) {
     console.error("Admin snapshots fetch error:", e);
-    if (tbody) {
+    if (tbody && allAdminSnapshotsCache.length === 0) {
       tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--magnetic-rose); padding: 1.5rem;">Error loading snapshots: ${e.message}</td></tr>`;
     }
   }
@@ -1605,6 +1641,7 @@ function renderAdminSnapshots() {
     return;
   }
 
+  const isMobile = window.innerWidth <= 768;
   const pageSlice = filtered.slice((snapshotsPage - 1) * snapshotsPageSize, snapshotsPage * snapshotsPageSize);
   tbody.innerHTML = "";
 
@@ -1615,25 +1652,58 @@ function renderAdminSnapshots() {
     const applicantName = s.decrypted_form_data && s.decrypted_form_data.fullName ? s.decrypted_form_data.fullName : "Anonymous";
     const loanAmt = s.decrypted_form_data && s.decrypted_form_data.loanAmount ? `$${Number(s.decrypted_form_data.loanAmount).toLocaleString()}` : "$0";
 
-    tr.innerHTML = `
-      <td>
-        <div style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--magnetic-cyan);">${sid.substring(0, 16)}...</div>
-        <div style="font-size: 0.74rem; color: var(--text-muted);">👤 ${applicantName} (${loanAmt})</div>
-      </td>
-      <td><span class="badge" style="background: rgba(0,240,255,0.1); color: var(--magnetic-cyan);">Step ${s.current_step || 1}</span></td>
-      <td><span class="badge badge-version">v${s.client_version || "1.0.0"}</span></td>
-      <td style="font-size: 0.8rem; color: var(--text-secondary);">${dateStr}</td>
-      <td>
-        <div style="display: flex; gap: 0.35rem;">
-          <button class="btn btn-secondary" style="padding: 0.25rem 0.55rem; font-size: 0.72rem;" onclick="inspectSnapshot('${sid}')">
-            Inspect
-          </button>
-          <button class="btn btn-danger" style="padding: 0.25rem 0.55rem; font-size: 0.72rem;" onclick="deleteAdminSnapshot('${sid}')">
-            Purge
-          </button>
-        </div>
-      </td>
-    `;
+    if (isMobile) {
+      tr.innerHTML = `
+        <td colspan="5" style="padding: 0.4rem 0;">
+          <div class="mobile-data-card">
+            <div class="mobile-card-row">
+              <span class="mono" style="color: var(--magnetic-cyan); font-weight: 700;">${sid.substring(0, 16)}...</span>
+              <span class="badge" style="background: rgba(0,240,255,0.1); color: var(--magnetic-cyan);">Step ${s.current_step || 1}</span>
+            </div>
+            <div class="mobile-card-row">
+              <span class="m-label">Applicant:</span>
+              <span class="m-val">👤 ${applicantName}</span>
+            </div>
+            <div class="mobile-card-row">
+              <span class="m-label">Capital / Ver:</span>
+              <span class="m-val">${loanAmt} <span class="badge badge-version">v${s.client_version || "1.0.0"}</span></span>
+            </div>
+            <div class="mobile-card-row">
+              <span class="m-label">Saved At:</span>
+              <span class="m-val">${dateStr}</span>
+            </div>
+            <div class="mobile-card-actions">
+              <button class="btn btn-secondary" onclick="inspectSnapshot('${sid}')">
+                🔍 Inspect
+              </button>
+              <button class="btn btn-danger" onclick="deleteAdminSnapshot('${sid}')">
+                🗑️ Purge
+              </button>
+            </div>
+          </div>
+        </td>
+      `;
+    } else {
+      tr.innerHTML = `
+        <td>
+          <div style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--magnetic-cyan);">${sid.substring(0, 16)}...</div>
+          <div style="font-size: 0.74rem; color: var(--text-muted);">👤 ${applicantName} (${loanAmt})</div>
+        </td>
+        <td><span class="badge" style="background: rgba(0,240,255,0.1); color: var(--magnetic-cyan);">Step ${s.current_step || 1}</span></td>
+        <td><span class="badge badge-version">v${s.client_version || "1.0.0"}</span></td>
+        <td style="font-size: 0.8rem; color: var(--text-secondary);">${dateStr}</td>
+        <td>
+          <div style="display: flex; gap: 0.35rem;">
+            <button class="btn btn-secondary" style="padding: 0.25rem 0.55rem; font-size: 0.72rem;" onclick="inspectSnapshot('${sid}')">
+              Inspect
+            </button>
+            <button class="btn btn-danger" style="padding: 0.25rem 0.55rem; font-size: 0.72rem;" onclick="deleteAdminSnapshot('${sid}')">
+              Purge
+            </button>
+          </div>
+        </td>
+      `;
+    }
     tbody.appendChild(tr);
   });
 }

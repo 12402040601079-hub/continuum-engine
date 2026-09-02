@@ -2,6 +2,7 @@ import io
 import csv
 import time
 import sys
+import asyncio
 from datetime import datetime, timedelta, timezone
 from fastapi import APIRouter, HTTPException, Request, Response, status, Depends, Query
 from typing import Optional
@@ -286,13 +287,16 @@ async def get_telemetry_logs(
             logs = list(db.telemetry_logs.documents.values())
             logs.sort(key=lambda x: str(x.get("timestamp", "")), reverse=True)
         else:
-            cursor = db.telemetry_logs.find({}).sort("timestamp", -1)
-            raw_logs = await cursor.to_list(length=1000)
-            logs = []
-            for log in raw_logs:
-                if "_id" in log:
-                    log["_id"] = str(log["_id"])
-                logs.append(log)
+            try:
+                cursor = db.telemetry_logs.find({}).sort("timestamp", -1)
+                raw_logs = await asyncio.wait_for(cursor.to_list(length=500), timeout=0.4)
+                logs = []
+                for log in raw_logs:
+                    if "_id" in log:
+                        log["_id"] = str(log["_id"])
+                    logs.append(log)
+            except Exception:
+                logs = []
 
         # Apply search and version filters if present
         if search:

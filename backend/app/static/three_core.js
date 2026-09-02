@@ -25,9 +25,10 @@ class Quantum3DEngine {
     this.groundGrid = null;
     
     // Animation state
+    const isMobile = typeof window !== 'undefined' && window.innerWidth <= 768;
     this.rotationSpeed = 0.008;
     this.targetRotationSpeed = 0.008;
-    this.particleCount = 3500;
+    this.particleCount = isMobile ? 800 : 3500;
     this.isCrashing = false;
     this.isLightMode = false;
     this.coreColor = new THREE.Color(0x00f0ff);
@@ -47,6 +48,8 @@ class Quantum3DEngine {
     this.container = document.getElementById(containerId);
     if (!this.container) return;
 
+    const isMobile = window.innerWidth <= 768;
+
     // 1. Scene Setup
     this.scene = new THREE.Scene();
     this.scene.fog = new THREE.FogExp2(0x060b14, 0.022);
@@ -56,10 +59,10 @@ class Quantum3DEngine {
     this.camera = new THREE.PerspectiveCamera(55, aspect, 0.1, 1000);
     this.camera.position.set(0, 4, 20);
 
-    // 3. WebGL Renderer
-    this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: "high-performance" });
+    // 3. WebGL Renderer (Mobile GPU Optimized)
+    this.renderer = new THREE.WebGLRenderer({ antialias: !isMobile, alpha: true, powerPreference: "high-performance" });
     this.renderer.setSize(this.container.clientWidth, this.container.clientHeight);
-    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMobile ? 1.25 : 2));
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
     this.renderer.toneMappingExposure = 1.25;
     this.container.appendChild(this.renderer.domElement);

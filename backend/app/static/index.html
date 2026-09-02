@@ -249,15 +249,15 @@
                 </div>
                 <div class="form-group">
                   <label for="email">Encrypted Email Address <span class="required">*</span></label>
-                  <input type="email" id="email" class="form-control" placeholder="john.doe@example.com" required autocomplete="email">
+                  <input type="email" id="email" class="form-control" placeholder="john.doe@example.com" required autocomplete="email" inputmode="email">
                 </div>
                 <div class="form-group">
                   <label for="phoneNumber">Secure Phone Number <span class="required">*</span></label>
-                  <input type="tel" id="phoneNumber" class="form-control" placeholder="+1 (555) 234-5678" required autocomplete="tel">
+                  <input type="tel" id="phoneNumber" class="form-control" placeholder="+1 (555) 234-5678" required autocomplete="tel" inputmode="tel">
                 </div>
                 <div class="form-group">
                   <label for="ssn">Social Security / Tax ID <span class="required">*</span></label>
-                  <input type="password" id="ssn" class="form-control" placeholder="•••-••-••••" required>
+                  <input type="password" id="ssn" class="form-control" placeholder="•••-••-••••" required inputmode="numeric">
                 </div>
               </div>
             </form>
@@ -284,14 +284,14 @@
                   <label for="annualIncome">Annual Gross Income ($) <span class="required">*</span></label>
                   <div class="input-with-prefix">
                     <span class="input-prefix">$</span>
-                    <input type="number" id="annualIncome" class="form-control" placeholder="85000" min="0" step="1000" required>
+                    <input type="number" id="annualIncome" class="form-control" placeholder="85000" min="0" step="1000" required inputmode="decimal">
                   </div>
                 </div>
                 <div class="form-group">
                   <label for="monthlyDebt">Monthly Liabilities ($) <span class="required">*</span></label>
                   <div class="input-with-prefix">
                     <span class="input-prefix">$</span>
-                    <input type="number" id="monthlyDebt" class="form-control" placeholder="1200" min="0" step="50" required>
+                    <input type="number" id="monthlyDebt" class="form-control" placeholder="1200" min="0" step="50" required inputmode="decimal">
                   </div>
                 </div>
               </div>
@@ -1111,6 +1111,30 @@
       100% { transform: rotate(360deg); }
     }
   </style>
+
+  <!-- Mobile Bottom Navigation Bar -->
+  <nav class="mobile-bottom-nav" aria-label="Mobile Navigation">
+    <button class="b-nav-item active" id="bNavWizard" onclick="switchView('wizard')">
+      <span class="b-nav-icon">📝</span>
+      <span class="b-nav-label">Process</span>
+    </button>
+    <button class="b-nav-item" id="bNavDashboard" onclick="switchView('dashboard')">
+      <span class="b-nav-icon">📊</span>
+      <span class="b-nav-label">Telemetry</span>
+    </button>
+    <button class="b-nav-item" id="bNavAdmin" onclick="switchView('admin')">
+      <span class="b-nav-icon">🛡️</span>
+      <span class="b-nav-label">Admin</span>
+    </button>
+    <button class="b-nav-item" id="bNavVault" onclick="openVaultModal()">
+      <span class="b-nav-icon">🔐</span>
+      <span class="b-nav-label">Vault</span>
+    </button>
+    <button class="b-nav-item highlight" id="bNavAi" onclick="toggleAiDrawer()">
+      <span class="b-nav-icon">✨</span>
+      <span class="b-nav-label">Gemini AI</span>
+    </button>
+  </nav>
 
   <!-- Application Logic & Engines -->
   <script src="/static/cyber_audio.js"></script>
