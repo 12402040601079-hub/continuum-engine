@@ -1,4 +1,5 @@
 import os
+import time
 import asyncio
 import json
 import random
@@ -52,6 +53,15 @@ async def lifespan(app: FastAPI):
         app.state.mongodb_client = client
         app.state.db = client[settings.DATABASE_NAME]
         print("Connected to MongoDB successfully.")
+
+        # Create MongoDB production compound indexes & TTL auto-expiry
+        try:
+            await app.state.db.session_snapshots.create_index([("last_saved_at", -1), ("user_id", 1)])
+            await app.state.db.telemetry_logs.create_index([("timestamp", -1), ("session_id", 1)])
+            await app.state.db.session_snapshots.create_index("expires_at", expireAfterSeconds=0)
+            print("MongoDB compound indexes and 30-day TTL auto-expiry initialized.")
+        except Exception as idx_err:
+            print(f"Index creation notice: {idx_err}")
     except Exception as e:
         print(f"MongoDB connection skipped ({e}). Falling back to instant in-memory MockDatabase.")
         from app.core.mock_db import MockDatabase
@@ -70,6 +80,35 @@ app = FastAPI(
     version=settings.APP_VERSION,
     lifespan=lifespan
 )
+
+# Rate Limiting & DDOS Protection Middleware
+RATE_LIMIT_STORE = {}
+
+@app.middleware("http")
+async def rate_limit_middleware(request: Request, call_next):
+    client_ip = request.client.host if request.client else "127.0.0.1"
+    path = request.url.path
+    
+    # Rate limit sensitive authentication and vaulting routes
+    if path.startswith("/api/v1/auth") or path.startswith("/api/v1/session/vault"):
+        now = time.time()
+        window = 60 # 60 seconds
+        max_requests = 120 # 120 requests per minute
+        
+        history = RATE_LIMIT_STORE.get(client_ip, [])
+        history = [t for t in history if now - t < window]
+        
+        if len(history) >= max_requests:
+            return JSONResponse(
+                status_code=429,
+                content={"detail": "Too many requests. Rate limit exceeded (120 req/min). Please try again shortly."}
+            )
+        
+        history.append(now)
+        RATE_LIMIT_STORE[client_ip] = history
+        
+    response = await call_next(request)
+    return response
 
 # GZip Compression Middleware - compresses static assets & JSON payloads for fast page loads
 app.add_middleware(GZipMiddleware, minimum_size=500)
