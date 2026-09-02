@@ -34,6 +34,16 @@
   <!-- Cyber Scanline & Vignette Overlay -->
   <div class="cyber-overlay"></div>
 
+  <!-- Native Mobile App Status Bar -->
+  <div class="mobile-native-status-bar" id="mobileStatusBar">
+    <div class="m-status-time" id="mobileStatusTime">09:41</div>
+    <div class="m-status-notch"></div>
+    <div class="m-status-icons">
+      <span class="m-status-icon">📶 5G</span>
+      <span class="m-status-icon">🔋 100%</span>
+    </div>
+  </div>
+
   <!-- Top App Navigation Header / HUD -->
   <header class="app-header">
     <div class="brand-container">
@@ -62,6 +72,11 @@
 
     <!-- Streamlined SaaS Right Controls: Theme, DevOps Tools & Google Verified User Pill -->
     <div class="hud-controls-group">
+      <!-- Desktop Mobile Phone Simulator Toggle -->
+      <button class="icon-btn" id="mobileSimBtn" onclick="toggleMobileSimFrame()" title="Toggle Desktop Smartphone Simulator Shell">
+        📱
+      </button>
+
       <!-- Theme Switcher (Light / Dark) -->
       <button class="icon-btn" id="themeToggleBtn" onclick="toggleThemeMode()" title="Toggle Light / Dark Mode">
         ☀️

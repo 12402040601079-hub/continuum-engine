@@ -161,11 +161,32 @@ document.addEventListener("visibilitychange", () => {
   }
 });
 
+function updateMobileClock() {
+  const el = document.getElementById("mobileStatusTime");
+  if (!el) return;
+  const now = new Date();
+  el.textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+}
+
+function toggleMobileSimFrame() {
+  document.body.classList.toggle("mobile-sim-mode");
+  const isSim = document.body.classList.contains("mobile-sim-mode");
+  showToast(
+    isSim ? "📱 Mobile App Shell Enabled" : "💻 Desktop View Restored",
+    isSim ? "Simulating mobile app experience in smartphone container shell." : "Returned to full-width desktop view.",
+    "info",
+    3000
+  );
+  if (window.cyberAudio) window.cyberAudio.playChirp(1200, "sine", 0.05);
+}
+
 // Initialize on DOM ready
 document.addEventListener("DOMContentLoaded", async () => {
   // 1. Initialize Theme & Background Preset
   initTheme();
   initBackgroundPreset();
+  updateMobileClock();
+  setInterval(updateMobileClock, 1000);
 
   // 2. Initialize 3D Quantum Reactor
   if (window.quantum3D) {
