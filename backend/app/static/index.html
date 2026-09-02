@@ -585,11 +585,14 @@
           </div>
         </div>
         <div class="admin-top-actions">
+          <button class="btn btn-secondary" onclick="pingDatabaseConnection()" title="Ping live database cluster connection">
+            <span>📶</span> Ping DB (<span id="dbPingMs">-- ms</span>)
+          </button>
+          <button class="btn btn-secondary" onclick="openAdminSettingsModal()" title="Manage Admin credentials & security settings">
+            <span>🔑</span> Security Credentials
+          </button>
           <button class="btn btn-secondary" onclick="refreshAdminData()">
             <span>🔄</span> Refresh All
-          </button>
-          <button class="btn btn-secondary" onclick="exportTelemetryJson()">
-            <span>📥</span> Export Logs JSON
           </button>
         </div>
       </div>
@@ -1165,8 +1168,31 @@
           </div>
         </div>
       </div>
-      <div style="display: flex; justify-content: flex-end; margin-top: 1rem;">
-        <button class="btn btn-secondary" onclick="closeStackTraceModal()">Dismiss</button>
+  <!-- Admin Credentials & Security Management Modal -->
+  <div id="adminSettingsModal" class="modal-backdrop hidden">
+    <div class="modal-card" style="max-width: 440px;">
+      <div class="modal-header">
+        <h3>🔑 Operator Admin Security Controls</h3>
+        <button class="close-btn" onclick="closeAdminSettingsModal()">&times;</button>
+      </div>
+      <div>
+        <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1rem;">
+          Update your private Operator Admin credentials to ensure only authorized administrators control system telemetry and snapshots.
+        </p>
+        <form onsubmit="event.preventDefault(); updateAdminCredentialsSubmit();">
+          <div class="form-group" style="margin-bottom: 1rem;">
+            <label for="newAdminUsername">New Admin Username</label>
+            <input type="text" id="newAdminUsername" class="form-control" placeholder="admin" required>
+          </div>
+          <div class="form-group" style="margin-bottom: 1.5rem;">
+            <label for="newAdminPassword">New Admin Password</label>
+            <input type="password" id="newAdminPassword" class="form-control" placeholder="••••••••••••" required>
+          </div>
+          <div style="display: flex; justify-content: flex-end; gap: 0.75rem;">
+            <button type="button" class="btn btn-secondary" onclick="closeAdminSettingsModal()">Cancel</button>
+            <button type="submit" class="btn btn-primary">Save & Lock Admin Access 🔒</button>
+          </div>
+        </form>
       </div>
     </div>
   </div>

@@ -570,6 +570,56 @@ async def clear_all_admin_snapshots(request: Request, admin: dict = Depends(veri
             detail=f"Failed to purge snapshots: {str(e)}"
         )
 
+@router.post("/admin/credentials/update", status_code=status.HTTP_200_OK)
+async def update_admin_credentials(
+    payload: LoginRequest,
+    admin: dict = Depends(verify_admin_token)
+):
+    """Update Operator Admin credentials dynamically and return updated access token."""
+    settings.ADMIN_USERNAME = payload.username
+    settings.ADMIN_PASSWORD = payload.password
+
+    token = create_access_token(
+        data={"sub": payload.username, "role": "admin"},
+        expires_delta=timedelta(hours=24)
+    )
+    return {
+        "success": True,
+        "message": f"Operator credentials updated successfully for user '{payload.username}'",
+        "access_token": token,
+        "username": payload.username
+    }
+
+@router.get("/admin/db/ping", status_code=status.HTTP_200_OK)
+async def ping_database_connection(request: Request, admin: dict = Depends(verify_admin_token)):
+    """Ping database cluster connection and return live latency and status."""
+    db = request.app.state.db
+    from app.core.mock_db import MockDatabase
+    is_mock = isinstance(db, MockDatabase)
+    start = time.time()
+
+    status_str = "healthy"
+    try:
+        if not is_mock and request.app.state.mongodb_client:
+            await asyncio.wait_for(request.app.state.mongodb_client.server_info(), timeout=0.5)
+            latency_ms = round((time.time() - start) * 1000, 2)
+            db_type = "MongoDB Atlas / Cluster"
+        else:
+            latency_ms = round((time.time() - start) * 1000, 2)
+            db_type = "Resilient In-Memory Vault"
+    except Exception as e:
+        status_str = "degraded"
+        latency_ms = 999.0
+        db_type = f"Connection Alert ({str(e)})"
+
+    return {
+        "success": True,
+        "status": status_str,
+        "latency_ms": latency_ms,
+        "database_backend": db_type,
+        "timestamp": datetime.now(timezone.utc).isoformat()
+    }
+
 @router.delete("/admin/telemetry/logs", status_code=status.HTTP_200_OK)
 async def clear_admin_telemetry_logs(request: Request, admin: dict = Depends(verify_admin_token)):
     """Clear all ingested crash telemetry logs."""

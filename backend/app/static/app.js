@@ -1690,8 +1690,70 @@ async function loadAdminOverview() {
       if (dbEl) dbEl.textContent = data.database_backend;
       if (snapCountEl) snapCountEl.textContent = data.total_snapshots;
     }
+    pingDatabaseConnection();
   } catch (e) {
     console.error("Admin overview fetch error:", e);
+  }
+}
+
+async function pingDatabaseConnection() {
+  if (!state.operatorJwt) await ensureOperatorAuth();
+  const pingMsEl = document.getElementById("dbPingMs");
+  if (pingMsEl) pingMsEl.textContent = "...";
+
+  try {
+    const res = await fetch(`${API_BASE}/admin/db/ping`, {
+      headers: { "Authorization": `Bearer ${state.operatorJwt}` }
+    });
+    if (res.ok) {
+      const data = await res.json();
+      if (pingMsEl) pingMsEl.textContent = `${data.latency_ms} ms`;
+      if (window.cyberAudio) window.cyberAudio.playChirp(1300, "sine", 0.04);
+    }
+  } catch (e) {
+    if (pingMsEl) pingMsEl.textContent = "Error";
+  }
+}
+
+function openAdminSettingsModal() {
+  const modal = document.getElementById("adminSettingsModal");
+  if (modal) modal.classList.remove("hidden");
+  if (window.cyberAudio) window.cyberAudio.playChirp(1000, "sine", 0.05);
+}
+
+function closeAdminSettingsModal() {
+  const modal = document.getElementById("adminSettingsModal");
+  if (modal) modal.classList.add("hidden");
+}
+
+async function updateAdminCredentialsSubmit() {
+  const u = document.getElementById("newAdminUsername")?.value;
+  const p = document.getElementById("newAdminPassword")?.value;
+
+  if (!u || !p) return;
+
+  try {
+    const res = await fetch(`${API_BASE}/admin/credentials/update`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${state.operatorJwt}`
+      },
+      body: JSON.stringify({ username: u, password: p })
+    });
+
+    if (res.ok) {
+      const data = await res.json();
+      state.operatorJwt = data.access_token;
+      localStorage.setItem("continuum_operator_jwt", state.operatorJwt);
+      closeAdminSettingsModal();
+      showToast("Credentials Secured 🔒", `Operator Admin credentials updated for '${u}'. Only you handle admin access!`, "success", 5000);
+      if (window.cyberAudio) window.cyberAudio.playRehydrateChime();
+    } else {
+      showToast("Update Failed", "Could not update credentials", "error");
+    }
+  } catch (e) {
+    showToast("Error", e.message, "error");
   }
 }
 
