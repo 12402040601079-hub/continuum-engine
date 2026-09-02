@@ -2,17 +2,24 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>⚡ Continuum Engine — 3D Quantum Vault & State Guardian</title>
-  <meta name="description" content="Continuum Engine: Enterprise 3D Quantum State Vault, Stale Asset Zero-Data-Loss Interceptor, and Gemini AI Assistant.">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>⚡ Continuum Engine — 3D Quantum Vault, State Guardian & Admin Console</title>
+  <meta name="description" content="Continuum Engine: Enterprise 3D Quantum State Vault, Stale Asset Zero-Data-Loss Interceptor, Gemini AI Assistant, and Admin Console.">
+  <meta name="theme-color" content="#060b14">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700;800&family=Outfit:wght@500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/static/styles.css">
+  <link rel="manifest" href="/static/manifest.json">
   <!-- Three.js CDN -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 </head>
 <body>
+
+  <!-- Live Toast Notification Container -->
+  <div id="toastContainer" class="toast-container" aria-live="polite" aria-atomic="true"></div>
 
   <!-- Fullscreen 3D WebGL Canvas Layer -->
   <div id="threeCanvasContainer"></div>
@@ -30,137 +37,195 @@
   <!-- Top App Navigation Header / HUD -->
   <header class="app-header">
     <div class="brand-container">
-      <div class="brand-icon">⚡</div>
-      <div class="brand-text">
+      <div class="brand-icon" onclick="switchView('wizard')" style="cursor: pointer;">⚡</div>
+      <div class="brand-text" onclick="switchView('wizard')" style="cursor: pointer;">
         <h1>Continuum Engine</h1>
         <p>3D Quantum State Guardian</p>
       </div>
     </div>
 
-    <!-- Navigation Tabs -->
+    <!-- Clean Navigation Tabs (Desktop & Tablet) -->
     <div class="tab-switch">
       <button class="tab-btn active" id="tabWizardBtn" onclick="switchView('wizard')">
-        <span>📝</span> Quantum Wizard
+        <span>📝</span> Process
       </button>
       <button class="tab-btn" id="tabDashboardBtn" onclick="switchView('dashboard')">
-        <span>📊</span> Telemetry Stream
+        <span>📊</span> Telemetry
+      </button>
+      <button class="tab-btn" id="tabAdminBtn" onclick="switchView('admin')">
+        <span>🛡️</span> Admin
       </button>
       <button class="tab-btn" id="tabVaultInspectorBtn" onclick="openVaultModal()">
         <span>🔐</span> State Vault
       </button>
     </div>
 
-    <!-- Controls Group: Guidance, Theme & Audio -->
+    <!-- Streamlined SaaS Right Controls: Theme, DevOps Tools & Google Verified User Pill -->
     <div class="hud-controls-group">
-      <!-- User Guidance Tour Button -->
-      <button class="btn btn-secondary" onclick="openGuideModal()" style="padding: 0.35rem 0.75rem; font-size: 0.78rem;">
-        <span>💡</span> User Guide
-      </button>
-
       <!-- Theme Switcher (Light / Dark) -->
       <button class="icon-btn" id="themeToggleBtn" onclick="toggleThemeMode()" title="Toggle Light / Dark Mode">
         ☀️
       </button>
 
-      <!-- Audio Visualizer & Synth Toggle -->
-      <div class="hud-audio-box">
-        <button class="icon-btn" id="audioToggleBtn" onclick="toggleCyberAudio()" title="Toggle Sci-Fi Audio Synthesis" style="padding: 0.15rem 0.35rem;">
-          🔊
-        </button>
-        <canvas id="audioVisualizerCanvas" width="70" height="22"></canvas>
-      </div>
-    </div>
+      <!-- Dev Ops & Sandbox Tools Side Drawer Toggle -->
+      <button class="icon-btn" id="devOpsDrawerBtn" onclick="toggleDevOpsDrawer()" title="Open DevOps & 3D Atmosphere Tools">
+        ⚙️
+      </button>
 
-    <!-- Live Status Indicators & Action Buttons -->
-    <div class="nav-controls" style="display: flex; align-items: center; gap: 0.75rem;">
-      <span class="badge badge-version" id="clientVerBadge">Client: v1.0.0</span>
-      <span class="badge badge-synced" id="vaultSyncBadge">● State Synced</span>
-      <button class="btn btn-danger" id="simulateCrashBtn" onclick="simulateDeployAndCrash()">
-        <span>💥</span> 404 Crash Simulator
+      <!-- User Profile / Google Account Sign In Button Pill -->
+      <div class="user-auth-pill-container" id="userAuthContainer">
+        <button class="btn btn-secondary google-signin-pill" id="googleLoginHeaderBtn" onclick="openGoogleAuthModal()">
+          <svg class="google-icon" width="16" height="16" viewBox="0 0 24 24"><path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17z"/><path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.26v3.15C3.25 21.3 7.31 24 12 24z"/><path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.26C.46 8.16 0 9.98 0 12s.46 3.84 1.26 5.42l4.02-3.15z"/><path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.31 0 3.25 2.7 1.26 6.58l4.02 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/></svg>
+          <span>Sign In with Google</span>
+        </button>
+      </div>
+
+      <!-- Mobile Quick Menu Toggle -->
+      <button class="mobile-menu-btn" id="mobileMenuToggleBtn" onclick="toggleMobileDrawer()" aria-label="Toggle Quick Navigation">
+        <span class="bar"></span>
+        <span class="bar"></span>
+        <span class="bar"></span>
       </button>
     </div>
   </header>
 
-  <!-- Main Container -->
-  <main class="main-content">
-
-    <!-- 3D Perspective & Atmospheric Background Switcher Bar -->
-    <div class="camera-controls-bar">
-      <!-- Background Presets -->
-      <div class="preset-group">
-        <span style="font-size: 0.75rem; color: var(--text-muted); font-family: var(--font-mono); margin-right: 0.25rem;">ATMOSPHERE:</span>
-        <button class="cam-btn active" onclick="setBackgroundPreset('aurora', this)">🌌 Aurora</button>
-        <button class="cam-btn" onclick="setBackgroundPreset('studio', this)">🏢 Studio</button>
-        <button class="cam-btn" onclick="setBackgroundPreset('nebula', this)">🔮 Nebula</button>
-      </div>
-
-      <!-- 3D Camera Angles -->
-      <div class="preset-group">
-        <span style="font-size: 0.75rem; color: var(--text-muted); font-family: var(--font-mono); margin-right: 0.25rem;">3D CAMERA:</span>
-        <button class="cam-btn active" onclick="set3DCamera('core', this)">⚛️ Core Focus</button>
-        <button class="cam-btn" onclick="set3DCamera('matrix', this)">🪐 Wide Matrix</button>
-        <button class="cam-btn" onclick="set3DCamera('radar', this)">🛰️ Orbit Radar</button>
-      </div>
+  <!-- DevOps & Sandbox Side Drawer -->
+  <div id="devOpsDrawer" class="dev-ops-drawer hidden">
+    <div class="dev-drawer-header">
+      <span>⚙️ DevOps & Atmosphere Sandbox</span>
+      <button class="close-btn" onclick="toggleDevOpsDrawer()">&times;</button>
     </div>
-
-    <!-- Active Session & Vault Context Bar -->
-    <div class="vault-banner">
-      <div class="vault-info-group">
-        <div class="vault-stat-item">
-          <span class="label">Quantum Session</span>
-          <span class="val" id="activeSessionIdDisplay">sess-init...</span>
-        </div>
-        <div class="vault-stat-item">
-          <span class="label">Production Version</span>
-          <span class="val" id="activeProdVersionDisplay">v1.0.0</span>
-        </div>
-        <div class="vault-stat-item">
-          <span class="label">Drift Status</span>
-          <span class="val" id="driftStatusDisplay"><span style="color: var(--magnetic-emerald);">● Healthy (v1.0.0)</span></span>
-        </div>
-        <div class="vault-stat-item">
-          <span class="label">Vault Sync</span>
-          <span class="val" id="lastSyncTimeDisplay">Just now</span>
-        </div>
-        <div class="vault-stat-item">
-          <span class="label">Live Stream Ping</span>
-          <span class="val" id="livePingDisplay" style="color: var(--magnetic-cyan);">24.5 ms</span>
+    <div class="dev-drawer-content">
+      <div class="dev-section">
+        <label class="dev-label">ATMOSPHERE PRESET</label>
+        <div class="preset-btn-grid">
+          <button class="cam-btn active" onclick="setBackgroundPreset('aurora', this)">🌌 Aurora</button>
+          <button class="cam-btn" onclick="setBackgroundPreset('studio', this)">🏢 Studio</button>
+          <button class="cam-btn" onclick="setBackgroundPreset('nebula', this)">🔮 Nebula</button>
         </div>
       </div>
-      <div class="vault-actions" style="display: flex; align-items: center; gap: 0.75rem;">
-        <button class="btn btn-secondary" onclick="manualSyncVault()">
-          <span>🔄</span> Force Sync
-        </button>
-        <button class="btn btn-secondary" onclick="resetFormSession()">
-          <span>🗑️</span> Reset
+      <div class="dev-section">
+        <label class="dev-label">3D CAMERA ANGLE</label>
+        <div class="preset-btn-grid">
+          <button class="cam-btn active" onclick="set3DCamera('core', this)">⚛️ Core</button>
+          <button class="cam-btn" onclick="set3DCamera('matrix', this)">🪐 Matrix</button>
+          <button class="cam-btn" onclick="set3DCamera('radar', this)">🛰️ Radar</button>
+        </div>
+      </div>
+      <div class="dev-section">
+        <label class="dev-label">AUDIO SYNTHESIZER</label>
+        <div style="display: flex; align-items: center; gap: 0.75rem;">
+          <button class="btn btn-secondary" onclick="toggleCyberAudio()">🔊 Toggle Cyber Audio</button>
+          <canvas id="audioVisualizerCanvas" width="60" height="20" style="background: rgba(0,0,0,0.3); border-radius: 4px;"></canvas>
+        </div>
+      </div>
+      <div class="dev-section">
+        <label class="dev-label">CHAOS TESTING</label>
+        <button class="btn btn-danger" style="width: 100%;" onclick="simulateDeployAndCrash(); toggleDevOpsDrawer();">
+          <span>💥</span> Trigger 404 Crash Simulator
         </button>
       </div>
     </div>
+  </div>
 
-    <!-- VIEW 1: Holographic Loan Wizard Interface -->
-    <section id="wizardView" class="card">
-      <!-- Stepper Indicator -->
-      <div class="stepper-header">
+  <!-- Mobile Quick Controls Drawer Dropdown -->
+  <div id="mobileControlsDrawer" class="mobile-controls-drawer hidden">
+    <div class="mobile-drawer-header">
+      <span style="font-weight: 700; color: var(--text-primary);">⚙️ Quick Controls</span>
+      <button class="close-btn" onclick="toggleMobileDrawer()">&times;</button>
+    </div>
+    <div class="mobile-drawer-grid">
+      <button class="btn btn-secondary" onclick="openGuideModal(); toggleMobileDrawer();">
+        <span>💡</span> User Guide
+      </button>
+      <button class="btn btn-secondary" onclick="toggleThemeMode()">
+        <span>🌓</span> Toggle Theme
+      </button>
+      <button class="btn btn-secondary" onclick="openGoogleAuthModal(); toggleMobileDrawer();">
+        <span>🔑</span> Google Login
+      </button>
+      <button class="btn btn-secondary" onclick="openVaultModal(); toggleMobileDrawer();">
+        <span>🔐</span> State Vault
+      </button>
+      <button class="btn btn-danger" onclick="simulateDeployAndCrash(); toggleMobileDrawer();" style="grid-column: span 2;">
+        <span>💥</span> 404 Crash Simulator
+      </button>
+    </div>
+  </div>
+
+    <!-- Main Container -->
+    <main class="main-content">
+
+      <!-- Active Session & Vault Status Pill Bar -->
+      <div class="vault-banner">
+        <div class="vault-info-group">
+          <div class="vault-stat-item">
+            <span class="label">Session ID:</span>
+            <span class="val" id="activeSessionIdDisplay">sess-init...</span>
+          </div>
+          <div class="vault-stat-item">
+            <span class="label">System Status:</span>
+            <span class="val" id="driftStatusDisplay"><span style="color: var(--magnetic-emerald);">● Operational (v1.0.0)</span></span>
+          </div>
+          <div class="vault-stat-item">
+            <span class="label">Vault Sync:</span>
+            <span class="val" id="lastSyncTimeDisplay">Just now</span>
+          </div>
+        </div>
+        <div class="vault-actions">
+          <button class="btn btn-secondary" onclick="manualSyncVault()" title="Force state sync to vault">
+            <span>🔄</span> Sync State
+          </button>
+          <button class="btn btn-secondary" onclick="resetFormSession()" title="Reset session form">
+            <span>🗑️</span> Reset
+          </button>
+        </div>
+      </div>
+
+    <!-- ========================================================== -->
+    <!-- VIEW 1: Page-by-Page Process Wizard Interface -->
+    <!-- ========================================================== -->
+    <section id="wizardView" class="card page-wizard-container">
+      <!-- Stepper Progress Header -->
+      <div class="stepper-header-box">
+        <div class="stepper-meta-bar">
+          <span class="stepper-meta-title">Page-by-Page Progress: <strong id="stepPercentLabel" style="color: var(--magnetic-cyan);">25% Complete</strong></span>
+          <span class="stepper-meta-badge" id="stepLockStatusBadge">🔒 Page 2 Locked until Page 1 is Complete</span>
+        </div>
         <div class="stepper-progress-bar">
-          <div class="stepper-progress-fill" id="stepperProgressFill"></div>
+          <div class="stepper-progress-fill" id="stepperProgressFill" style="width: 25%;"></div>
         </div>
 
-        <button class="step-node active" id="stepNode1" onclick="goToStep(1)">
-          <div class="step-circle" id="stepCircle1">1</div>
-          <span class="step-label">Personal Profile</span>
-        </button>
-        <button class="step-node" id="stepNode2" onclick="goToStep(2)">
-          <div class="step-circle" id="stepCircle2">2</div>
-          <span class="step-label">Financial Matrix</span>
-        </button>
-        <button class="step-node" id="stepNode3" onclick="goToStep(3)">
-          <div class="step-circle" id="stepCircle3">3</div>
-          <span class="step-label">Loan Quantum</span>
-        </button>
-        <button class="step-node" id="stepNode4" onclick="goToStep(4)">
-          <div class="step-circle" id="stepCircle4">4</div>
-          <span class="step-label">Review & Vault</span>
-        </button>
+        <div class="stepper-nodes-row">
+          <button class="step-node active" id="stepNode1" onclick="goToStep(1)">
+            <div class="step-circle" id="stepCircle1">1</div>
+            <div class="step-node-text">
+              <span class="step-label">1. Profile</span>
+              <span class="step-status-tag" id="stepTag1">Active ⚡</span>
+            </div>
+          </button>
+          <button class="step-node locked" id="stepNode2" onclick="goToStep(2)">
+            <div class="step-circle" id="stepCircle2">2</div>
+            <div class="step-node-text">
+              <span class="step-label">2. Financial</span>
+              <span class="step-status-tag" id="stepTag2">Locked 🔒</span>
+            </div>
+          </button>
+          <button class="step-node locked" id="stepNode3" onclick="goToStep(3)">
+            <div class="step-circle" id="stepCircle3">3</div>
+            <div class="step-node-text">
+              <span class="step-label">3. Loan Vault</span>
+              <span class="step-status-tag" id="stepTag3">Locked 🔒</span>
+            </div>
+          </button>
+          <button class="step-node locked" id="stepNode4" onclick="goToStep(4)">
+            <div class="step-circle" id="stepCircle4">4</div>
+            <div class="step-node-text">
+              <span class="step-label">4. AI Review</span>
+              <span class="step-status-tag" id="stepTag4">Locked 🔒</span>
+            </div>
+          </button>
+        </div>
       </div>
 
       <!-- Sliding Carousel Track Viewport for Step Panes -->
@@ -176,7 +241,7 @@
               <div class="form-grid">
                 <div class="form-group full-width">
                   <label for="fullName">Full Legal Name <span class="required">*</span></label>
-                  <input type="text" id="fullName" class="form-control" placeholder="e.g. Johnathan Alexander Doe" required>
+                  <input type="text" id="fullName" class="form-control" placeholder="e.g. Johnathan Alexander Doe" required autocomplete="name">
                 </div>
                 <div class="form-group">
                   <label for="dateOfBirth">Date of Birth <span class="required">*</span></label>
@@ -184,14 +249,14 @@
                 </div>
                 <div class="form-group">
                   <label for="email">Encrypted Email Address <span class="required">*</span></label>
-                  <input type="email" id="email" class="form-control" placeholder="john.doe@example.com" required>
+                  <input type="email" id="email" class="form-control" placeholder="john.doe@example.com" required autocomplete="email">
                 </div>
                 <div class="form-group">
                   <label for="phoneNumber">Secure Phone Number <span class="required">*</span></label>
-                  <input type="tel" id="phoneNumber" class="form-control" placeholder="+1 (555) 234-5678" required>
+                  <input type="tel" id="phoneNumber" class="form-control" placeholder="+1 (555) 234-5678" required autocomplete="tel">
                 </div>
                 <div class="form-group">
-                  <label for="ssn">Social Security Number / Tax ID <span class="required">*</span></label>
+                  <label for="ssn">Social Security / Tax ID <span class="required">*</span></label>
                   <input type="password" id="ssn" class="form-control" placeholder="•••-••-••••" required>
                 </div>
               </div>
@@ -219,14 +284,14 @@
                   <label for="annualIncome">Annual Gross Income ($) <span class="required">*</span></label>
                   <div class="input-with-prefix">
                     <span class="input-prefix">$</span>
-                    <input type="number" id="annualIncome" class="form-control" placeholder="85,000" min="0" step="1000" required>
+                    <input type="number" id="annualIncome" class="form-control" placeholder="85000" min="0" step="1000" required>
                   </div>
                 </div>
                 <div class="form-group">
                   <label for="monthlyDebt">Monthly Liabilities ($) <span class="required">*</span></label>
                   <div class="input-with-prefix">
                     <span class="input-prefix">$</span>
-                    <input type="number" id="monthlyDebt" class="form-control" placeholder="1,200" min="0" step="50" required>
+                    <input type="number" id="monthlyDebt" class="form-control" placeholder="1200" min="0" step="50" required>
                   </div>
                 </div>
               </div>
@@ -297,7 +362,7 @@
                 <div class="summary-row"><span class="s-label">Employment:</span><span class="s-val" id="revEmployment">-</span></div>
                 <div class="summary-row"><span class="s-label">Annual Income:</span><span class="s-val" id="revIncome">-</span></div>
                 <div class="summary-row"><span class="s-label">Monthly Debt:</span><span class="s-val" id="revDebt">-</span></div>
-                <div class="summary-row"><span class="s-label">Requested Capital:</span><span class="s-val" id="revLoanAmount" style="color: var(--magnetic-cyan);">-</span></div>
+                <div class="summary-row"><span class="s-label">Requested Capital:</span><span class="s-val" id="revLoanAmount" style="color: var(--magnetic-cyan); font-weight: 700;">-</span></div>
                 <div class="summary-row"><span class="s-label">Term & Purpose:</span><span class="s-val" id="revTermPurpose">-</span></div>
               </div>
             </div>
@@ -321,8 +386,10 @@
       </div>
     </section>
 
+    <!-- ========================================================== -->
     <!-- VIEW 2: Telemetry Operator Dashboard & Live Stream -->
-    <section id="dashboardView" class="dashboard-view">
+    <!-- ========================================================== -->
+    <section id="dashboardView" class="dashboard-view" style="display: none;">
       <!-- Operator Login Banner (if not logged in) -->
       <div id="operatorLoginCard" class="card" style="display: none; max-width: 480px; margin: 0 auto;">
         <div class="step-heading" style="text-align: center;">
@@ -395,19 +462,44 @@
             </div>
           </div>
 
-          <!-- Raw Telemetry Ingestion Logs Table -->
+          <!-- Raw Telemetry Ingestion Logs Table with Filters, Search & Pagination -->
           <div class="dash-panel">
             <div class="panel-header">
-              <h3>📡 Live Ingested Crash Telemetry</h3>
-              <span style="font-size: 0.8rem; color: var(--text-muted);" id="logsCountLabel">0 logs</span>
+              <div>
+                <h3>📡 Live Ingested Crash Telemetry</h3>
+                <p style="font-size: 0.78rem; color: var(--text-muted); margin-top: 2px;">Real-time runtime exception captures & stack traces</p>
+              </div>
+              <div class="table-actions-group">
+                <button class="btn btn-secondary" onclick="exportTelemetryCsv()" title="Export filtered crash incidents to CSV">
+                  <span>📥</span> CSV
+                </button>
+                <button class="btn btn-secondary" onclick="exportTelemetryJson()" title="Export raw logs as JSON">
+                  <span>💾</span> JSON
+                </button>
+                <button class="btn btn-secondary" onclick="loadTelemetryDashboard()" title="Refresh telemetry stream">
+                  <span>🔄</span>
+                </button>
+              </div>
             </div>
+
+            <!-- Table Filter Toolbar -->
+            <div class="table-toolbar">
+              <div class="table-filter-group">
+                <input type="text" id="telemetrySearchInput" placeholder="Search by session, asset, error..." class="form-control" oninput="debounceFilterTelemetry()">
+                <select id="telemetryVersionFilter" class="form-control" style="max-width: 140px;" onchange="filterTelemetryLogs()">
+                  <option value="">All Versions</option>
+                </select>
+              </div>
+              <div style="font-size: 0.8rem; color: var(--text-muted); font-family: var(--font-mono);" id="logsCountLabel">0 logs</div>
+            </div>
+
             <div class="table-container">
               <table class="data-table">
                 <thead>
                   <tr>
-                    <th>Timestamp</th>
-                    <th>Session ID</th>
-                    <th>Client Ver</th>
+                    <th class="sortable-th" onclick="sortTelemetryBy('timestamp')">Timestamp <span class="sort-icon" id="sortIconTime">▼</span></th>
+                    <th class="sortable-th" onclick="sortTelemetryBy('session_id')">Session ID <span class="sort-icon" id="sortIconSess">↕</span></th>
+                    <th class="sortable-th" onclick="sortTelemetryBy('client_version')">Client Ver <span class="sort-icon" id="sortIconVer">↕</span></th>
                     <th>Target Chunk Asset</th>
                     <th>Action</th>
                   </tr>
@@ -421,6 +513,224 @@
                 </tbody>
               </table>
             </div>
+
+            <!-- Table Pagination Bar -->
+            <div class="table-pagination" id="telemetryPagination">
+              <span id="telemetryPageInfo">Showing 0 of 0 entries</span>
+              <div class="pagination-controls">
+                <button class="pagination-btn" id="telemetryPrevBtn" onclick="changeTelemetryPage(-1)">← Prev</button>
+                <span class="pagination-page-indicator" id="telemetryPageNum">Page 1 / 1</span>
+                <button class="pagination-btn" id="telemetryNextBtn" onclick="changeTelemetryPage(1)">Next →</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================== -->
+    <!-- VIEW 3: Comprehensive Enterprise Admin Console -->
+    <!-- ========================================================== -->
+    <section id="adminView" class="admin-view" style="display: none;">
+      <!-- Admin Header Bar -->
+      <div class="admin-top-bar card">
+        <div class="admin-title-group">
+          <div class="admin-shield-badge">🛡️</div>
+          <div>
+            <h2>Continuum Control Center & Admin Console</h2>
+            <p>System cluster monitoring, AES-256 session snapshots, version rolling releases, and chaos engineering.</p>
+          </div>
+        </div>
+        <div class="admin-top-actions">
+          <button class="btn btn-secondary" onclick="refreshAdminData()">
+            <span>🔄</span> Refresh All
+          </button>
+          <button class="btn btn-secondary" onclick="exportTelemetryJson()">
+            <span>📥</span> Export Logs JSON
+          </button>
+        </div>
+      </div>
+
+      <!-- Admin KPI Health Cards -->
+      <div class="metrics-grid" style="margin-top: 1rem;">
+        <div class="kpi-card">
+          <div class="kpi-icon" style="background: rgba(16, 185, 129, 0.12); color: var(--magnetic-emerald);">⚡</div>
+          <div class="kpi-details">
+            <span class="kpi-label">Cluster Health</span>
+            <span class="kpi-val" id="adminClusterStatus">Operational</span>
+          </div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-icon" style="background: rgba(0, 240, 255, 0.12); color: var(--magnetic-cyan);">🗄️</div>
+          <div class="kpi-details">
+            <span class="kpi-label">Database Backend</span>
+            <span class="kpi-val" id="adminDbBackend">Mock Vault</span>
+          </div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-icon" style="background: rgba(157, 78, 221, 0.12); color: var(--magnetic-purple);">💾</div>
+          <div class="kpi-details">
+            <span class="kpi-label">Active Snapshots</span>
+            <span class="kpi-val" id="adminTotalSnapshots">0</span>
+          </div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-icon" style="background: rgba(225, 29, 72, 0.12); color: var(--magnetic-rose);">🛡️</div>
+          <div class="kpi-details">
+            <span class="kpi-label">Encryption Cipher</span>
+            <span class="kpi-val" style="font-size: 1.1rem; font-family: var(--font-mono);">AES-256-CBC</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Admin Dual Columns: Snapshot Management & Release/Chaos Control -->
+      <div class="dashboard-columns" style="margin-top: 1.5rem;">
+        <!-- Left: Live Session Snapshots Inspector with Search, Sort & Pagination -->
+        <div class="dash-panel">
+          <div class="panel-header">
+            <div>
+              <h3>💾 Live Vaulted Session Snapshots</h3>
+              <p style="font-size: 0.78rem; color: var(--text-muted); margin-top: 2px;">Decrypted AES-256 snapshots stored in database</p>
+            </div>
+            <div class="table-actions-group">
+              <button class="btn btn-secondary" onclick="exportAdminSnapshotsCsv()" title="Export snapshots audit to CSV">
+                <span>📥</span> CSV
+              </button>
+              <button class="btn btn-danger" onclick="purgeAllSnapshotsPrompt()" style="padding: 0.35rem 0.65rem; font-size: 0.75rem;">
+                Purge All
+              </button>
+            </div>
+          </div>
+
+          <!-- Snapshots Filter Toolbar -->
+          <div class="table-toolbar">
+            <div class="table-filter-group">
+              <input type="text" id="snapshotSearchInput" placeholder="Filter by session ID, applicant name, email..." class="form-control" oninput="debounceFilterSnapshots()">
+            </div>
+            <div style="font-size: 0.8rem; color: var(--text-muted); font-family: var(--font-mono);" id="snapshotsCountLabel">0 snapshots</div>
+          </div>
+          
+          <div class="table-container">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th class="sortable-th" onclick="sortSnapshotsBy('session_id')">Session ID / Applicant <span class="sort-icon" id="snapSortSess">↕</span></th>
+                  <th class="sortable-th" onclick="sortSnapshotsBy('current_step')">Step <span class="sort-icon" id="snapSortStep">↕</span></th>
+                  <th class="sortable-th" onclick="sortSnapshotsBy('client_version')">Version <span class="sort-icon" id="snapSortVer">↕</span></th>
+                  <th class="sortable-th" onclick="sortSnapshotsBy('last_saved_at')">Saved At <span class="sort-icon" id="snapSortTime">▼</span></th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="adminSnapshotsTableBody">
+                <tr>
+                  <td colspan="5" style="text-align: center; color: var(--text-muted); padding: 2rem;">
+                    Loading session snapshots from vault...
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Snapshots Pagination Bar -->
+          <div class="table-pagination" id="snapshotsPagination">
+            <span id="snapshotsPageInfo">Showing 0 of 0 snapshots</span>
+            <div class="pagination-controls">
+              <button class="pagination-btn" id="snapshotsPrevBtn" onclick="changeSnapshotsPage(-1)">← Prev</button>
+              <span class="pagination-page-indicator" id="snapshotsPageNum">Page 1 / 1</span>
+              <button class="pagination-btn" id="snapshotsNextBtn" onclick="changeSnapshotsPage(1)">Next →</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Release Management & Chaos Engineering Lab -->
+        <div class="admin-sidebar-stack">
+          <!-- Rolling Release & Drift Simulation Panel -->
+          <div class="dash-panel">
+            <div class="panel-header">
+              <h3>🚀 Production Rolling Release Simulator</h3>
+            </div>
+            <p style="font-size: 0.82rem; color: var(--text-secondary); margin-bottom: 0.85rem;">
+              Simulate dynamic cloud rollouts or breaking version upgrades to test client version drift detection and zero-data-loss hot reload.
+            </p>
+            
+            <div class="version-sim-grid">
+              <button class="btn btn-secondary" onclick="simulateVersionUpgrade('1.0.0')">
+                Rollback <strong>v1.0.0</strong>
+              </button>
+              <button class="btn btn-primary" onclick="simulateVersionUpgrade('1.0.1')">
+                Deploy Patch <strong>v1.0.1</strong>
+              </button>
+              <button class="btn btn-secondary" onclick="simulateVersionUpgrade('1.1.0')">
+                Deploy Minor <strong>v1.1.0</strong>
+              </button>
+              <button class="btn btn-danger" onclick="simulateVersionUpgrade('2.0.0')">
+                Deploy Major <strong>v2.0.0</strong>
+              </button>
+            </div>
+
+            <div class="custom-version-row" style="margin-top: 0.85rem; display: flex; gap: 0.5rem;">
+              <input type="text" id="customVersionInput" placeholder="Custom semver e.g. 1.0.5" class="form-control" style="font-size: 0.85rem;">
+              <button class="btn btn-secondary" onclick="applyCustomVersion()">Apply</button>
+            </div>
+          </div>
+
+          <!-- Chaos Resilience Lab -->
+          <div class="dash-panel" style="margin-top: 1.25rem;">
+            <div class="panel-header">
+              <h3>🧪 Chaos Engineering & Resilience Lab</h3>
+            </div>
+            <p style="font-size: 0.82rem; color: var(--text-secondary); margin-bottom: 0.85rem;">
+              Inject synthetic failures to test the 3D State Guardian's automatic recovery under degraded conditions.
+            </p>
+
+            <div class="chaos-btn-list">
+              <button class="chaos-action-card" onclick="triggerChaosAction('latency')">
+                <div class="c-icon">📶</div>
+                <div class="c-info">
+                  <strong>Simulate Latency Spike</strong>
+                  <span>Inject 600ms artificial network lag</span>
+                </div>
+              </button>
+              <button class="chaos-action-card" onclick="triggerChaosAction('chunk404')">
+                <div class="c-icon">⚡</div>
+                <div class="c-info">
+                  <strong>Inject 404 ChunkLoad Failure</strong>
+                  <span>Verify zero-data-loss auto-vault</span>
+                </div>
+              </button>
+              <button class="chaos-action-card" onclick="triggerChaosAction('dbReconnect')">
+                <div class="c-icon">🔄</div>
+                <div class="c-info">
+                  <strong>Simulate Database Reconnect</strong>
+                  <span>Verify cache sync and in-memory fallback</span>
+                </div>
+              </button>
+            </div>
+          </div>
+
+          <!-- Admin Security & Cryptography Policy Card -->
+          <div class="dash-panel" style="margin-top: 1.25rem;">
+            <div class="panel-header">
+              <h3>🔐 Cryptographic & Security Policies</h3>
+            </div>
+            <div class="security-policy-list">
+              <div class="policy-item">
+                <span class="p-label">Encryption:</span>
+                <span class="p-val" style="color: var(--magnetic-cyan);">AES-256-CBC with PKCS7 Padding</span>
+              </div>
+              <div class="policy-item">
+                <span class="p-label">Token Auth:</span>
+                <span class="p-val" style="color: var(--magnetic-emerald);">JWT HMAC-SHA256 (24-Hour TTL)</span>
+              </div>
+              <div class="policy-item">
+                <span class="p-label">CORS Policy:</span>
+                <span class="p-val" style="color: var(--magnetic-teal);">Allow Origin All (*), Credentials Enabled</span>
+              </div>
+              <div class="policy-item">
+                <span class="p-label">State Vault:</span>
+                <span class="p-val" style="color: var(--magnetic-purple);">MongoDB Persistent Cluster / In-Memory Mock</span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -428,11 +738,37 @@
   </main>
 
   <!-- ========================================================== -->
+  <!-- MOBILE BOTTOM NAVIGATION BAR (Thumb-friendly for Phones) -->
+  <!-- ========================================================== -->
+  <nav class="mobile-bottom-nav">
+    <button class="b-nav-item active" id="bNavWizard" onclick="switchView('wizard')">
+      <span class="b-nav-icon">📝</span>
+      <span class="b-nav-label">Wizard</span>
+    </button>
+    <button class="b-nav-item" id="bNavDashboard" onclick="switchView('dashboard')">
+      <span class="b-nav-icon">📊</span>
+      <span class="b-nav-label">Telemetry</span>
+    </button>
+    <button class="b-nav-item" id="bNavAdmin" onclick="switchView('admin')">
+      <span class="b-nav-icon">🛡️</span>
+      <span class="b-nav-label">Admin</span>
+    </button>
+    <button class="b-nav-item" id="bNavVault" onclick="openVaultModal()">
+      <span class="b-nav-icon">🔐</span>
+      <span class="b-nav-label">Vault</span>
+    </button>
+    <button class="b-nav-item highlight" onclick="toggleAiDrawer()">
+      <span class="b-nav-icon">✨</span>
+      <span class="b-nav-label">Gemini</span>
+    </button>
+  </nav>
+
+  <!-- ========================================================== -->
   <!-- AUTHENTIC GEMINI AI ASSISTANT TRIGGER & DRAWER -->
   <!-- ========================================================== -->
   <button class="floating-ai-trigger" onclick="toggleAiDrawer()">
     <span class="gemini-sparkle-icon">✨</span>
-    <span>Gemini AI Assistant</span>
+    <span class="gemini-btn-text">Gemini AI Assistant</span>
   </button>
 
   <!-- Gemini AI Drawer Panel -->
@@ -545,8 +881,89 @@
   </div>
 
   <!-- ========================================================== -->
-  <!-- USER GUIDANCE ONBOARDING TOUR MODAL -->
+  <!-- MODALS & OVERLAYS -->
   <!-- ========================================================== -->
+
+  <!-- Accessible SaaS Confirmation Dialog Modal -->
+  <div id="confirmDialogModal" class="confirm-modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="confirmDialogTitle">
+    <div class="confirm-dialog-card">
+      <div class="confirm-dialog-icon" id="confirmDialogIcon">⚠️</div>
+      <h3 class="confirm-dialog-title" id="confirmDialogTitle">Are you sure?</h3>
+      <p class="confirm-dialog-desc" id="confirmDialogDesc">This action cannot be undone.</p>
+      <div class="confirm-dialog-actions">
+        <button class="btn btn-secondary" id="confirmDialogCancelBtn" onclick="closeConfirmDialog()">Cancel</button>
+        <button class="btn btn-danger" id="confirmDialogConfirmBtn">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Google Authentication & Automatic Account Verification Modal -->
+  <div id="googleAuthModal" class="modal-backdrop hidden" role="dialog" aria-modal="true">
+    <div class="modal-card google-auth-card">
+      <div class="modal-header">
+        <div style="display: flex; align-items: center; gap: 0.75rem;">
+          <svg width="24" height="24" viewBox="0 0 24 24"><path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17z"/><path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.26v3.15C3.25 21.3 7.31 24 12 24z"/><path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.26C.46 8.16 0 9.98 0 12s.46 3.84 1.26 5.42l4.02-3.15z"/><path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.31 0 3.25 2.7 1.26 6.58l4.02 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/></svg>
+          <h3 style="font-size: 1.2rem; font-weight: 800;">Google Account Authentication</h3>
+        </div>
+        <button class="close-btn" onclick="closeGoogleAuthModal()">&times;</button>
+      </div>
+
+      <div style="padding: 1rem 0;">
+        <p style="font-size: 0.88rem; color: var(--text-secondary); margin-bottom: 1.25rem;">
+          Sign in with your Google account to automatically verify your identity, secure your state vault session, and claim your instant <strong>100 Quantum Bonus Credits</strong>!
+        </p>
+
+        <!-- Unauthenticated State -->
+        <div id="googleAuthUnauthBody">
+          <div class="google-auth-box">
+            <button class="google-btn-large" onclick="executeGoogleLogin()">
+              <svg width="20" height="20" viewBox="0 0 24 24"><path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17z"/><path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.26v3.15C3.25 21.3 7.31 24 12 24z"/><path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.26C.46 8.16 0 9.98 0 12s.46 3.84 1.26 5.42l4.02-3.15z"/><path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.31 0 3.25 2.7 1.26 6.58l4.02 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/></svg>
+              <span>Continue with Google Account</span>
+            </button>
+            <div class="auth-divider"><span>or sign in manually</span></div>
+            <form onsubmit="event.preventDefault(); executeManualLogin();">
+              <div class="form-group" style="margin-bottom: 0.75rem;">
+                <input type="email" id="modalAuthEmail" class="form-control" placeholder="Enter your email address" required>
+              </div>
+              <div class="form-group" style="margin-bottom: 1rem;">
+                <input type="text" id="modalAuthName" class="form-control" placeholder="Enter your full name" required>
+              </div>
+              <button type="submit" class="btn btn-secondary" style="width: 100%;">Sign In & Verify Account</button>
+            </form>
+          </div>
+        </div>
+
+        <!-- Authenticated & Verified State -->
+        <div id="googleAuthVerifiedBody" class="hidden">
+          <div class="verified-profile-card">
+            <div class="v-avatar-wrapper">
+              <img id="vUserAvatar" src="https://api.dicebear.com/7.x/avataaars/svg?seed=verified" alt="User Avatar" class="v-avatar">
+              <span class="v-check-badge">✓</span>
+            </div>
+            <div class="v-details">
+              <h4 id="vUserName">Verified User</h4>
+              <p id="vUserEmail">user@example.com</p>
+              <div class="v-status-row">
+                <span class="badge badge-verified">✓ Google Verified True Account</span>
+                <span class="badge badge-credits">🎁 <span id="vUserCredits">100</span> Quantum Credits</span>
+              </div>
+            </div>
+          </div>
+          <div class="reward-claim-box" style="margin-top: 1rem; background: rgba(16, 185, 129, 0.1); border: 1px solid var(--magnetic-emerald); padding: 1rem; border-radius: 8px;">
+            <div style="font-weight: 700; color: var(--magnetic-emerald); margin-bottom: 0.25rem;">🎉 Login Reward Claimed!</div>
+            <div style="font-size: 0.82rem; color: var(--text-secondary);">Your identity has been verified via Google OAuth. 100 Quantum State Credits have been added to your vault account.</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1rem;">
+        <button class="btn btn-secondary" onclick="closeGoogleAuthModal()">Close</button>
+        <button class="btn btn-danger hidden" id="googleAuthLogoutBtn" onclick="logoutGoogleUser()">Sign Out</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- USER GUIDANCE ONBOARDING TOUR MODAL -->
   <div id="userGuideModal" class="modal-backdrop hidden">
     <div class="guide-card">
       <div class="modal-header">
@@ -579,7 +996,7 @@
       </div>
 
       <div class="info-note-box">
-        <strong style="color: var(--magnetic-cyan);">✨ Gemini AI Assistant:</strong> Click the floating <strong>"✨ Gemini AI Assistant"</strong> button at the bottom-right anytime to scan documents with live vision or get instant underwriting insights.
+        <strong style="color: var(--magnetic-cyan);">✨ Gemini AI Assistant:</strong> Click the floating <strong>"✨ Gemini AI Assistant"</strong> button or tap the bottom Gemini tab anytime to scan documents with live vision or get instant underwriting insights.
       </div>
 
       <div style="display: flex; justify-content: flex-end; gap: 0.75rem;">
@@ -647,6 +1064,27 @@
       </div>
       <div style="display: flex; justify-content: flex-end; gap: 0.75rem;">
         <button class="btn btn-secondary" onclick="closeVaultModal()">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Admin Snapshot Inspector Modal -->
+  <div id="snapshotInspectModal" class="modal-backdrop hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 id="snapshotInspectTitle">🔐 Session Snapshot Deep Inspector</h3>
+        <button class="close-btn" onclick="closeSnapshotInspectModal()">&times;</button>
+      </div>
+      <div>
+        <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1rem;">
+          Complete decrypted and raw vaulted snapshot payload:
+        </p>
+        <div class="code-box" id="snapshotInspectJson">
+          Loading snapshot payload...
+        </div>
+      </div>
+      <div style="display: flex; justify-content: flex-end; gap: 0.75rem;">
+        <button class="btn btn-secondary" onclick="closeSnapshotInspectModal()">Close</button>
       </div>
     </div>
   </div>

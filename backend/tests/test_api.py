@@ -58,15 +58,26 @@ def test_version_check():
     assert "active_version" in response.json()
 
 def test_auth_login_success():
-    payload = {
-        "username": settings.ADMIN_USERNAME,
-        "password": settings.ADMIN_PASSWORD
-    }
-    response = client.post("/api/v1/auth/login", json=payload)
+    response = client.post("/api/v1/auth/login", json={"username": "admin", "password": "password123"})
     assert response.status_code == 200
     data = response.json()
     assert "access_token" in data
     assert data["token_type"] == "bearer"
+
+def test_auth_google_login():
+    response = client.post("/api/v1/auth/google", json={
+        "email": "test.user@gmail.com",
+        "name": "Test Google User",
+        "picture": "https://api.dicebear.com/7.x/avataaars/svg?seed=test"
+    })
+    assert response.status_code == 200
+    data = response.json()
+    assert data["success"] is True
+    assert "access_token" in data
+    assert data["user"]["email"] == "test.user@gmail.com"
+    assert data["user"]["is_verified"] is True
+    assert data["user"]["reward_credits"] == 100
+
 
 def test_auth_login_failure():
     payload = {
@@ -224,3 +235,157 @@ def test_get_telemetry_metrics_success(mock_db):
     assert data["drifted_sessions"] == 1 # session-1 is running 1.0.0, production is 1.0.1
     assert data["impacted_sessions"] == 1
     assert data["version_crashes"]["1.0.0"] == 2
+
+def test_admin_overview_success(mock_db):
+    mock_db.session_snapshots.count_documents = AsyncMock(return_value=5)
+    mock_db.telemetry_logs.count_documents = AsyncMock(return_value=3)
+    token = create_access_token({"sub": settings.ADMIN_USERNAME, "role": "admin"})
+
+    response = client.get(
+        "/api/v1/admin/overview",
+        headers={"Authorization": f"Bearer {token}"}
+    )
+    assert response.status_code == 200
+    data = response.json()
+    assert data["status"] == "operational"
+    assert "encryption_algorithm" in data
+    assert "active_nodes" in data
+
+def test_admin_snapshots_management(mock_db):
+    mock_cursor = MagicMock()
+    mock_cursor.sort = MagicMock(return_value=mock_cursor)
+    mock_cursor.to_list = AsyncMock(return_value=[
+        {
+            "_id": "sess-test-1",
+            "client_version": "1.0.0",
+            "current_step": 2,
+            "form_data": {}
+        }
+    ])
+    mock_db.session_snapshots.find = MagicMock(return_value=mock_cursor)
+    mock_db.session_snapshots.delete_one = AsyncMock(return_value=MagicMock(deleted_count=1))
+    mock_db.session_snapshots.delete_many = AsyncMock(return_value=MagicMock(deleted_count=1))
+
+    token = create_access_token({"sub": settings.ADMIN_USERNAME, "role": "admin"})
+
+    # 1. Fetch snapshots
+    res_list = client.get("/api/v1/admin/snapshots", headers={"Authorization": f"Bearer {token}"})
+    assert res_list.status_code == 200
+    assert len(res_list.json()) == 1
+
+    # 2. Delete single snapshot
+    res_del = client.delete("/api/v1/admin/snapshots/sess-test-1", headers={"Authorization": f"Bearer {token}"})
+    assert res_del.status_code == 200
+    assert res_del.json()["success"] is True
+
+    # 3. Clear all snapshots
+    res_clear = client.delete("/api/v1/admin/snapshots", headers={"Authorization": f"Bearer {token}"})
+    assert res_clear.status_code == 200
+    assert res_clear.json()["success"] is True
+
+def test_admin_version_update_and_telemetry_clear(mock_db):
+    mock_db.telemetry_logs.delete_many = AsyncMock(return_value=MagicMock(deleted_count=2))
+    token = create_access_token({"sub": settings.ADMIN_USERNAME, "role": "admin"})
+
+    # 1. Clear telemetry logs
+    res_clear = client.delete("/api/v1/admin/telemetry/logs", headers={"Authorization": f"Bearer {token}"})
+    assert res_clear.status_code == 200
+    assert res_clear.json()["success"] is True
+
+    # 2. Update production version
+    res_ver = client.post(
+        "/api/v1/admin/version/update",
+        json={"version": "1.0.2"},
+        headers={"Authorization": f"Bearer {token}"}
+    )
+    assert res_ver.status_code == 200
+    assert res_ver.json()["new_version"] == "1.0.2"
+
+def test_health_check_diagnostics():
+    response = client.get("/api/v1/health")
+    assert response.status_code == 200
+    data = response.json()
+    assert data["status"] == "healthy"
+    assert "uptime_seconds" in data
+    assert "system" in data
+    assert data["system"]["encryption_standard"] == "AES-256-CBC (PKCS7)"
+
+def test_telemetry_logs_filtering_and_pagination(mock_db):
+    mock_cursor = MagicMock()
+    mock_cursor.sort = MagicMock(return_value=mock_cursor)
+    mock_cursor.to_list = AsyncMock(return_value=[
+        {
+            "_id": "log-1",
+            "session_id": "sess-alpha-123",
+            "client_version": "1.0.0",
+            "target_asset_url": "https://cdn.example.com/main.part.js",
+            "error_message": "ChunkLoadError",
+            "user_agent": "Mozilla"
+        },
+        {
+            "_id": "log-2",
+            "session_id": "sess-beta-456",
+            "client_version": "1.0.1",
+            "target_asset_url": "https://cdn.example.com/step4.chunk.js",
+            "error_message": "404 Not Found",
+            "user_agent": "Chrome"
+        }
+    ])
+    mock_db.telemetry_logs.find = MagicMock(return_value=mock_cursor)
+    token = create_access_token({"sub": settings.ADMIN_USERNAME, "role": "admin"})
+
+    # Test search filter
+    res_search = client.get("/api/v1/telemetry/logs?search=beta", headers={"Authorization": f"Bearer {token}"})
+    assert res_search.status_code == 200
+    logs = res_search.json()
+    assert len(logs) == 1
+    assert logs[0]["session_id"] == "sess-beta-456"
+
+    # Test version filter
+    res_ver = client.get("/api/v1/telemetry/logs?version=1.0.0", headers={"Authorization": f"Bearer {token}"})
+    assert res_ver.status_code == 200
+    assert len(res_ver.json()) == 1
+
+def test_export_telemetry_csv(mock_db):
+    mock_cursor = MagicMock()
+    mock_cursor.sort = MagicMock(return_value=mock_cursor)
+    mock_cursor.to_list = AsyncMock(return_value=[
+        {
+            "session_id": "sess-csv-1",
+            "client_version": "1.0.0",
+            "target_asset_url": "https://cdn.example.com/chunk.js",
+            "error_message": "ChunkLoadError",
+            "user_agent": "TestBrowser"
+        }
+    ])
+    mock_db.telemetry_logs.find = MagicMock(return_value=mock_cursor)
+    token = create_access_token({"sub": settings.ADMIN_USERNAME, "role": "admin"})
+
+    res = client.get("/api/v1/telemetry/export/csv", headers={"Authorization": f"Bearer {token}"})
+    assert res.status_code == 200
+    assert "text/csv" in res.headers["content-type"]
+    assert "sess-csv-1" in res.text
+    assert "Timestamp,Session ID,Client Version" in res.text
+
+def test_export_admin_snapshots_csv(mock_db):
+    mock_cursor = MagicMock()
+    mock_cursor.sort = MagicMock(return_value=mock_cursor)
+    mock_cursor.to_list = AsyncMock(return_value=[
+        {
+            "_id": "sess-snap-1",
+            "user_id": "user-1",
+            "client_version": "1.0.0",
+            "current_step": 3,
+            "form_data": {},
+            "is_recovered": False
+        }
+    ])
+    mock_db.session_snapshots.find = MagicMock(return_value=mock_cursor)
+    token = create_access_token({"sub": settings.ADMIN_USERNAME, "role": "admin"})
+
+    res = client.get("/api/v1/admin/snapshots/export/csv", headers={"Authorization": f"Bearer {token}"})
+    assert res.status_code == 200
+    assert "text/csv" in res.headers["content-type"]
+    assert "sess-snap-1" in res.text
+    assert "Session ID,User ID,Step,Version" in res.text
+

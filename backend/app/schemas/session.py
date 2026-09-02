@@ -41,6 +41,22 @@ class LoginRequest(BaseModel):
     username: str = Field(..., description="Admin operator username")
     password: str = Field(..., description="Admin operator password")
 
+class GoogleLoginRequest(BaseModel):
+    id_token: Optional[str] = Field(None, description="Google OAuth ID Token")
+    email: str = Field(..., description="Verified Google Email")
+    name: str = Field(..., description="Google User Full Name")
+    picture: Optional[str] = Field(None, description="Google Profile Picture URL")
+
+class UserProfileResponse(BaseModel):
+    user_id: str
+    name: str
+    email: str
+    picture: str
+    is_verified: bool
+    reward_credits: int
+    role: str
+
 class SessionTokenRequest(BaseModel):
     session_id: str = Field(..., description="Unique session token ID")
+
 

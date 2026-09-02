@@ -7,6 +7,10 @@ class MockInsertOneResult:
     def __init__(self, inserted_id: str):
         self.inserted_id = inserted_id
 
+class MockDeleteResult:
+    def __init__(self, deleted_count: int):
+        self.deleted_count = deleted_count
+
 class MockCollection:
     def __init__(self, name: str):
         self.name = name
@@ -51,6 +55,21 @@ class MockCollection:
         
         self.documents[doc_id] = doc_copy
         return MockInsertOneResult(inserted_id=doc_id)
+
+    async def delete_one(self, filter: dict) -> MockDeleteResult:
+        doc_id = filter.get("_id")
+        if doc_id and doc_id in self.documents:
+            del self.documents[doc_id]
+            return MockDeleteResult(deleted_count=1)
+        return MockDeleteResult(deleted_count=0)
+
+    async def delete_many(self, filter: dict) -> MockDeleteResult:
+        count = len(self.documents)
+        self.documents.clear()
+        return MockDeleteResult(deleted_count=count)
+
+    async def count_documents(self, filter: dict = None) -> int:
+        return len(self.documents)
 
 class MockDatabase:
     def __init__(self):
