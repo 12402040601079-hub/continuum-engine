@@ -64,4 +64,18 @@ class UserProfileResponse(BaseModel):
 class SessionTokenRequest(BaseModel):
     session_id: str = Field(..., description="Unique session token ID")
 
+class AiChatRequest(BaseModel):
+    message: str = Field(..., description="User question or prompt")
+    session_id: Optional[str] = Field(None, description="Active session ID")
+    current_step: Optional[int] = Field(1, description="Active wizard step")
+    client_version: Optional[str] = Field("1.0.0", description="Running client version")
+    form_data: Optional[Dict[str, Any]] = Field(default_factory=dict, description="Current form parameters")
+    attachment: Optional[Dict[str, Any]] = Field(None, description="Uploaded file or image")
+
+class AiChatResponse(BaseModel):
+    success: bool
+    reply: str
+    action_type: Optional[str] = None
+    suggested_actions: Optional[list] = None
+
 

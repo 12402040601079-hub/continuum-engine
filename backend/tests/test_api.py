@@ -389,3 +389,40 @@ def test_export_admin_snapshots_csv(mock_db):
     assert "sess-snap-1" in res.text
     assert "Session ID,User ID,Step,Version" in res.text
 
+def test_ai_chat_loan_calculation():
+    payload = {
+        "message": "Calculate my monthly payment and DTI ratio",
+        "session_id": "sess-test-ai-01",
+        "current_step": 3,
+        "client_version": "1.0.0",
+        "form_data": {
+            "fullName": "Alice Johnson",
+            "annualIncome": "120000",
+            "monthlyDebt": "1800",
+            "loanAmount": "40000",
+            "repaymentTerm": "36"
+        }
+    }
+    res = client.post("/api/v1/ai/chat", json=payload)
+    assert res.status_code == 200
+    data = res.json()
+    assert data["success"] is True
+    assert "Alice Johnson" in data["reply"]
+    assert "DTI" in data["reply"]
+    assert data["action_type"] == "loan_calculation"
+
+def test_ai_chat_crash_explanation():
+    payload = {
+        "message": "Explain how 404 zero-data-loss recovery works",
+        "session_id": "sess-test-ai-02",
+        "current_step": 2,
+        "form_data": {}
+    }
+    res = client.post("/api/v1/ai/chat", json=payload)
+    assert res.status_code == 200
+    data = res.json()
+    assert data["success"] is True
+    assert "ChunkLoadError" in data["reply"]
+    assert data["action_type"] == "crash_recovery_explanation"
+
+

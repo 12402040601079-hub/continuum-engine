@@ -461,9 +461,18 @@ class Quantum3DEngine {
     if (!this.container || !this.renderer || !this.camera) return;
     const width = this.container.clientWidth;
     const height = this.container.clientHeight;
+    const isMobile = window.innerWidth <= 768;
+    const targetParticleCount = isMobile ? 800 : 3500;
+
+    if (this.particleCount !== targetParticleCount) {
+      this.particleCount = targetParticleCount;
+      this.buildParticleMatrix();
+    }
+
     this.camera.aspect = width / height;
     this.camera.updateProjectionMatrix();
     this.renderer.setSize(width, height);
+    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMobile ? 1.25 : 2));
   }
 }
 

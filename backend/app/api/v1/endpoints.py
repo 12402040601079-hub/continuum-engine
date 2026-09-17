@@ -13,8 +13,11 @@ from app.schemas.session import (
     LoginRequest,
     GoogleLoginRequest,
     UserProfileResponse,
-    SessionTokenRequest
+    SessionTokenRequest,
+    AiChatRequest,
+    AiChatResponse
 )
+from app.api.v1.ai import process_ai_chat
 from app.core.config import settings
 from app.core.security import create_access_token, get_token_payload, verify_admin_token
 from app.core.encryption import encrypt_data, decrypt_data
@@ -126,7 +129,7 @@ async def vault_session(
 
     db = request.app.state.db
     now = datetime.now(timezone.utc)
-    expires = now + timedelta(hours=24) # 24 hours TTL expiration
+    expires = now + timedelta(hours=48) # 48 hours TTL expiration
 
     # Encrypt form data at rest
     encrypted_form_data = encrypt_data(payload.form_data)
@@ -654,4 +657,16 @@ async def update_production_version(payload: dict, admin: dict = Depends(verify_
         "new_version": settings.APP_VERSION,
         "message": f"Active production version updated to {new_version}"
     }
+
+@router.post("/ai/chat", response_model=AiChatResponse, status_code=status.HTTP_200_OK)
+async def ai_chat(payload: AiChatRequest):
+    """Contextual conversational AI assistant with multimodal underwriting & technical diagnostics."""
+    try:
+        return await process_ai_chat(payload)
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"AI chat assistant error: {str(e)}"
+        )
+
 
