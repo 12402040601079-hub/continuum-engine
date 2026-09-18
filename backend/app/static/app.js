@@ -363,6 +363,17 @@ function set3DCamera(preset, btnEl) {
   if (btnEl) btnEl.classList.add("active");
 }
 
+function updateSessionIdDisplays() {
+  const fullId = state.sessionId || "sess-init";
+  const shortId = fullId.length > 16 ? fullId.substring(0, 16) + "..." : fullId;
+
+  const activeElem = document.getElementById("activeSessionIdDisplay");
+  const hudElem = document.getElementById("hudSessionIdDisplay");
+
+  if (activeElem) activeElem.textContent = fullId;
+  if (hudElem) hudElem.textContent = shortId;
+}
+
 /**
  * Generates or retrieves unique session token & obtains session JWT
  */
@@ -373,7 +384,7 @@ async function initSession() {
     localStorage.setItem("continuum_session_id", storedSession);
   }
   state.sessionId = storedSession;
-  document.getElementById("activeSessionIdDisplay").textContent = state.sessionId;
+  updateSessionIdDisplays();
 
   // Retrieve cached operator token if present
   const storedOpJwt = localStorage.getItem("continuum_operator_jwt");
@@ -412,6 +423,8 @@ async function checkVersionDrift() {
       const prodDisplay = document.getElementById("activeProdVersionDisplay");
       const driftDisplay = document.getElementById("driftStatusDisplay");
       const metricProd = document.getElementById("metricProdVersion");
+      const hudStatusText = document.getElementById("hudStatusText");
+      const hudStatusBadge = document.getElementById("hudStatusBadge");
 
       if (badge) badge.textContent = `Client: v${state.clientVersion}`;
       if (prodDisplay) prodDisplay.textContent = `v${state.serverVersion}`;
@@ -421,9 +434,19 @@ async function checkVersionDrift() {
         if (state.isDrifted) {
           if (badge) badge.className = "badge badge-drift";
           driftDisplay.innerHTML = `<span style="color: #ffaa00; font-weight: 700;">⚠️ Drift (v${state.serverVersion} Live)</span>`;
+          if (hudStatusText) hudStatusText.textContent = `Drift (v${state.serverVersion} Live)`;
+          if (hudStatusBadge) {
+            hudStatusBadge.style.borderColor = "rgba(255, 170, 0, 0.4)";
+            hudStatusBadge.style.background = "rgba(255, 170, 0, 0.1)";
+          }
         } else {
           if (badge) badge.className = "badge badge-version";
           driftDisplay.innerHTML = `<span style="color: #00ff9d; font-weight: 700;">● Operational (v${state.serverVersion})</span>`;
+          if (hudStatusText) hudStatusText.textContent = `Operational (v${state.serverVersion})`;
+          if (hudStatusBadge) {
+            hudStatusBadge.style.borderColor = "rgba(0, 255, 136, 0.3)";
+            hudStatusBadge.style.background = "rgba(0, 255, 136, 0.08)";
+          }
         }
       }
     }
