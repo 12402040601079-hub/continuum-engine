@@ -3547,11 +3547,6 @@ body.theme-light .skeleton {
   border-radius: 12px;
 }
 
-@keyframes shimmer {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
-}
-
 /* 3D Perspective Wrapper & Parallax Input Cards */
 .input-3d-wrapper {
   perspective: 1000px;
