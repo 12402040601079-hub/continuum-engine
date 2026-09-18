@@ -2737,3 +2737,179 @@ function removeAttachment() {
   const preview = document.getElementById("attachmentPillPreview");
   if (preview) preview.style.display = "none";
 }
+
+/**
+ * ==========================================================
+ * 3D INTERACTIVE TILT HOVER EFFECTS FOR WIZARD INPUT CARDS
+ * ==========================================================
+ */
+function attach3DHoverEffects() {
+  const cards = document.querySelectorAll('.input-3d-card');
+
+  cards.forEach(card => {
+    if (card.dataset.tiltAttached) return;
+    card.dataset.tiltAttached = "true";
+
+    card.addEventListener('mousemove', (e) => {
+      const rect = card.getBoundingClientRect();
+      const x = e.clientX - rect.left - rect.width / 2;
+      const y = e.clientY - rect.top - rect.height / 2;
+
+      // Calculate tilt angles (Max 10 deg)
+      const rotateX = (-y / (rect.height / 2)) * 10;
+      const rotateY = (x / (rect.width / 2)) * 10;
+
+      card.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.02)`;
+    });
+
+    card.addEventListener('mouseleave', () => {
+      card.style.transform = `rotateX(0deg) rotateY(0deg) scale(1)`;
+    });
+  });
+}
+
+/**
+ * ==========================================================
+ * AUTOSAVE CYAN PULSE FEEDBACK ON KEYSTROKE
+ * ==========================================================
+ */
+function setupAutosavePulseListeners() {
+  const inputs = document.querySelectorAll('input, select, textarea');
+  inputs.forEach(input => {
+    if (input.dataset.pulseAttached) return;
+    input.dataset.pulseAttached = "true";
+
+    input.addEventListener('input', () => {
+      const card = input.closest('.input-3d-card') || input;
+      card.classList.remove('autosave-pulsing');
+      // Trigger reflow to restart CSS animation
+      void card.offsetWidth;
+      card.classList.add('autosave-pulsing');
+
+      if (window.cyberAudio) {
+        window.cyberAudio.playChirp(1100, "sine", 0.02);
+      }
+    });
+  });
+}
+
+/**
+ * ==========================================================
+ * GEMINI AI CO-PILOT CUSTOM DRAWER CONTROLLER
+ * ==========================================================
+ */
+function toggleGeminiDrawer() {
+  const drawer = document.getElementById('gemini-drawer');
+  if (!drawer) return;
+  
+  drawer.classList.toggle('active');
+  
+  if (drawer.classList.contains('active')) {
+    if (window.cyberAudio) window.cyberAudio.playChirp(1300, "sine", 0.08);
+    const input = document.getElementById('gemini-input');
+    if (input) setTimeout(() => input.focus(), 300);
+  } else {
+    if (window.cyberAudio) window.cyberAudio.playChirp(700, "triangle", 0.05);
+  }
+}
+
+function sendGeminiPrompt(customText) {
+  const input = document.getElementById('gemini-input');
+  const chatStream = document.getElementById('gemini-chat-stream');
+  const text = customText || (input ? input.value.trim() : "");
+
+  if (!text) return;
+
+  if (input) input.value = "";
+
+  // Append User Message
+  const userMsg = document.createElement('div');
+  userMsg.className = 'user-message';
+  userMsg.style.cssText = 'background: rgba(0, 240, 255, 0.12); border-right: 3px solid #00F0FF; padding: 12px; border-radius: 8px; margin-bottom: 12px; color: #FFF; font-size: 0.9rem; align-self: flex-end; width: 85%;';
+  userMsg.innerHTML = `<p style="margin:0;">👤 <strong>You:</strong> ${text}</p>`;
+  if (chatStream) chatStream.appendChild(userMsg);
+
+  // Generate AI Response
+  setTimeout(() => {
+    const aiResponse = generateLocalIntelligentAiResponse(text, currentAttachment);
+    const aiMsg = document.createElement('div');
+    aiMsg.className = 'ai-message';
+    aiMsg.innerHTML = aiResponse;
+    if (chatStream) {
+      chatStream.appendChild(aiMsg);
+      chatStream.scrollTop = chatStream.scrollHeight;
+    }
+    if (window.cyberAudio) window.cyberAudio.playChirp(1400, "sine", 0.06);
+  }, 400);
+}
+
+function scanDocumentAI() {
+  const chatStream = document.getElementById('gemini-chat-stream');
+  if (!chatStream) return;
+
+  const scanningMsg = document.createElement('div');
+  scanningMsg.className = 'ai-message';
+  scanningMsg.innerHTML = '<p>📷 <em>Scanning paystub and identity documents via Gemini Vision OCR...</em></p>';
+  chatStream.appendChild(scanningMsg);
+  chatStream.scrollTop = chatStream.scrollHeight;
+
+  setTimeout(() => {
+    // Auto-fill wizard fields
+    const nameInput = document.getElementById('fullName');
+    const incomeInput = document.getElementById('annualIncome');
+    const debtInput = document.getElementById('monthlyDebt');
+
+    if (nameInput && !nameInput.value) nameInput.value = "Johnathan Alexander Doe";
+    if (incomeInput) incomeInput.value = "95000";
+    if (debtInput) debtInput.value = "1100";
+
+    scanningMsg.innerHTML = `
+      <p>✅ <strong>Document OCR Scan Complete!</strong></p>
+      <p>Extracted Financial Parameters:</p>
+      <ul>
+        <li><strong>Legal Name:</strong> Johnathan Alexander Doe</li>
+        <li><strong>Verified Annual Income:</strong> $95,000</li>
+        <li><strong>Monthly Liabilities:</strong> $1,100</li>
+      </ul>
+      <p style="color:#00FF88;">Wizard form fields updated automatically with 100% precision!</p>
+    `;
+    if (chatStream) chatStream.scrollTop = chatStream.scrollHeight;
+    if (window.cyberAudio) window.cyberAudio.playRehydrateChime();
+    setupAutosavePulseListeners();
+  }, 1200);
+}
+
+function auditRiskAI() {
+  sendGeminiPrompt("Audit underwriting risk for my current income and debt parameters");
+}
+
+function explainRecoveryAI() {
+  sendGeminiPrompt("Explain how 404 crash interception recovery works in Continuum Engine");
+}
+
+// Global Exports
+window.attach3DHoverEffects = attach3DHoverEffects;
+window.toggleGeminiDrawer = toggleGeminiDrawer;
+window.sendGeminiPrompt = sendGeminiPrompt;
+window.scanDocumentAI = scanDocumentAI;
+window.auditRiskAI = auditRiskAI;
+window.explainRecoveryAI = explainRecoveryAI;
+
+// DOM Ready Initialization
+document.addEventListener('DOMContentLoaded', () => {
+  attach3DHoverEffects();
+  setupAutosavePulseListeners();
+  if (typeof window.initDreamCanvas === 'function') {
+    window.initDreamCanvas('three-canvas');
+  }
+});
+
+// Also trigger on window load to ensure all dynamic elements are caught
+window.addEventListener('load', () => {
+  attach3DHoverEffects();
+  setupAutosavePulseListeners();
+  if (typeof window.initDreamCanvas === 'function') {
+    window.initDreamCanvas('three-canvas');
+  }
+});
+

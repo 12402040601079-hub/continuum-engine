@@ -21,8 +21,10 @@
   <!-- Live Toast Notification Container -->
   <div id="toastContainer" class="toast-container" aria-live="polite" aria-atomic="true"></div>
 
-  <!-- Fullscreen 3D WebGL Canvas Layer -->
-  <div id="threeCanvasContainer"></div>
+  <!-- Fullscreen 3D WebGL Canvas Layer [Z-INDEX 0] -->
+  <div id="threeCanvasContainer">
+    <div id="three-canvas" style="position: absolute; inset: 0; width: 100%; height: 100%;"></div>
+  </div>
 
   <!-- Dynamic Magnetic Aurora Light Animation Background -->
   <div class="magnetic-aurora-bg" id="magneticAuroraBg">
@@ -44,7 +46,7 @@
     </div>
   </div>
 
-  <!-- Top App Navigation Header / HUD -->
+  <!-- Top App Navigation Header / HUD [Z-INDEX 50] -->
   <header class="app-header">
     <div class="brand-container">
       <div class="brand-icon" onclick="switchView('wizard')" style="cursor: pointer;">⚡</div>
@@ -70,10 +72,23 @@
       </button>
     </div>
 
-    <!-- Streamlined SaaS Right Controls: Theme, DevOps Tools & Google Verified User Pill -->
+    <!-- Streamlined SaaS Right Controls: Live Session ID, Operational Badge, Simulator & Tools -->
     <div class="hud-controls-group">
+      <!-- Live Session ID Badge -->
+      <div class="hud-stat-pill" title="Live Cryptographic Session ID">
+        <span class="hud-stat-dot"></span>
+        <span class="hud-stat-label">SESSION:</span>
+        <span class="hud-stat-val mono" id="hudSessionIdDisplay">sess-init...</span>
+      </div>
+
+      <!-- Operational Status Badge -->
+      <div class="hud-stat-pill status-operational" id="hudStatusBadge" title="System Operational Status">
+        <span class="status-pulse-dot"></span>
+        <span class="hud-status-text">Operational (v1.0.0)</span>
+      </div>
+
       <!-- Desktop Mobile Phone Simulator Toggle -->
-      <button class="icon-btn" id="mobileSimBtn" onclick="toggleMobileSimFrame()" title="Toggle Desktop Smartphone Simulator Shell">
+      <button class="icon-btn" id="mobileSimBtn" onclick="toggleMobileSimFrame()" title="Toggle Desktop Smartphone Simulator Shell (3D Frame)">
         📱
       </button>
 
@@ -199,9 +214,9 @@
       </div>
 
     <!-- ========================================================== -->
-    <!-- VIEW 1: Page-by-Page Process Wizard Interface -->
+    <!-- VIEW 1: Page-by-Page Process Wizard Interface [Z-INDEX 10] -->
     <!-- ========================================================== -->
-    <section id="wizardView" class="card page-wizard-container">
+    <section id="wizardView" class="card page-wizard-container dream-card">
       <!-- Stepper Progress Header -->
       <div class="stepper-header-box">
         <div class="stepper-meta-bar">
@@ -255,25 +270,35 @@
             </div>
             <form id="formStep1" onsubmit="event.preventDefault(); nextStep();">
               <div class="form-grid">
-                <div class="form-group full-width">
-                  <label for="fullName">Full Legal Name <span class="required">*</span></label>
-                  <input type="text" id="fullName" class="form-control" placeholder="e.g. Johnathan Alexander Doe" required autocomplete="name">
+                <div class="form-group full-width input-3d-wrapper">
+                  <div class="input-3d-card">
+                    <label for="fullName">Full Legal Name <span class="required">*</span></label>
+                    <input type="text" id="fullName" class="form-control" placeholder="e.g. Johnathan Alexander Doe" required autocomplete="name">
+                  </div>
                 </div>
-                <div class="form-group">
-                  <label for="dateOfBirth">Date of Birth <span class="required">*</span></label>
-                  <input type="date" id="dateOfBirth" class="form-control" required>
+                <div class="form-group input-3d-wrapper">
+                  <div class="input-3d-card">
+                    <label for="dateOfBirth">Date of Birth <span class="required">*</span></label>
+                    <input type="date" id="dateOfBirth" class="form-control" required>
+                  </div>
                 </div>
-                <div class="form-group">
-                  <label for="email">Encrypted Email Address <span class="required">*</span></label>
-                  <input type="email" id="email" class="form-control" placeholder="john.doe@example.com" required autocomplete="email" inputmode="email">
+                <div class="form-group input-3d-wrapper">
+                  <div class="input-3d-card">
+                    <label for="email">Encrypted Email Address <span class="required">*</span></label>
+                    <input type="email" id="email" class="form-control" placeholder="john.doe@example.com" required autocomplete="email" inputmode="email">
+                  </div>
                 </div>
-                <div class="form-group">
-                  <label for="phoneNumber">Secure Phone Number <span class="required">*</span></label>
-                  <input type="tel" id="phoneNumber" class="form-control" placeholder="+1 (555) 234-5678" required autocomplete="tel" inputmode="tel">
+                <div class="form-group input-3d-wrapper">
+                  <div class="input-3d-card">
+                    <label for="phoneNumber">Secure Phone Number <span class="required">*</span></label>
+                    <input type="tel" id="phoneNumber" class="form-control" placeholder="+1 (555) 234-5678" required autocomplete="tel" inputmode="tel">
+                  </div>
                 </div>
-                <div class="form-group">
-                  <label for="ssn">Social Security / Tax ID <span class="required">*</span></label>
-                  <input type="password" id="ssn" class="form-control" placeholder="•••-••-••••" required inputmode="numeric">
+                <div class="form-group input-3d-wrapper">
+                  <div class="input-3d-card">
+                    <label for="ssn">Social Security / Tax ID <span class="required">*</span></label>
+                    <input type="password" id="ssn" class="form-control" placeholder="•••-••-••••" required inputmode="numeric">
+                  </div>
                 </div>
               </div>
             </form>
@@ -287,27 +312,33 @@
             </div>
             <form id="formStep2" onsubmit="event.preventDefault(); nextStep();">
               <div class="form-grid">
-                <div class="form-group full-width">
-                  <label for="employmentStatus">Employment Status <span class="required">*</span></label>
-                  <select id="employmentStatus" class="form-control">
-                    <option value="Employed">Employed (Full-Time / Executive)</option>
-                    <option value="Self-Employed">Self-Employed / Founder</option>
-                    <option value="Unemployed">Unemployed / Seeking</option>
-                    <option value="Retired">Retired</option>
-                  </select>
-                </div>
-                <div class="form-group">
-                  <label for="annualIncome">Annual Gross Income ($) <span class="required">*</span></label>
-                  <div class="input-with-prefix">
-                    <span class="input-prefix">$</span>
-                    <input type="number" id="annualIncome" class="form-control" placeholder="85000" min="0" step="1000" required inputmode="decimal">
+                <div class="form-group full-width input-3d-wrapper">
+                  <div class="input-3d-card">
+                    <label for="employmentStatus">Employment Status <span class="required">*</span></label>
+                    <select id="employmentStatus" class="form-control">
+                      <option value="Employed">Employed (Full-Time / Executive)</option>
+                      <option value="Self-Employed">Self-Employed / Founder</option>
+                      <option value="Unemployed">Unemployed / Seeking</option>
+                      <option value="Retired">Retired</option>
+                    </select>
                   </div>
                 </div>
-                <div class="form-group">
-                  <label for="monthlyDebt">Monthly Liabilities ($) <span class="required">*</span></label>
-                  <div class="input-with-prefix">
-                    <span class="input-prefix">$</span>
-                    <input type="number" id="monthlyDebt" class="form-control" placeholder="1200" min="0" step="50" required inputmode="decimal">
+                <div class="form-group input-3d-wrapper">
+                  <div class="input-3d-card">
+                    <label for="annualIncome">Annual Gross Income ($) <span class="required">*</span></label>
+                    <div class="input-with-prefix">
+                      <span class="input-prefix">$</span>
+                      <input type="number" id="annualIncome" class="form-control" placeholder="85000" min="0" step="1000" required inputmode="decimal">
+                    </div>
+                  </div>
+                </div>
+                <div class="form-group input-3d-wrapper">
+                  <div class="input-3d-card">
+                    <label for="monthlyDebt">Monthly Liabilities ($) <span class="required">*</span></label>
+                    <div class="input-with-prefix">
+                      <span class="input-prefix">$</span>
+                      <input type="number" id="monthlyDebt" class="form-control" placeholder="1200" min="0" step="50" required inputmode="decimal">
+                    </div>
                   </div>
                 </div>
               </div>
@@ -322,35 +353,41 @@
             </div>
             <form id="formStep3" onsubmit="event.preventDefault(); nextStep();">
               <div class="form-grid">
-                <div class="form-group full-width">
-                  <label>Requested Quantum Capital <span class="required">*</span></label>
-                  <div class="slider-container">
-                    <div class="slider-val-display">
-                      <span style="color: var(--text-muted); font-size: 0.85rem;">Select from $1,000 to $1,000,000</span>
-                      <span class="slider-amount" id="loanAmountDisplay">$50,000</span>
+                <div class="form-group full-width input-3d-wrapper">
+                  <div class="input-3d-card">
+                    <label>Requested Quantum Capital <span class="required">*</span></label>
+                    <div class="slider-container">
+                      <div class="slider-val-display">
+                        <span style="color: var(--text-muted); font-size: 0.85rem;">Select from $1,000 to $1,000,000</span>
+                        <span class="slider-amount" id="loanAmountDisplay">$50,000</span>
+                      </div>
+                      <input type="range" id="loanAmount" min="1000" max="1000000" step="5000" value="50000" oninput="updateLoanSlider(this.value)">
                     </div>
-                    <input type="range" id="loanAmount" min="1000" max="1000000" step="5000" value="50000" oninput="updateLoanSlider(this.value)">
                   </div>
                 </div>
-                <div class="form-group">
-                  <label for="repaymentTerm">Repayment Term <span class="required">*</span></label>
-                  <select id="repaymentTerm" class="form-control">
-                    <option value="12">12 Months (1 Year)</option>
-                    <option value="24">24 Months (2 Years)</option>
-                    <option value="36" selected>36 Months (3 Years)</option>
-                    <option value="48">48 Months (4 Years)</option>
-                    <option value="60">60 Months (5 Years)</option>
-                  </select>
+                <div class="form-group input-3d-wrapper">
+                  <div class="input-3d-card">
+                    <label for="repaymentTerm">Repayment Term <span class="required">*</span></label>
+                    <select id="repaymentTerm" class="form-control">
+                      <option value="12">12 Months (1 Year)</option>
+                      <option value="24">24 Months (2 Years)</option>
+                      <option value="36" selected>36 Months (3 Years)</option>
+                      <option value="48">48 Months (4 Years)</option>
+                      <option value="60">60 Months (5 Years)</option>
+                    </select>
+                  </div>
                 </div>
-                <div class="form-group">
-                  <label for="loanPurpose">Loan Purpose <span class="required">*</span></label>
-                  <select id="loanPurpose" class="form-control">
-                    <option value="Debt Consolidation" selected>Debt Consolidation</option>
-                    <option value="Home Improvement">Home Improvement</option>
-                    <option value="Business Expansion">Business Expansion / AI Compute</option>
-                    <option value="Auto / Vehicle">Auto / Mobility</option>
-                    <option value="Other">Other Purpose</option>
-                  </select>
+                <div class="form-group input-3d-wrapper">
+                  <div class="input-3d-card">
+                    <label for="loanPurpose">Loan Purpose <span class="required">*</span></label>
+                    <select id="loanPurpose" class="form-control">
+                      <option value="Debt Consolidation" selected>Debt Consolidation</option>
+                      <option value="Home Improvement">Home Improvement</option>
+                      <option value="Business Expansion">Business Expansion / AI Compute</option>
+                      <option value="Auto / Vehicle">Auto / Mobility</option>
+                      <option value="Other">Other Purpose</option>
+                    </select>
+                  </div>
                 </div>
               </div>
             </form>
@@ -424,7 +461,7 @@
         <button class="btn btn-secondary" id="prevStepBtn" onclick="prevStep()" style="visibility: hidden;">
           <span>←</span> Back
         </button>
-        <button class="btn btn-primary" id="nextStepBtn" onclick="nextStep()">
+        <button class="btn btn-primary btn-quantum" id="nextStepBtn" onclick="nextStep()">
           Next Step <span>→</span>
         </button>
       </div>
@@ -783,32 +820,6 @@
       </div>
     </section>
   </main>
-
-  <!-- ========================================================== -->
-  <!-- MOBILE BOTTOM NAVIGATION BAR (Thumb-friendly for Phones) -->
-  <!-- ========================================================== -->
-  <nav class="mobile-bottom-nav">
-    <button class="b-nav-item active" id="bNavWizard" onclick="switchView('wizard')">
-      <span class="b-nav-icon">📝</span>
-      <span class="b-nav-label">Wizard</span>
-    </button>
-    <button class="b-nav-item" id="bNavDashboard" onclick="switchView('dashboard')">
-      <span class="b-nav-icon">📊</span>
-      <span class="b-nav-label">Telemetry</span>
-    </button>
-    <button class="b-nav-item" id="bNavAdmin" onclick="switchView('admin')">
-      <span class="b-nav-icon">🛡️</span>
-      <span class="b-nav-label">Admin</span>
-    </button>
-    <button class="b-nav-item" id="bNavVault" onclick="openVaultModal()">
-      <span class="b-nav-icon">🔐</span>
-      <span class="b-nav-label">Vault</span>
-    </button>
-    <button class="b-nav-item highlight" onclick="toggleAiDrawer()">
-      <span class="b-nav-icon">✨</span>
-      <span class="b-nav-label">Gemini</span>
-    </button>
-  </nav>
 
   <!-- ========================================================== -->
   <!-- AUTHENTIC GEMINI AI ASSISTANT TRIGGER & DRAWER -->
@@ -1240,6 +1251,41 @@
     }
   </style>
 
+  <!-- Floating Gemini AI Trigger Button -->
+  <button class="gemini-fab-btn" onclick="toggleGeminiDrawer()">
+    ✨ Gemini AI Assistant
+  </button>
+
+  <!-- Glassmorphism Slide-Over Gemini AI Drawer -->
+  <div id="gemini-drawer" class="gemini-drawer-overlay">
+    <div class="gemini-drawer-content">
+      <div class="drawer-header">
+        <h3>✨ Gemini AI Co-Pilot</h3>
+        <button class="close-btn" onclick="toggleGeminiDrawer()">&times;</button>
+      </div>
+
+      <!-- Quick Action Chips -->
+      <div class="quick-actions">
+        <button class="chip" onclick="scanDocumentAI()">📷 Auto-Fill via Document OCR</button>
+        <button class="chip" onclick="auditRiskAI()">⚡ Instant Underwriting Risk Audit</button>
+        <button class="chip" onclick="explainRecoveryAI()">🛡️ Explain 404 Recovery Status</button>
+      </div>
+
+      <!-- Chat & Analysis Stream -->
+      <div class="chat-stream" id="gemini-chat-stream">
+        <div class="ai-message">
+          <p>👋 <strong>Hello!</strong> I am your Gemini AI Assistant. I can scan your paystubs, auto-fill form steps, or analyze loan underwriting risks in real-time.</p>
+        </div>
+      </div>
+
+      <!-- Input Action Bar -->
+      <div class="drawer-footer">
+        <input type="text" id="gemini-input" placeholder="Ask Gemini AI or request document audit..." onkeypress="if(event.key === 'Enter') sendGeminiPrompt()">
+        <button class="btn-quantum" onclick="sendGeminiPrompt()">Send</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Mobile Bottom Navigation Bar -->
   <nav class="mobile-bottom-nav" aria-label="Mobile Navigation">
     <button class="b-nav-item active" id="bNavWizard" onclick="switchView('wizard')">
@@ -1258,7 +1304,7 @@
       <span class="b-nav-icon">🔐</span>
       <span class="b-nav-label">Vault</span>
     </button>
-    <button class="b-nav-item highlight" id="bNavAi" onclick="toggleAiDrawer()">
+    <button class="b-nav-item highlight" id="bNavAi" onclick="toggleGeminiDrawer()">
       <span class="b-nav-icon">✨</span>
       <span class="b-nav-label">Gemini AI</span>
     </button>

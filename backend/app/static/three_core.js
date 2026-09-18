@@ -45,14 +45,14 @@ class Quantum3DEngine {
   }
 
   init(containerId) {
-    this.container = document.getElementById(containerId);
+    this.container = document.getElementById(containerId) || document.getElementById('three-canvas') || document.getElementById('threeCanvasContainer');
     if (!this.container) return;
 
     const isMobile = window.innerWidth <= 768;
 
-    // 1. Scene Setup
+    // 1. Scene Setup (Deep obsidian void #060911)
     this.scene = new THREE.Scene();
-    this.scene.fog = new THREE.FogExp2(0x060b14, 0.022);
+    this.scene.fog = new THREE.FogExp2(0x060911, 0.022);
 
     // 2. Camera Setup
     const aspect = this.container.clientWidth / this.container.clientHeight;
@@ -478,3 +478,94 @@ class Quantum3DEngine {
 
 // Global 3D Engine Singleton
 window.quantum3D = new Quantum3DEngine();
+
+// ==========================================================
+// Quantum Ether 3D Background Engine (Dream Canvas Core)
+// ==========================================================
+let dreamScene, dreamCamera, dreamRenderer, dreamParticles, dreamParticleGeo;
+
+function initDreamCanvas(customContainerId) {
+  const container = document.getElementById(customContainerId) || document.getElementById('three-canvas') || document.getElementById('threeCanvasContainer');
+  if (!container) return;
+  
+  // If container already has a canvas, don't duplicate
+  if (container.querySelector('canvas')) {
+    console.log("⚡ 3D canvas already mounted to container.");
+    return;
+  }
+
+  dreamScene = new THREE.Scene();
+  dreamScene.fog = new THREE.FogExp2(0x060911, 0.0015);
+  
+  dreamCamera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+  dreamCamera.position.z = 400;
+
+  dreamRenderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+  dreamRenderer.setSize(window.innerWidth, window.innerHeight);
+  
+  // Mobile GPU Scaling Rule
+  const isMobile = window.innerWidth <= 768;
+  const particleCount = isMobile ? 800 : 3500;
+  dreamRenderer.setPixelRatio(isMobile ? 1.25 : Math.min(window.devicePixelRatio, 2));
+  
+  container.appendChild(dreamRenderer.domElement);
+
+  // Create Particles
+  dreamParticleGeo = new THREE.BufferGeometry();
+  const positions = new Float32Array(particleCount * 3);
+  const colors = new Float32Array(particleCount * 3);
+
+  const cyan = new THREE.Color('#00F0FF');
+  const violet = new THREE.Color('#A020F0');
+
+  for (let i = 0; i < particleCount * 3; i += 3) {
+    positions[i] = (Math.random() - 0.5) * 1000;
+    positions[i + 1] = (Math.random() - 0.5) * 1000;
+    positions[i + 2] = (Math.random() - 0.5) * 1000;
+
+    const mixedColor = cyan.clone().lerp(violet, Math.random());
+    colors[i] = mixedColor.r;
+    colors[i + 1] = mixedColor.g;
+    colors[i + 2] = mixedColor.b;
+  }
+
+  dreamParticleGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+  dreamParticleGeo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+
+  const material = new THREE.PointsMaterial({
+    size: isMobile ? 2.5 : 3.5,
+    vertexColors: true,
+    transparent: true,
+    opacity: 0.7,
+    blending: THREE.AdditiveBlending
+  });
+
+  dreamParticles = new THREE.Points(dreamParticleGeo, material);
+  dreamScene.add(dreamParticles);
+
+  function animateDream() {
+    requestAnimationFrame(animateDream);
+    if (dreamParticles) {
+      dreamParticles.rotation.y += 0.0008;
+      dreamParticles.rotation.x += 0.0003;
+    }
+    dreamRenderer.render(dreamScene, dreamCamera);
+  }
+
+  window.addEventListener('resize', () => {
+    if (!dreamCamera || !dreamRenderer) return;
+    const isMob = window.innerWidth <= 768;
+    dreamCamera.aspect = window.innerWidth / window.innerHeight;
+    dreamCamera.updateProjectionMatrix();
+    dreamRenderer.setSize(window.innerWidth, window.innerHeight);
+    dreamRenderer.setPixelRatio(isMob ? 1.25 : Math.min(window.devicePixelRatio, 2));
+  });
+
+  animateDream();
+  console.log("🌌 Quantum Ether 3D Background Engine active.");
+}
+
+window.initDreamCanvas = initDreamCanvas;
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = { initDreamCanvas, Quantum3DEngine };
+}
