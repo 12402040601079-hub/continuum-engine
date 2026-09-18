@@ -2424,17 +2424,7 @@ let webcamStream = null;
 let currentAttachment = null;
 
 function toggleAiDrawer() {
-  const drawer = document.getElementById("aiDrawerBackdrop");
-  const isHidden = drawer.classList.contains("hidden");
-  
-  if (isHidden) {
-    drawer.classList.remove("hidden");
-    if (window.cyberAudio) window.cyberAudio.playChirp(1500, "sine", 0.06);
-  } else {
-    drawer.classList.add("hidden");
-    stopLiveCamera();
-    if (window.cyberAudio) window.cyberAudio.playChirp(700, "triangle", 0.05);
-  }
+  toggleGeminiDrawer();
 }
 
 function clearGeminiChat() {

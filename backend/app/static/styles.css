@@ -3621,34 +3621,39 @@ body.theme-light .skeleton {
   border-color: #00F0FF !important;
 }
 
-/* Floating Gemini AI Assistant FAB Button */
-.gemini-fab-btn {
+/* Single Unified Circular Floating Gemini AI Icon FAB Button */
+.gemini-fab-icon-btn {
   position: fixed;
   bottom: 24px;
   right: 24px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
   background: linear-gradient(135deg, #A020F0 0%, #00F0FF 100%);
-  color: #FFF;
-  border: none;
-  padding: 14px 24px;
-  border-radius: 30px;
-  font-weight: 700;
-  font-size: 0.95rem;
-  box-shadow: 0 10px 30px rgba(160, 32, 240, 0.45), 0 0 15px rgba(0, 240, 255, 0.3);
+  color: #FFFFFF;
+  border: 1px solid rgba(0, 240, 255, 0.4);
+  font-size: 1.45rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 10px 30px rgba(160, 32, 240, 0.5), 0 0 20px rgba(0, 240, 255, 0.4);
   cursor: pointer;
   z-index: 90;
   transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s ease;
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
 }
 
-.gemini-fab-btn:hover {
-  transform: scale(1.08) translateY(-2px);
-  box-shadow: 0 15px 40px rgba(160, 32, 240, 0.65), 0 0 25px rgba(0, 240, 255, 0.5);
+.gemini-fab-icon-btn:hover {
+  transform: scale(1.12) translateY(-2px);
+  box-shadow: 0 15px 40px rgba(160, 32, 240, 0.7), 0 0 30px rgba(0, 240, 255, 0.6);
 }
 
-.gemini-fab-btn:active {
-  transform: scale(0.96);
+.gemini-fab-icon-btn:active {
+  transform: scale(0.92);
+}
+
+.gemini-fab-icon-btn .fab-icon {
+  display: inline-block;
+  animation: sparkleRotate 6s infinite linear;
 }
 
 /* Glassmorphism Slide-Over Gemini Drawer [Z-INDEX 100] */
