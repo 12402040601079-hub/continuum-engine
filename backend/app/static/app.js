@@ -15,18 +15,18 @@ const state = {
   maxUnlockedStep: 1, // Page locking state: highest step unlocked so far
   user: null, // Verified Google account profile
   formData: {
-    fullName: "",
-    dateOfBirth: "",
-    email: "",
-    phoneNumber: "",
-    ssn: "",
+    fullName: "Johnathan Alexander Doe",
+    dateOfBirth: "1994-06-15",
+    email: "johnathan.doe@quantum-corp.io",
+    phoneNumber: "+1 (555) 019-2834",
+    ssn: "987-65-4321",
     employmentStatus: "Employed",
-    annualIncome: "85000",
+    annualIncome: "95000",
     monthlyDebt: "1200",
     loanAmount: "50000",
     repaymentTerm: "36",
     loanPurpose: "Debt Consolidation",
-    consentChecked: false
+    consentChecked: true
   },
   edgeAiScore: {
     dti: 16.9,
