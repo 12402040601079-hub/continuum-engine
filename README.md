@@ -7,52 +7,90 @@
 [![FastAPI](https://img.shields.io/badge/FastAPI-v0.110.0-00F0FF?style=for-the-badge&logo=fastapi)](https://fastapi.tiangolo.com)
 [![Pytest](https://img.shields.io/badge/Tests-27%20Passed-A020F0?style=for-the-badge&logo=pytest)](https://docs.pytest.org)
 [![Three.js](https://img.shields.io/badge/Three.js-r128-00F0FF?style=for-the-badge&logo=threedotjs)](https://threejs.org)
+[![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?style=for-the-badge&logo=docker)](https://www.docker.com/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](LICENSE)
 
 ---
 
-## 🌐 Live Production Application
-🔗 **Render Production Deployment:** [https://continuum-engine.onrender.com/](https://continuum-engine.onrender.com/)  
-🔗 **Web Interface:** [https://continuum-engine.onrender.com/app](https://continuum-engine.onrender.com/app)  
-🔗 **Interactive Swagger API Docs:** [https://continuum-engine.onrender.com/docs](https://continuum-engine.onrender.com/docs)  
-🔗 **API Health Check:** [https://continuum-engine.onrender.com/api/v1/health](https://continuum-engine.onrender.com/api/v1/health)  
+## 📑 Table of Contents
+
+- [📌 Project Overview](#-project-overview)
+- [🚨 Problem Statement](#-problem-statement)
+- [💡 The Continuum Solution](#-the-continuum-solution)
+- [✨ Key Features](#-key-features)
+- [🏗️ System Architecture & Recovery Loop](#️-system-architecture--recovery-loop)
+- [💻 Tech Stack](#-tech-stack)
+- [🌐 Live Demo & Endpoints](#-live-demo--endpoints)
+- [🚀 How to Run & Use the Project](#-how-to-run--use-the-project)
+  - [Prerequisites](#prerequisites)
+  - [Option 1: One-Click Quick Start (Windows)](#option-1-one-click-quick-start-windows)
+  - [Option 2: Manual Terminal Run](#option-2-manual-terminal-run)
+  - [Option 3: Docker Deployment](#option-3-docker-deployment)
+  - [Option 4: Running Automated Tests](#option-4-running-automated-tests)
+- [🧪 Interactive Demo & Testing Walkthrough](#-interactive-demo--testing-walkthrough)
+- [🛠️ REST & WebSocket API Reference](#️-rest--websocket-api-reference)
+- [🔐 Operator Credentials](#-operator-credentials)
+- [📁 Directory Structure](#-directory-structure)
+- [👥 Team Members](#-team-members)
+- [📄 License](#-license)
 
 ---
 
-## 💡 What is Continuum Engine?
+## 📌 Project Overview
 
-Modern Single Page Applications (SPAs) use code-splitting to lazy-load JavaScript chunks (`step3.a8f91b.js`). When a new production release is deployed, older chunks are purged from CDNs. When an active user navigates to a new page or wizard step, their browser attempts to fetch the deleted chunk, resulting in a **404 ChunkLoadError**, causing a blank screen and destroying unsubmitted user data.
+**Continuum Engine** is an enterprise-grade resilience and state guardian platform designed to eliminate user data loss and downtime caused by code updates, lazy-loading chunk failures, and network disruptions in modern Single Page Applications (SPAs).
 
-**Continuum Engine guarantees Zero Data Loss and Zero Downtime:**
-1. **Intercepts 404 Chunk Load Errors**: Catches network asset failures before the application crashes.
-2. **AES-256 Cryptographic Vaulting**: Serializes and encrypts in-flight form data and step state to a MongoDB backend.
-3. **Automated Bundle Refresh & Rehydration**: Hot-reloads the application to fetch fresh production code and rehydrates user inputs with **100% field precision**.
+Combining **AES-256 cryptographic vaulting**, **real-time DOM telemetry**, **Gemini Multimodal AI co-pilot assistance**, and an interactive **Three.js WebGL 3D interface**, Continuum Engine ensures seamless application updates without interrupting in-flight user sessions.
 
 ---
 
-## 🎨 Key Features & Architecture
+## 🚨 Problem Statement
 
-### 🌌 1. 3D Animated & Dream Fantasy Layout (Quantum Ether)
-- **Three.js WebGL Particle Mesh (`z-index: 0`)**: Interactive 3D particle canvas with dual-axis rotation.
-- **Adaptive Mobile GPU Density Scaling**: Automatically scales particle density from **3,500** on desktop down to **800** on mobile viewports ($\le 768\text{px}$) with `devicePixelRatio` capped at **1.25** to preserve GPU performance and battery life.
-- **3D Parallax Input Cards (`.input-3d-card`)**: Mousemove tracking tilts input fields up to **$\pm 10^\circ$** with floating 3D labels (`translateZ(15px)`).
+Modern Single Page Applications (React, Vue, Angular, Flutter Web) rely heavily on **dynamic code-splitting** to optimize initial load times by fetching JavaScript chunks on-demand (e.g., `step3.a8f91b.js`).
 
-### ⚡ 2. Keystroke-Level Autosave Pulse & AES-256 Security
-- **Cyan Pulse Feedback (`#00F0FF`)**: Typing in any wizard input field triggers an instant cyan border glow (`.autosave-pulsing`), confirming that inputs are encrypted via bank-grade **AES-256-CBC** at rest.
-- **Pre-Loaded Demonstration Data**: Pre-configured with working applicant data (`Johnathan Alexander Doe`, Gross Income `$95,000`, Loan Request `$50,000`) so first-time reviewers can immediately interact with the system.
-
-### ✨ 3. Gemini AI Co-Pilot Assistant
-- **Single Circular FAB Button (`✨`)**: Sleek, circular floating action button at the bottom-right corner.
-- **Multimodal OCR Vision**: Scans paystubs and government IDs to auto-fill financial wizard steps.
-- **Real-Time Underwriting Inference**: Calculates Debt-to-Income (DTI), APR estimates, and projected monthly installments.
-
-### 📊 4. Telemetry Operations & Incident Diagnostics
-- **Operator Dashboard**: Role-based JWT security for Operators (`admin` / `password123`).
-- **60 FPS DOM Mutation Session Replay**: Replays incident diagnostic stack traces frame-by-frame.
-- **Stacked Mobile Data Cards**: Data tables automatically transform into stacked touch cards on screens $\le 768\text{px}$.
+However, in continuous deployment (CI/CD) environments:
+1. **The Stale Chunk Hazard**: Deploying a new release replaces or purges old hashed JS bundles on edge CDNs.
+2. **The 404 ChunkLoadError**: When an active user on an older session navigates to a new step or route, the browser requests the purged chunk, triggering an unhandled network `404 ChunkLoadError`.
+3. **Catastrophic State Loss**: The SPA crashes to a blank screen. Refreshing the browser resets the application, destroying in-progress multi-step forms, document uploads, and unsubmitted transactions.
+4. **Poor Observability**: Developers receive disconnected client errors without rich DOM execution state or replay context.
 
 ---
 
-## 🏗️ 3-Step Zero-Data-Loss Recovery Loop
+## 💡 The Continuum Solution
+
+Continuum Engine resolves this vulnerability through an automated **3-Step Zero-Data-Loss Recovery Lifecycle**:
+
+1. **Client-Side Interception (`StaleAssetBoundary`)**: Catches lazy-loading chunk failures and runtime network asset exceptions before the user interface crashes.
+2. **Bank-Grade AES-256 State Vaulting**: Cryptographically encrypts all uncommitted form inputs, active step indexes, and session tokens, transmitting a snapshot to the backend vault.
+3. **Atomic Bundle Refresh & Precision Rehydration**: Performs a clean cache-busting application reload to fetch the latest code bundle, decrypts the state vault, and restores all form fields with **100% precision**.
+
+---
+
+## ✨ Key Features
+
+### 🌌 1. 3D Quantum Ether & Parallax UI (Three.js)
+- **Interactive 3D WebGL Particle System**: 3,500 interactive particles dynamically reacting to cursor movements and system state changes.
+- **Adaptive GPU Density Scaling**: Scales particle density smoothly down to 800 on mobile devices ($\le 768\text{px}$) with capped `devicePixelRatio` (1.25) to conserve battery and GPU cycles.
+- **3D Gyroscopic Parallax Cards**: Mouse tracking produces real-time angular card tilting ($\pm 10^\circ$) with floating 3D depth labels.
+
+### ⚡ 2. Keystroke-Level Autosave Pulse & AES-256-CBC Vault
+- **Live Cyan Autosave Indicator**: Real-time visual feedback (`#00F0FF` glowing pulse) on field edits verifying immediate encryption and local/remote synchronization.
+- **Cryptographic Snapshot Isolation**: Client snapshots are signed with session-specific JWTs and encrypted at rest with **AES-256-CBC**.
+- **Instant Demo Preload**: Comes with built-in financial onboarding demo profiles (`Johnathan Alexander Doe`, `$95,000` Gross Income, `$50,000` Loan Request) for instant evaluation.
+
+### ✨ 3. Gemini Multimodal AI Co-Pilot
+- **Autonomous Form Auto-Fill**: Multimodal vision AI reads and parses uploaded financial documents (paystubs, tax forms, IDs) to populate multi-step fields.
+- **Real-Time Underwriting Inference**: Computes instant Debt-to-Income (DTI) metrics, estimated APR brackets, and personalized monthly installment plans.
+- **Unified Floating Action Control**: Modern circular FAB button (`✨`) with responsive conversational AI drawer.
+
+### 📊 4. Telemetry Operations & Frame-by-Frame DOM Replay
+- **Live WebSocket Telemetry**: High-frequency system metrics, active session counts, and live crash-interception logs stream directly to the admin dashboard.
+- **60 FPS DOM Session Replay**: Captures DOM mutation timelines to visually replay exact user actions leading up to simulated or real chunk failures.
+- **Mobile-Responsive Operator Dashboard**: Responsive table-to-card reflows for smooth tablet and mobile operator monitoring.
+
+---
+
+## 🏗️ System Architecture & Recovery Loop
 
 ```mermaid
 sequenceDiagram
@@ -61,58 +99,164 @@ sequenceDiagram
     participant Boundary as StaleAssetBoundary
     participant Vault as FastAPI / MongoDB Vault
     participant Telemetry as Telemetry Ingestion
+    participant AI as Gemini AI Co-Pilot
 
     User->>Boundary: Edits Form Fields (Keystroke Autosave Pulse)
     Note over Boundary: Production Release Deployed (Old JS Chunks Purged)
     User->>Boundary: Navigates Step (Requests missing dynamic chunk)
     Boundary-->>User: 💥 Intercepts HTTP 404 ChunkLoadError
     Boundary->>Vault: 🔐 Encrypt & Vault Snapshot (/api/v1/session/vault)
-    Boundary->>Telemetry: 📡 Ingest Crash Event (/api/v1/telemetry/log)
-    Boundary->>User: 🔄 Hard Reload Application Bundle
+    Boundary->>Telemetry: 📡 Ingest Crash Event & Stack Trace (/api/v1/telemetry/log)
+    Boundary->>User: 🔄 Hard Reload Application Bundle (Cache-Bust)
     User->>Vault: 🔓 Decrypt Snapshot (/api/v1/session/rehydrate/{id})
-    Vault-->>User: Restore Form Inputs at Exact Step with 100% Precision
+    Vault-->>User: 🎯 Restore Form Inputs at Exact Step with 100% Precision
+    User->>AI: 🤖 Request AI Underwriting Guidance (/api/v1/ai/chat)
+    AI-->>User: Returns Real-Time DTI & Loan Estimate Analysis
 ```
 
 ---
 
-## 🛠️ REST API Endpoints Overview
+## 💻 Tech Stack
 
-| Method | Endpoint | Description | Auth |
-| :--- | :--- | :--- | :--- |
-| `GET` | `/api/v1/health` | System health check, uptime, & security standards | Public |
-| `POST` | `/api/v1/session/token` | Generates cryptographic session JWT token | Public |
-| `POST` | `/api/v1/session/vault` | Encrypts & vaults active form progress | Bearer JWT |
-| `GET` | `/api/v1/session/rehydrate/{id}` | Decrypts & retrieves vaulted state snapshot | Bearer JWT |
-| `POST` | `/api/v1/telemetry/log` | Ingests client crash telemetry & stack traces | Public |
-| `GET` | `/api/v1/telemetry/metrics` | Retrieves operator KPI metrics & incident logs | Admin JWT |
-| `POST` | `/api/v1/ai/chat` | Queries Gemini AI Multimodal Co-Pilot | Public |
-| `WS` | `/api/v1/ws/telemetry` | High-frequency live WebSocket node metric telemetry stream | Public |
+| Domain | Technologies & Libraries |
+| :--- | :--- |
+| **Backend Framework** | **FastAPI** (Python 3.11+), **Uvicorn** (ASGI Server), **Starlette** |
+| **Data Validation & Schemas** | **Pydantic v2** |
+| **Frontend (Web Application)** | **Vanilla HTML5 / Modern ES6+ JavaScript**, **CSS3 Glassmorphism**, **Three.js** (WebGL 3D Engine) |
+| **Frontend (Mobile / Multi-Platform)**| **Flutter** (Dart 3.x), Cross-platform Material 3 UI |
+| **AI & Multimodal Intelligence** | **Google Gemini AI API** (Multimodal Document OCR & Underwriting) |
+| **Database & Persistence** | **MongoDB** (Async Motor driver) with In-Memory Vault fallback |
+| **Security & Cryptography** | **AES-256-CBC Encryption**, **PyJWT** (HMAC-SHA256 Session Tokens), **BCrypt** |
+| **Testing & Quality Assurance** | **Pytest** (27 Automated Unit, Integration & Security Tests) |
+| **DevOps, CI/CD & Cloud** | **Docker**, **Docker Compose**, **GitHub Actions**, **Render Cloud** |
 
 ---
 
-## 🚀 Local Quick Start & Running
+## 🌐 Live Demo & Endpoints
 
-### 1. One-Click Launcher (Windows)
-Double-click `start_all.bat` or run:
+| Resource | URL | Description |
+| :--- | :--- | :--- |
+| 🚀 **Live Production Application** | [https://continuum-engine.onrender.com/](https://continuum-engine.onrender.com/) | Primary production application landing page |
+| 🖥️ **Interactive Web Application** | [https://continuum-engine.onrender.com/app](https://continuum-engine.onrender.com/app) | Live 3D Financial Loan Wizard & State Vault Demo |
+| 📖 **Interactive Swagger API Docs** | [https://continuum-engine.onrender.com/docs](https://continuum-engine.onrender.com/docs) | OpenAPI interactive documentation and test sandbox |
+| 🩺 **System Health Endpoint** | [https://continuum-engine.onrender.com/api/v1/health](https://continuum-engine.onrender.com/api/v1/health) | Real-time service health, uptime, & security status |
+
+---
+
+## 🚀 How to Run & Use the Project
+
+### Prerequisites
+- **Python**: Version `3.10` or higher
+- **Node.js** (Optional, for Flutter web tooling)
+- **Git**
+
+---
+
+### Option 1: One-Click Quick Start (Windows)
+
+Simply double-click `start_all.bat` in the root folder, or execute via PowerShell:
+
 ```powershell
 .\start_all.bat
 ```
-Launches the FastAPI backend on `http://127.0.0.1:8000` and opens the web application at `http://127.0.0.1:8000/app`.
 
-### 2. Manual Command Line
+*This automatically activates your virtual environment, installs requirements, launches the FastAPI server on port 8000, and opens the web application in your default browser.*
+
+---
+
+### Option 2: Manual Terminal Run
+
+1. **Clone the Repository:**
+   ```bash
+   git clone https://github.com/12402040601079-hub/continuum-engine.git
+   cd continuum-engine
+   ```
+
+2. **Create & Activate a Virtual Environment:**
+   ```bash
+   # On Windows
+   python -m venv venv
+   .\venv\Scripts\activate
+
+   # On macOS/Linux
+   python3 -m venv venv
+   source venv/bin/activate
+   ```
+
+3. **Install Dependencies:**
+   ```bash
+   pip install -r backend/requirements.txt
+   ```
+
+4. **Launch the Application:**
+   ```bash
+   python -m uvicorn app.main:app --app-dir backend --reload --port 8000
+   ```
+
+5. **Access the Application:**
+   - Web App: `http://127.0.0.1:8000/app`
+   - API Docs: `http://127.0.0.1:8000/docs`
+
+---
+
+### Option 3: Docker Deployment
+
+Run the complete containerized stack using Docker Compose:
+
+```bash
+docker-compose up --build
+```
+Access the application at `http://localhost:8000/app`.
+
+---
+
+### Option 4: Running Automated Tests
+
+Continuum Engine includes a full test suite covering encryption integrity, session vaulting, rehydration accuracy, telemetry ingestion, and AI endpoints:
+
 ```powershell
-python -m uvicorn app.main:app --app-dir backend --reload --port 8000
+python -m pytest backend/tests -v
 ```
 
-### 3. Automated Test Verification
-```powershell
-python -m pytest backend/tests
-```
-*Executes all 27 automated unit, integration, and mock database tests (100% Passing).*
+> **Result:** `27 passed in ~0.60s (100% passing test suite)`
+
+---
+
+## 🧪 Interactive Demo & Testing Walkthrough
+
+To experience the zero-data-loss state guardian in action:
+
+1. Open the web application at `/app`.
+2. Fill out steps 1 and 2 in the Loan Application Wizard (or use the preloaded demo profile).
+3. Observe the **cyan pulse glow** confirming keystroke encryption.
+4. Click the **"Simulate 404 Chunk Crash"** button in the header toolbar.
+5. **Observe the magic:**
+   - The `StaleAssetBoundary` catches the simulated dynamic chunk failure.
+   - A snapshot is instantly encrypted and saved to the vault.
+   - The application performs an atomic bundle reload.
+   - The state is automatically decrypted and restored to the exact step with 100% of your inputs intact.
+6. Open the **Operator Telemetry View** (`admin` / `password123`) to review the crash log and DOM replay stream.
+
+---
+
+## 🛠️ REST & WebSocket API Reference
+
+| Method | Endpoint | Description | Authentication |
+| :--- | :--- | :--- | :--- |
+| `GET` | `/api/v1/health` | Service health status, uptime, & security standards | Public |
+| `POST` | `/api/v1/session/token` | Generates a signed cryptographic session JWT | Public |
+| `POST` | `/api/v1/session/vault` | Encrypts & vaults active form progress snapshot | Bearer JWT |
+| `GET` | `/api/v1/session/rehydrate/{session_id}` | Decrypts & retrieves vaulted state snapshot | Bearer JWT |
+| `POST` | `/api/v1/telemetry/log` | Ingests client crash telemetry & stack traces | Public |
+| `GET` | `/api/v1/telemetry/metrics` | Retrieves operator KPIs and incident diagnostics | Admin JWT |
+| `POST` | `/api/v1/ai/chat` | Multimodal AI underwriting analysis & OCR parsing | Public |
+| `WS` | `/api/v1/ws/telemetry` | Real-time WebSocket live node telemetry feed | Public |
 
 ---
 
 ## 🔐 Operator Credentials
+
+Use the following credentials to access the Operator Dashboard and Telemetry inspection panel:
 
 | Role | Username | Password |
 | :--- | :--- | :--- |
@@ -120,28 +264,41 @@ python -m pytest backend/tests
 
 ---
 
-## 📁 Repository Architecture
+## 📁 Directory Structure
 
 ```
+continuum-engine/
+├── .github/
+│   └── workflows/ci.yml              # Automated GitHub Actions CI/CD Pipeline
 ├── backend/
 │   ├── app/
 │   │   ├── api/v1/endpoints.py       # REST API Endpoints (Vault, Rehydrate, Telemetry, AI)
-│   │   ├── core/                     # Config, Security, AES-256 Encryption, MongoDB/Mock DB
-│   │   ├── schemas/                  # Pydantic v2 Request & Response Models
-│   │   ├── static/                   # Glassmorphism Web SPA (index.html, styles.css, app.js, Three.js)
+│   │   ├── core/                     # Config, Security, AES-256 Encryption, Database Handlers
+│   │   ├── schemas/                  # Pydantic v2 Request & Response Data Models
+│   │   ├── static/                   # Glassmorphism Web SPA (HTML5, styles.css, app.js, Three.js)
 │   │   └── main.py                   # FastAPI Application Entry point & WebSockets
-│   └── tests/                        # 27 Automated Pytest Test Cases
-├── frontend/                         # Cross-platform Flutter App Codebase
-├── docs/                             # System Architecture Specifications
-├── Dockerfile                        # Multi-stage production container build
-├── docker-compose.yml                # Docker stack configuration
-├── render.yaml                       # Render cloud deployment blueprint
-├── start_all.bat                     # One-click launcher script
-└── start_public_tunnel.bat           # Global HTTPS public tunnel script
+│   ├── tests/                        # 27 Pytest Test Cases (Unit, Integration, Security)
+│   └── requirements.txt              # Backend Dependencies
+├── frontend/                         # Cross-Platform Flutter Mobile Application
+├── docs/                             # System Architecture & Technical Specifications
+├── Dockerfile                        # Multi-Stage Production Container Build
+├── docker-compose.yml                # Docker Compose Multi-Container Orchestration
+├── render.yaml                       # Cloud Deployment Blueprint (Render)
+├── start_all.bat                     # Windows One-Click Quick Start Script
+├── start_public_tunnel.bat           # HTTPS Public Tunnel Launcher
+└── LICENSE                           # MIT License
 ```
+
+---
+
+## 👥 Team Members
+
+| Name | Role | Profile / Contribution |
+| :--- | :--- | :--- |
+| **Sneh Shukal** | **Lead Developer & System Architect** (Solo) | Full-Stack Architecture, Zero-Downtime Rehydration Protocol, AES-256 Cryptographic Vault, 3D WebGL Visualization, Gemini AI Co-Pilot Integration, CI/CD Pipeline & Documentation |
 
 ---
 
 ## 📄 License
 
-Distributed under the **MIT License**. See [`LICENSE`](LICENSE) for details.
+This project is licensed under the **MIT License** — see the [`LICENSE`](LICENSE) file for details.
