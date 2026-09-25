@@ -3771,3 +3771,339 @@ body.theme-light .skeleton {
   border-color: #00F0FF;
   box-shadow: 0 0 15px rgba(0, 240, 255, 0.3);
 }
+
+/* =========================================================================
+   ENTERPRISE STATE GUARDIAN SDK INTEGRATION MODAL STYLES
+   ========================================================================= */
+.sdk-metric-ribbon {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 0.65rem;
+  background: var(--bg-inset);
+  border: 1px solid var(--border-glass);
+  border-radius: var(--radius-md);
+  padding: 0.65rem 0.85rem;
+}
+
+.sdk-metric-pill {
+  font-size: 0.76rem;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.sdk-metric-pill strong {
+  color: var(--magnetic-cyan);
+}
+
+.sdk-tabs-bar {
+  display: flex;
+  gap: 0.4rem;
+  border-bottom: 1px solid var(--border-subtle);
+  padding-bottom: 0.5rem;
+  overflow-x: auto;
+}
+
+.sdk-tab-btn {
+  background: var(--bg-inset);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+  padding: 0.4rem 0.85rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all var(--transition-fast);
+}
+
+.sdk-tab-btn:hover {
+  color: var(--magnetic-cyan);
+  border-color: rgba(0, 240, 255, 0.4);
+}
+
+.sdk-tab-btn.active {
+  background: rgba(0, 240, 255, 0.12);
+  border-color: var(--magnetic-cyan);
+  color: #FFFFFF;
+  box-shadow: 0 0 12px rgba(0, 240, 255, 0.25);
+}
+
+.sdk-config-builder {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 0.6rem 0.85rem;
+}
+
+.sdk-toggle-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.78rem;
+  color: var(--text-primary);
+  cursor: pointer;
+}
+
+.sdk-toggle-item input[type="checkbox"] {
+  width: 15px;
+  height: 15px;
+  accent-color: var(--magnetic-cyan);
+  cursor: pointer;
+}
+
+/* =========================================================================
+   EXECUTIVE INCIDENT POST-MORTEM REPORT STYLES
+   ========================================================================= */
+.postmortem-doc-body {
+  background: rgba(6, 11, 20, 0.85);
+  border: 1px solid var(--border-glass);
+  border-radius: var(--radius-lg);
+  padding: 1.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.35rem;
+}
+
+.pm-audit-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 2px solid var(--border-glass);
+  padding-bottom: 0.85rem;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.pm-logo-tag {
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: var(--magnetic-cyan);
+}
+
+.pm-severity-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  background: rgba(0, 255, 136, 0.12);
+  border: 1px solid rgba(0, 255, 136, 0.4);
+  color: #00FF88;
+  padding: 0.3rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
+.pm-severity-badge .pm-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #00FF88;
+  box-shadow: 0 0 8px #00FF88;
+}
+
+.pm-meta-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 0.75rem;
+  background: var(--bg-inset);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 1rem;
+}
+
+.pm-meta-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.pm-meta-label {
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+
+.pm-meta-val {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  word-break: break-all;
+}
+
+.pm-meta-val.highlight {
+  color: #00FF88;
+  font-weight: 800;
+  font-size: 0.95rem;
+}
+
+.pm-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.pm-section h4 {
+  font-size: 0.88rem;
+  font-weight: 800;
+  color: var(--magnetic-cyan);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.pm-section p {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.pm-timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  border-left: 2px solid rgba(0, 240, 255, 0.3);
+  padding-left: 1.15rem;
+  margin-left: 0.35rem;
+}
+
+.pm-tl-step {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.pm-tl-step::before {
+  content: "";
+  position: absolute;
+  left: -1.45rem;
+  top: 4px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--magnetic-cyan);
+  box-shadow: 0 0 8px var(--magnetic-cyan);
+}
+
+.pm-tl-step.mitigated::before {
+  background: #00FF88;
+  box-shadow: 0 0 8px #00FF88;
+}
+
+.pm-tl-time {
+  font-size: 0.72rem;
+  font-family: var(--font-mono);
+  color: var(--magnetic-cyan);
+  font-weight: 700;
+}
+
+.pm-tl-desc {
+  font-size: 0.8rem;
+  color: var(--text-primary);
+}
+
+.pm-ai-box {
+  background: rgba(160, 32, 240, 0.08);
+  border: 1px solid rgba(160, 32, 240, 0.3);
+  border-radius: var(--radius-md);
+  padding: 1rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.pm-ai-box strong {
+  color: #E2E8F0;
+}
+
+.pm-footer-audit {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid var(--border-subtle);
+  padding-top: 0.85rem;
+  font-size: 0.75rem;
+}
+
+/* =========================================================================
+   PRINT STYLES FOR CLEAN EXECUTIVE PDF EXPORT
+   ========================================================================= */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  #postMortemPrintArea, #postMortemPrintArea * {
+    visibility: visible;
+  }
+  #postMortemPrintArea {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    background: #FFFFFF !important;
+    color: #0F172A !important;
+    border: none !important;
+    padding: 20px !important;
+  }
+  .pm-audit-header {
+    border-bottom: 2px solid #0284c7 !important;
+  }
+  .pm-logo-tag {
+    color: #0284c7 !important;
+  }
+  .pm-severity-badge {
+    background: #ecfdf5 !important;
+    border-color: #10b981 !important;
+    color: #047857 !important;
+  }
+  .pm-meta-grid {
+    background: #f8fafc !important;
+    border: 1px solid #cbd5e1 !important;
+  }
+  .pm-meta-label {
+    color: #64748b !important;
+  }
+  .pm-meta-val {
+    color: #0f172a !important;
+  }
+  .pm-meta-val.highlight {
+    color: #047857 !important;
+  }
+  .pm-section h4 {
+    color: #0284c7 !important;
+  }
+  .pm-section p {
+    color: #334155 !important;
+  }
+  .pm-ai-box {
+    background: #fdf4ff !important;
+    border: 1px solid #c084fc !important;
+    color: #3b0764 !important;
+  }
+  .pm-ai-box strong {
+    color: #1e1b4b !important;
+  }
+  .pm-tl-step::before {
+    background: #0284c7 !important;
+    box-shadow: none !important;
+  }
+  .pm-tl-time {
+    color: #0284c7 !important;
+  }
+  .pm-tl-desc {
+    color: #0f172a !important;
+  }
+}
+
