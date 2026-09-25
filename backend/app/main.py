@@ -164,15 +164,11 @@ async def websocket_telemetry_stream(websocket: WebSocket):
 @app.get("/", status_code=200)
 def read_root(request: Request):
     accept_header = request.headers.get("accept", "")
-    marketing_index = os.path.join(marketing_dir, "index.html")
     index_path = os.path.join(static_dir, "index.html")
     
-    # If accessed directly via browser HTML navigation, return marketing website if present, otherwise web app
-    if "text/html" in accept_header:
-        if os.path.exists(marketing_index):
-            return FileResponse(marketing_index)
-        elif os.path.exists(index_path):
-            return FileResponse(index_path)
+    # Direct browser visits load the flagship Quantum Interface application
+    if "text/html" in accept_header and os.path.exists(index_path):
+        return FileResponse(index_path)
             
     return {
         "status": "online",

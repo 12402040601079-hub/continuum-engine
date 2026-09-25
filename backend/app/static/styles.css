@@ -4092,18 +4092,500 @@ body.theme-light .skeleton {
     border: 1px solid #c084fc !important;
     color: #3b0764 !important;
   }
-  .pm-ai-box strong {
-    color: #1e1b4b !important;
+}
+
+/* =========================================================================
+   NEXT-GEN QUANTUM INTERFACE (Image 2 Precision Specification)
+   ========================================================================= */
+.quantum-ui-frame {
+  position: relative;
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 1.25rem;
+  border: 1px solid rgba(99, 102, 241, 0.25);
+  border-radius: 20px;
+  background: rgba(6, 11, 24, 0.65);
+  box-shadow: 0 0 50px rgba(0, 240, 255, 0.08), inset 0 0 30px rgba(99, 102, 241, 0.05);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+}
+
+.quantum-header-banner {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.quantum-header-title {
+  font-family: 'Space Grotesk', 'Outfit', sans-serif;
+  font-size: clamp(1.4rem, 2.8vw, 2.2rem);
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #FFFFFF;
+  margin: 0;
+  text-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+}
+
+.quantum-header-sub {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(0.75rem, 1.2vw, 0.95rem);
+  font-weight: 700;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  background: linear-gradient(90deg, #00F0FF 0%, #818CF8 50%, #34D399 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-top: 0.25rem;
+}
+
+/* Top-Right HUD Badge */
+.quantum-hud-badge {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.75rem;
+  background: rgba(10, 16, 32, 0.85);
+  border: 1px solid rgba(0, 240, 255, 0.35);
+  border-radius: 12px;
+  padding: 0.65rem 1rem;
+  box-shadow: 0 0 20px rgba(0, 240, 255, 0.15);
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  z-index: 20;
+}
+
+.quantum-hud-line {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.72rem;
+  font-family: 'JetBrains Mono', monospace;
+  color: #94A3B8;
+}
+
+.quantum-hud-val {
+  font-weight: 700;
+  color: #FFFFFF;
+}
+
+.quantum-hud-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #00F0FF;
+  box-shadow: 0 0 8px #00F0FF;
+  animation: quantumPulse 2s infinite ease-in-out;
+}
+
+@keyframes quantumPulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.3); opacity: 0.6; }
+}
+
+/* Quantum Deployment Wizard Card */
+.quantum-wizard-box {
+  background: rgba(13, 20, 38, 0.75);
+  border: 1px solid rgba(0, 240, 255, 0.25);
+  border-radius: 20px;
+  padding: 2rem 2.5rem;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), inset 0 0 30px rgba(0, 240, 255, 0.05);
+  margin-bottom: 1.5rem;
+}
+
+.quantum-wizard-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.quantum-wizard-header h2 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(1.3rem, 2.2vw, 1.85rem);
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: #FFFFFF;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.quantum-wizard-header p {
+  font-size: 0.88rem;
+  color: #94A3B8;
+  margin-top: 0.35rem;
+}
+
+/* 4-Icon Horizontal Step Tracker */
+.quantum-tracker {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.25rem;
+  margin-bottom: 2rem;
+  position: relative;
+}
+
+.quantum-step-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  color: inherit;
+  transition: all 0.3s ease;
+  padding: 0.5rem;
+}
+
+.quantum-step-icon-wrap {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: rgba(10, 16, 32, 0.9);
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+}
+
+.quantum-step-icon-wrap svg {
+  width: 32px;
+  height: 32px;
+  stroke: #94A3B8;
+  fill: none;
+  stroke-width: 1.8;
+  transition: stroke 0.3s ease;
+}
+
+.quantum-step-item.active .quantum-step-icon-wrap {
+  border-color: #00F0FF;
+  box-shadow: 0 0 25px rgba(0, 240, 255, 0.5), inset 0 0 15px rgba(0, 240, 255, 0.2);
+}
+
+.quantum-step-item.active .quantum-step-icon-wrap svg {
+  stroke: #00F0FF;
+}
+
+.quantum-step-item.completed .quantum-step-icon-wrap {
+  border-color: #10B981;
+  box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
+}
+
+.quantum-step-item.completed .quantum-step-icon-wrap svg {
+  stroke: #10B981;
+}
+
+.quantum-step-check {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #10B981;
+  color: #000;
+  font-size: 13px;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.7);
+}
+
+.quantum-step-name {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #FFFFFF;
+  letter-spacing: 0.05em;
+  margin-top: 0.75rem;
+  text-transform: uppercase;
+}
+
+.quantum-step-desc {
+  font-size: 0.72rem;
+  color: #94A3B8;
+  line-height: 1.35;
+  margin-top: 0.25rem;
+  max-width: 180px;
+}
+
+.quantum-step-item.active .quantum-step-name {
+  color: #00F0FF;
+}
+
+/* Progress Bar */
+.quantum-progress-wrapper {
+  margin-bottom: 2rem;
+}
+
+.quantum-progress-track {
+  width: 100%;
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+  position: relative;
+}
+
+.quantum-progress-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #00F0FF 0%, #3B82F6 50%, #10B981 100%);
+  box-shadow: 0 0 12px #00F0FF;
+  transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.quantum-progress-label {
+  display: flex;
+  justify-content: space-between;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  color: #94A3B8;
+  margin-top: 0.5rem;
+}
+
+/* Lower Split Grid: Vault Status & Telemetry Logs */
+.quantum-lower-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+
+@media (min-width: 1024px) {
+  .quantum-lower-grid {
+    grid-template-columns: 1fr 1.6fr;
   }
-  .pm-tl-step::before {
-    background: #0284c7 !important;
-    box-shadow: none !important;
-  }
-  .pm-tl-time {
-    color: #0284c7 !important;
-  }
-  .pm-tl-desc {
-    color: #0f172a !important;
-  }
+}
+
+/* AES-256 Vault Status Card */
+.quantum-vault-card {
+  background: rgba(10, 16, 32, 0.8);
+  border: 1px solid rgba(0, 240, 255, 0.25);
+  border-radius: 16px;
+  padding: 1.25rem 1.5rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.25rem;
+}
+
+.quantum-vault-left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.quantum-lock-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: rgba(16, 185, 129, 0.15);
+  border: 1px solid rgba(16, 185, 129, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 20px rgba(16, 185, 129, 0.3);
+  font-size: 1.5rem;
+}
+
+.quantum-vault-meta h4 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: #FFFFFF;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.quantum-vault-status-text {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+  color: #10B981;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  margin-top: 0.25rem;
+}
+
+.quantum-vault-throughput {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+  color: #94A3B8;
+  margin-top: 0.15rem;
+}
+
+.quantum-vault-throughput strong {
+  color: #00F0FF;
+}
+
+.quantum-vault-anim {
+  width: 52px;
+  height: 38px;
+  border-radius: 8px;
+  background: rgba(0, 240, 255, 0.1);
+  border: 1px solid rgba(0, 240, 255, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 15px rgba(0, 240, 255, 0.25);
+  font-size: 1.25rem;
+}
+
+/* Telemetry Crash Logs Card */
+.quantum-logs-card {
+  background: rgba(10, 16, 32, 0.8);
+  border: 1px solid rgba(0, 240, 255, 0.25);
+  border-radius: 16px;
+  padding: 1.25rem 1.5rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.quantum-logs-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.quantum-logs-header h4 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: #FFFFFF;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.quantum-table-wrap {
+  overflow-x: auto;
+}
+
+.quantum-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+}
+
+.quantum-table th {
+  text-align: left;
+  padding: 0.5rem 0.65rem;
+  color: #64748B;
+  font-size: 0.65rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.quantum-table td {
+  padding: 0.65rem 0.65rem;
+  color: #CBD5E1;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  white-space: nowrap;
+}
+
+.quantum-chip {
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  display: inline-block;
+}
+
+.quantum-chip.critical {
+  background: rgba(239, 68, 68, 0.2);
+  color: #F87171;
+  border: 1px solid rgba(239, 68, 68, 0.4);
+}
+
+.quantum-chip.warning {
+  background: rgba(245, 158, 11, 0.2);
+  color: #FBBF24;
+  border: 1px solid rgba(245, 158, 11, 0.4);
+}
+
+.quantum-chip.high {
+  background: rgba(249, 115, 22, 0.2);
+  color: #FB923C;
+  border: 1px solid rgba(249, 115, 22, 0.4);
+}
+
+.quantum-chip.pending {
+  background: rgba(59, 130, 246, 0.2);
+  color: #60A5FA;
+  border: 1px solid rgba(59, 130, 246, 0.4);
+}
+
+.quantum-chip.resolved {
+  background: rgba(16, 185, 129, 0.2);
+  color: #34D399;
+  border: 1px solid rgba(16, 185, 129, 0.4);
+}
+
+.quantum-chip.investigating {
+  background: rgba(217, 119, 6, 0.2);
+  color: #FCD34D;
+  border: 1px solid rgba(217, 119, 6, 0.4);
+}
+
+/* Floating Ask Gemini AI Assistant Button */
+.quantum-gemini-pill {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  background: rgba(13, 20, 42, 0.92);
+  border: 1px solid rgba(0, 240, 255, 0.4);
+  border-radius: 999px;
+  padding: 0.65rem 1.4rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  box-shadow: 0 10px 30px rgba(0, 240, 255, 0.35), 0 0 15px rgba(160, 32, 240, 0.25);
+  cursor: pointer;
+  z-index: 90;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.quantum-gemini-pill:hover {
+  transform: translateY(-3px) scale(1.03);
+  box-shadow: 0 15px 40px rgba(0, 240, 255, 0.5), 0 0 25px rgba(160, 32, 240, 0.4);
+  border-color: #00F0FF;
+}
+
+.quantum-gemini-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #00F0FF 0%, #A020F0 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #FFF;
+  font-size: 1.1rem;
+  box-shadow: 0 0 15px #00F0FF;
+}
+
+.quantum-gemini-text {
+  text-align: left;
+}
+
+.quantum-gemini-text .title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: #FFFFFF;
+}
+
+.quantum-gemini-text .sub {
+  font-size: 0.68rem;
+  color: #94A3B8;
 }
 

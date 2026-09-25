@@ -217,48 +217,76 @@
       </div>
 
     <!-- ========================================================== -->
-    <!-- VIEW 1: Page-by-Page Process Wizard Interface [Z-INDEX 10] -->
+    <!-- VIEW 1: Next-Gen Quantum Interface & Process Wizard [Z-INDEX 10] -->
     <!-- ========================================================== -->
-    <section id="wizardView" class="card page-wizard-container dream-card">
-      <!-- Stepper Progress Header -->
-      <div class="stepper-header-box">
-        <div class="stepper-meta-bar">
-          <span class="stepper-meta-title">Page-by-Page Progress: <strong id="stepPercentLabel" style="color: var(--magnetic-cyan);">25% Complete</strong></span>
-          <span class="stepper-meta-badge" id="stepLockStatusBadge">🔒 Page 2 Locked until Page 1 is Complete</span>
-        </div>
-        <div class="stepper-progress-bar">
-          <div class="stepper-progress-fill" id="stepperProgressFill" style="width: 25%;"></div>
-        </div>
+    <section id="wizardView" class="card page-wizard-container dream-card" style="position: relative;">
+      <!-- Quantum Title Header -->
+      <div class="quantum-header-banner">
+        <h1 class="quantum-header-title">Continuum Engine Frontend UI</h1>
+        <div class="quantum-header-sub">Next-Gen Quantum Interface</div>
+      </div>
 
-        <div class="stepper-nodes-row">
-          <button class="step-node active" id="stepNode1" onclick="goToStep(1)">
-            <div class="step-circle" id="stepCircle1">1</div>
-            <div class="step-node-text">
-              <span class="step-label">1. Profile</span>
-              <span class="step-status-tag" id="stepTag1">Active ⚡</span>
-            </div>
-          </button>
-          <button class="step-node locked" id="stepNode2" onclick="goToStep(2)">
-            <div class="step-circle" id="stepCircle2">2</div>
-            <div class="step-node-text">
-              <span class="step-label">2. Financial</span>
-              <span class="step-status-tag" id="stepTag2">Locked 🔒</span>
-            </div>
-          </button>
-          <button class="step-node locked" id="stepNode3" onclick="goToStep(3)">
-            <div class="step-circle" id="stepCircle3">3</div>
-            <div class="step-node-text">
-              <span class="step-label">3. Loan Vault</span>
-              <span class="step-status-tag" id="stepTag3">Locked 🔒</span>
-            </div>
-          </button>
-          <button class="step-node locked" id="stepNode4" onclick="goToStep(4)">
-            <div class="step-circle" id="stepCircle4">4</div>
-            <div class="step-node-text">
-              <span class="step-label">4. AI Review</span>
-              <span class="step-status-tag" id="stepTag4">Locked 🔒</span>
-            </div>
-          </button>
+      <!-- Top-Right Quantum Session HUD -->
+      <div class="quantum-hud-badge">
+        <div class="quantum-hud-line">
+          <span class="quantum-hud-dot"></span>
+          <span>SESSION ID:</span>
+          <span class="quantum-hud-val" id="quantumSessionIdBadge">QNTM-XJ9-845-BETA</span>
+        </div>
+        <div class="quantum-hud-line">
+          <span>⏱️ TIME ELAPSED:</span>
+          <span class="quantum-hud-val" id="quantumElapsedTime">00:14:32</span>
+        </div>
+      </div>
+
+      <!-- Quantum Deployment Wizard Stepper Box -->
+      <div class="quantum-wizard-header">
+        <h2>Quantum Deployment Wizard</h2>
+        <p>Guided Setup &amp; Configuration.</p>
+      </div>
+
+      <div class="quantum-tracker">
+        <button type="button" class="quantum-step-item active" id="qntmStep1" onclick="goToStep(1)">
+          <div class="quantum-step-icon-wrap">
+            <svg viewBox="0 0 24 24"><path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z"/></svg>
+            <span class="quantum-step-check">✓</span>
+          </div>
+          <div class="quantum-step-name">1. Connect</div>
+          <div class="quantum-step-desc">Session Established. Secure link active.</div>
+        </button>
+
+        <button type="button" class="quantum-step-item" id="qntmStep2" onclick="goToStep(2)">
+          <div class="quantum-step-icon-wrap">
+            <svg viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M8 3v3m8-3v3m-8 12v3m8-3v3m-13-8h3m12 0h3m-15-4h3m12 0h3"/><rect width="8" height="8" x="8" y="8" rx="1"/></svg>
+          </div>
+          <div class="quantum-step-name">2. Configure</div>
+          <div class="quantum-step-desc">Defining Quantum Parameters &amp; Resources</div>
+        </button>
+
+        <button type="button" class="quantum-step-item" id="qntmStep3" onclick="goToStep(3)">
+          <div class="quantum-step-icon-wrap">
+            <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/><path d="M11 8v6m-3-3h6"/></svg>
+          </div>
+          <div class="quantum-step-name">3. Validate</div>
+          <div class="quantum-step-desc">Running integrity Checks &amp; AI Analysis</div>
+        </button>
+
+        <button type="button" class="quantum-step-item" id="qntmStep4" onclick="goToStep(4)">
+          <div class="quantum-step-icon-wrap">
+            <svg viewBox="0 0 24 24"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/></svg>
+          </div>
+          <div class="quantum-step-name">4. Deploy</div>
+          <div class="quantum-step-desc">Executing Final Deployment.</div>
+        </button>
+      </div>
+
+      <div class="quantum-progress-wrapper">
+        <div class="quantum-progress-track">
+          <div class="quantum-progress-fill" id="quantumProgressFill" style="width: 25%;"></div>
+        </div>
+        <div class="quantum-progress-label">
+          <span id="quantumProgressText">STEP 1 OF 4</span>
+          <span id="quantumProgressPercent" style="color: #00F0FF; font-weight: 700;">25%</span>
         </div>
       </div>
 
@@ -393,6 +421,21 @@
                   </div>
                 </div>
               </div>
+
+              <!-- Flagship 404 Chunk-Load Simulation Banner -->
+              <div class="chaos-test-banner" style="margin-top: 1.5rem; padding: 1.15rem 1.35rem; border-radius: 14px; background: rgba(239, 68, 68, 0.12); border: 1px solid rgba(239, 68, 68, 0.4); display: flex; flex-direction: column; sm:flex-row; align-items: flex-start; sm:align-items: center; justify-content: space-between; gap: 1rem; box-shadow: 0 4px 20px rgba(239, 68, 68, 0.15);">
+                <div>
+                  <strong style="color: #F87171; font-size: 0.92rem; display: flex; align-items: center; gap: 0.5rem; letter-spacing: 0.04em;">
+                    <span>💥</span> PROVE ZERO DATA LOSS: 404 CHUNKLOAD RECOVERY SIMULATOR
+                  </strong>
+                  <p style="font-size: 0.78rem; color: #CBD5E1; margin-top: 0.35rem; line-height: 1.45;">
+                    Simulate an edge CDN purging the lazy-loaded chunk (<code>step3.a8f91b.js</code>) during a live CI/CD deploy. The <code>StaleAssetBoundary</code> will intercept the 404, AES-256 vault all active inputs, trigger a cache-busting reload, and restore your exact step without showing a blank screen.
+                  </p>
+                </div>
+                <button type="button" class="btn btn-danger" onclick="simulateDeployAndCrash()" style="white-space: nowrap; padding: 0.75rem 1.4rem; font-weight: 800; letter-spacing: 0.05em; box-shadow: 0 0 20px rgba(239, 68, 68, 0.5);">
+                  Trigger 404 Crash
+                </button>
+              </div>
             </form>
           </div>
 
@@ -468,7 +511,76 @@
           Next Step <span>→</span>
         </button>
       </div>
+
+      <!-- Lower Split Grid: AES-256 Vault Status & Live Telemetry Logs Table (Image 2) -->
+      <div class="quantum-lower-grid" style="margin-top: 2rem;">
+        <!-- Left Card: AES-256 Encrypted Vault Status -->
+        <div class="quantum-vault-card">
+          <div class="quantum-vault-left">
+            <div class="quantum-lock-icon">🔒</div>
+            <div class="quantum-vault-meta">
+              <h4>AES-256 Encrypted Vault Status</h4>
+              <div class="quantum-vault-status-text">STATUS: SECURE — QUANTUM ENCRYPTION ACTIVE</div>
+              <div class="quantum-vault-throughput">THROUGHPUT: <strong id="quantumThroughputDisplay">45.2 TB/s</strong></div>
+            </div>
+          </div>
+          <div class="quantum-vault-anim" title="Quantum Encryption Pipeline">⚡</div>
+        </div>
+
+        <!-- Right Card: Telemetry Crash Logs Table -->
+        <div class="quantum-logs-card">
+          <div class="quantum-logs-header">
+            <h4>Telemetry Crash Logs Table</h4>
+            <span style="font-size: 0.72rem; color: #10B981; font-family: 'JetBrains Mono', monospace;" id="quantumLogsLiveStatus">● LIVE STREAM ACTIVE</span>
+          </div>
+          <div class="quantum-table-wrap">
+            <table class="quantum-table">
+              <thead>
+                <tr>
+                  <th>Timestamp</th>
+                  <th>Event Type</th>
+                  <th>Severity</th>
+                  <th>Message</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="quantumTableBody">
+                <tr>
+                  <td>2024-05-22 10:15:03</td>
+                  <td>SYSTEM_ERROR</td>
+                  <td><span class="quantum-chip critical">CRITICAL</span></td>
+                  <td>Memory Allocation Fault</td>
+                  <td><span class="quantum-chip pending">PENDING</span></td>
+                </tr>
+                <tr>
+                  <td>2024-05-22 10:12:45</td>
+                  <td>NETWORK_TIMEOUT</td>
+                  <td><span class="quantum-chip warning">WARNING</span></td>
+                  <td>Connection Latency Spike</td>
+                  <td><span class="quantum-chip resolved">RESOLVED</span></td>
+                </tr>
+                <tr>
+                  <td>2024-05-22 09:58:12</td>
+                  <td>API_FAILURE</td>
+                  <td><span class="quantum-chip high">HIGH</span></td>
+                  <td>Invalid Token Request</td>
+                  <td><span class="quantum-chip investigating">INVESTIGATING</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
     </section>
+
+    <!-- Floating Ask Gemini AI Assistant Button (Image 2) -->
+    <div class="quantum-gemini-pill" onclick="toggleAiDrawer()" title="Open Gemini AI Intelligent Assistant">
+      <div class="quantum-gemini-icon">✨</div>
+      <div class="quantum-gemini-text">
+        <div class="title">ASK GEMINI AI</div>
+        <div class="sub">Your Intelligent Assistant</div>
+      </div>
+    </div>
 
     <!-- ========================================================== -->
     <!-- VIEW 2: Telemetry Operator Dashboard & Live Stream -->

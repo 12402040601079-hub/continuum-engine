@@ -247,8 +247,48 @@ document.addEventListener("DOMContentLoaded", async () => {
  * Initializes and toggles Light & Magnetic Theme Mode
  */
 function initTheme() {
+  // Always default to signature Quantum Dark theme
   const savedTheme = localStorage.getItem("continuum_theme_mode") || "dark";
   applyTheme(savedTheme === "light");
+  initQuantumHudTimer();
+}
+
+let _qntmElapsedSeconds = 14 * 60 + 32; // Starts from 00:14:32 as in Image 2
+function initQuantumHudTimer() {
+  const timerEl = document.getElementById("quantumElapsedTime");
+  if (!timerEl) return;
+  
+  setInterval(() => {
+    _qntmElapsedSeconds++;
+    const hrs = Math.floor(_qntmElapsedSeconds / 3600);
+    const mins = Math.floor((_qntmElapsedSeconds % 3600) / 60);
+    const secs = _qntmElapsedSeconds % 60;
+    const pad = (n) => String(n).padStart(2, '0');
+    timerEl.textContent = `${pad(hrs)}:${pad(mins)}:${pad(secs)}`;
+  }, 1000);
+}
+
+function connectTelemetryWebSocket() {
+  const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+  const wsUrl = `${protocol}//${window.location.host}/api/v1/ws/telemetry`;
+  
+  try {
+    const ws = new WebSocket(wsUrl);
+    ws.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data);
+        const tpEl = document.getElementById("quantumThroughputDisplay");
+        if (tpEl && data.throughput_mbps) {
+          tpEl.textContent = `${(data.throughput_mbps / 20).toFixed(1)} TB/s`;
+        }
+      } catch (err) {}
+    };
+    ws.onerror = (e) => {
+      console.log("WebSocket telemetry stream notice (using HTTP fallback):", e);
+    };
+  } catch (e) {
+    console.log("WebSocket not available:", e);
+  }
 }
 
 function toggleThemeMode() {
@@ -806,6 +846,36 @@ function updateUi() {
       nextBtn.className = "btn btn-primary";
     }
   }
+
+  // 5. Sync Next-Gen Quantum Interface Stepper (Image 2)
+  const qFill = document.getElementById("quantumProgressFill");
+  if (qFill) {
+    qFill.style.width = percents[state.currentStep] + "%";
+  }
+  const qPct = document.getElementById("quantumProgressPercent");
+  if (qPct) {
+    qPct.textContent = percents[state.currentStep] + "%";
+  }
+  const qTxt = document.getElementById("quantumProgressText");
+  if (qTxt) {
+    qTxt.textContent = `STEP ${state.currentStep} OF 4`;
+  }
+  const qSessBadge = document.getElementById("quantumSessionIdBadge");
+  if (qSessBadge) {
+    qSessBadge.textContent = state.sessionId ? `QNTM-${state.sessionId.slice(-7).toUpperCase()}` : "QNTM-XJ9-845-BETA";
+  }
+
+  for (let i = 1; i <= 4; i++) {
+    const qStep = document.getElementById(`qntmStep${i}`);
+    if (qStep) {
+      qStep.classList.remove("active", "completed");
+      if (i < state.currentStep) {
+        qStep.classList.add("completed");
+      } else if (i === state.currentStep) {
+        qStep.classList.add("active");
+      }
+    }
+  }
 }
 
 /**
@@ -1284,6 +1354,21 @@ async function simulateDeployAndCrash() {
   try {
     loadTelemetryDashboard();
   } catch (e) {}
+
+  // Prepend live incident to Next-Gen Quantum Table (Image 2)
+  const quantumTbody = document.getElementById("quantumTableBody");
+  if (quantumTbody) {
+    const tr = document.createElement("tr");
+    const now = new Date().toISOString().replace('T', ' ').slice(0, 19);
+    tr.innerHTML = `
+      <td>${now}</td>
+      <td>CHUNK_404_RECOVERED</td>
+      <td><span class="quantum-chip critical">CRITICAL</span></td>
+      <td>Stale chunk 404 intercepted & rehydrated</td>
+      <td><span class="quantum-chip resolved">RESOLVED</span></td>
+    `;
+    quantumTbody.insertBefore(tr, quantumTbody.firstChild);
+  }
 }
 
 function setCrashStep(stepId, status) {
