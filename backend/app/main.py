@@ -124,8 +124,14 @@ app.add_middleware(
 
 # Mount static asset directory
 static_dir = os.path.join(os.path.dirname(__file__), "static")
+marketing_dir = os.path.join(static_dir, "marketing")
+marketing_assets_dir = os.path.join(marketing_dir, "assets")
+
 if os.path.exists(static_dir):
     app.mount("/static", StaticFiles(directory=static_dir), name="static")
+
+if os.path.exists(marketing_assets_dir):
+    app.mount("/assets", StaticFiles(directory=marketing_assets_dir), name="marketing_assets")
 
 # Ingest v1 endpoints
 app.include_router(api_v1_router, prefix="/api/v1")
@@ -158,10 +164,16 @@ async def websocket_telemetry_stream(websocket: WebSocket):
 @app.get("/", status_code=200)
 def read_root(request: Request):
     accept_header = request.headers.get("accept", "")
+    marketing_index = os.path.join(marketing_dir, "index.html")
     index_path = os.path.join(static_dir, "index.html")
-    # If accessed directly via browser HTML navigation, return web app interface
-    if "text/html" in accept_header and os.path.exists(index_path):
-        return FileResponse(index_path)
+    
+    # If accessed directly via browser HTML navigation, return marketing website if present, otherwise web app
+    if "text/html" in accept_header:
+        if os.path.exists(marketing_index):
+            return FileResponse(marketing_index)
+        elif os.path.exists(index_path):
+            return FileResponse(index_path)
+            
     return {
         "status": "online",
         "service": "Continuum Engine API",
@@ -174,5 +186,12 @@ def read_app():
     if os.path.exists(index_path):
         return FileResponse(index_path)
     return {"message": "Web application interface not found."}
+
+@app.get("/marketing", status_code=200)
+def read_marketing():
+    marketing_index = os.path.join(marketing_dir, "index.html")
+    if os.path.exists(marketing_index):
+        return FileResponse(marketing_index)
+    return {"message": "Marketing website not found."}
 
 

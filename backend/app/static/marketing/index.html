@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Continuum Engine — Zero-Downtime Session Persistence for Modern SPAs</title>
+    <meta name="description" content="Continuum Engine intercepts chunk-load 404 errors, vaults live SPA state with AES-256 envelope cryptography, and auto-rehydrates users after a deployment with zero data loss." />
+    <!-- Google Fonts: Inter, Space Grotesk, JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS Engine -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              navy: {
+                950: '#060910',
+                900: '#0A0E17',
+                850: '#0D1322',
+                800: '#111827',
+              },
+              electric: {
+                400: '#60A5FA',
+                500: '#3B82F6',
+                600: '#2563EB',
+              },
+              tealAccent: {
+                300: '#5EEAD4',
+                400: '#2DD4BF',
+              }
+            },
+            fontFamily: {
+              sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+              heading: ['Space Grotesk', 'sans-serif'],
+              mono: ['JetBrains Mono', 'monospace'],
+            }
+          }
+        }
+      }
+    </script>
+    <script type="module" crossorigin src="/assets/index-DlzfY8cF.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-PdU7Bwsq.css">
+  </head>
+  <body class="bg-[#0A0E17] text-white selection:bg-[#3B82F6]/30 selection:text-[#5EEAD4] antialiased">
+    <div id="root"></div>
+  </body>
+</html>
