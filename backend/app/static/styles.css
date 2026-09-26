@@ -127,7 +127,11 @@ body.theme-light {
 
 body {
   font-family: var(--font-family);
-  background-color: var(--bg-primary);
+  background-color: #060911;
+  background-image: 
+    radial-gradient(circle at 50% 0%, rgba(13, 21, 39, 0.9) 0%, transparent 70%),
+    radial-gradient(circle at 100% 100%, rgba(15, 23, 42, 0.7) 0%, transparent 60%);
+  background-attachment: fixed;
   color: var(--text-primary);
   min-height: 100vh;
   display: flex;
@@ -138,85 +142,36 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* 3D Canvas Layer [Z-INDEX 0] */
-#threeCanvasContainer,
-#three-canvas {
-  position: fixed;
-  inset: 0;
-  z-index: var(--z-quantum-canvas, 0);
-  pointer-events: none;
-  width: 100vw;
-  height: 100vh;
+body.theme-light {
+  background-color: #f8fafc !important;
+  background-image: none !important;
+  color: #0f172a !important;
 }
 
-/* Atmospheric Background [Z-INDEX 0] */
-.magnetic-aurora-bg {
+/* =========================================================================
+   VISIBLE & EYE-COMFORTING AMBIENT AURORA CANVAS
+   ========================================================================= */
+.ambient-aurora-canvas {
   position: fixed;
   inset: 0;
-  z-index: var(--z-quantum-canvas, 0);
+  width: 100vw;
+  height: 100vh;
+  z-index: 0;
   pointer-events: none;
-  overflow: hidden;
+  opacity: 0.95;
   transition: opacity 0.5s ease;
 }
 
+body.theme-light .ambient-aurora-canvas {
+  opacity: 0.75;
+}
+
+/* Disabled Heavy 3D Layers */
+#threeCanvasContainer,
+#three-canvas,
+.magnetic-aurora-bg,
 .aurora-blob {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(90px);
-  opacity: 0.55;
-  animation: floatAurora 20s infinite alternate ease-in-out;
-}
-
-body.theme-light .aurora-blob {
-  opacity: 0.4;
-  filter: blur(100px);
-}
-
-.blob-1 {
-  width: 700px;
-  height: 700px;
-  background: radial-gradient(circle, rgba(0, 240, 255, 0.3) 0%, rgba(99, 102, 241, 0.15) 70%, transparent 100%);
-  top: -120px;
-  left: -120px;
-  animation-duration: 24s;
-}
-
-body.theme-light .blob-1 {
-  background: radial-gradient(circle, rgba(186, 230, 253, 0.6) 0%, rgba(199, 210, 254, 0.3) 70%, transparent 100%);
-}
-
-.blob-2 {
-  width: 800px;
-  height: 800px;
-  background: radial-gradient(circle, rgba(157, 78, 221, 0.28) 0%, rgba(255, 0, 128, 0.12) 60%, transparent 100%);
-  bottom: -180px;
-  right: -120px;
-  animation-duration: 28s;
-  animation-delay: -6s;
-}
-
-body.theme-light .blob-2 {
-  background: radial-gradient(circle, rgba(233, 213, 255, 0.5) 0%, rgba(254, 205, 211, 0.3) 60%, transparent 100%);
-}
-
-.blob-3 {
-  width: 550px;
-  height: 550px;
-  background: radial-gradient(circle, rgba(0, 255, 204, 0.22) 0%, rgba(0, 240, 255, 0.08) 70%, transparent 100%);
-  top: 35%;
-  left: 40%;
-  animation-duration: 18s;
-  animation-delay: -9s;
-}
-
-body.theme-light .blob-3 {
-  background: radial-gradient(circle, rgba(167, 243, 208, 0.5) 0%, rgba(186, 230, 253, 0.3) 70%, transparent 100%);
-}
-
-@keyframes floatAurora {
-  0% { transform: translate(0, 0) scale(1) rotate(0deg); }
-  50% { transform: translate(70px, 50px) scale(1.1) rotate(45deg); }
-  100% { transform: translate(-50px, 90px) scale(0.9) rotate(90deg); }
+  display: none !important;
 }
 
 /* Background Atmosphere Presets */
@@ -317,13 +272,22 @@ body.theme-light .brand-text h1 {
   font-weight: 700;
 }
 
-/* Nav Tabs */
+/* Nav Tabs (Single Row No-Wrap Flow) */
 .tab-switch {
   display: flex;
+  align-items: center;
   background: var(--bg-inset);
-  padding: 0.25rem;
+  padding: 0.2rem;
   border-radius: var(--radius-md);
   border: 1px solid var(--border-glass);
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  gap: 0.2rem;
+}
+.tab-switch::-webkit-scrollbar {
+  display: none;
 }
 
 .tab-btn {
@@ -331,15 +295,17 @@ body.theme-light .brand-text h1 {
   border: none;
   color: var(--text-secondary);
   font-family: inherit;
-  font-size: 0.85rem;
+  font-size: 0.78rem;
   font-weight: 600;
-  padding: 0.5rem 1.15rem;
+  padding: 0.35rem 0.65rem;
   border-radius: calc(var(--radius-md) - 3px);
   cursor: pointer;
   transition: var(--transition-fast);
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.3rem;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .tab-btn.active {
@@ -350,7 +316,7 @@ body.theme-light .brand-text h1 {
 }
 
 body:not(.theme-light) .tab-btn.active {
-  background: linear-gradient(135deg, rgba(0, 240, 255, 0.2), rgba(157, 78, 221, 0.2));
+  background: linear-gradient(135deg, rgba(0, 240, 255, 0.22), rgba(157, 78, 221, 0.22));
   border-color: var(--magnetic-cyan);
   color: #ffffff;
   box-shadow: var(--glow-cyan);
@@ -365,7 +331,8 @@ body:not(.theme-light) .tab-btn.active {
 .hud-controls-group {
   display: flex;
   align-items: center;
-  gap: 0.6rem;
+  gap: 0.45rem;
+  flex-shrink: 0;
 }
 
 .hud-audio-box {
@@ -4588,4 +4555,517 @@ body.theme-light .skeleton {
   font-size: 0.68rem;
   color: #94A3B8;
 }
+
+/* Eliminate Any Colliding Legacy Widgets */
+.radial-system-map,
+.gemini-fab-icon-btn {
+  display: none !important;
+}
+
+/* Continuous Scrolling Web-Application Architecture */
+.overview-view,
+.page-wizard-container,
+.dashboard-view,
+.admin-view,
+.arch-view,
+.blueprint-view {
+  width: 100%;
+  max-width: 1380px;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 4rem;
+  box-sizing: border-box;
+}
+
+/* Cyber Section Divider for Scrolling Web-Application */
+.cyber-section-divider {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  margin: 4.5rem auto 2.5rem auto;
+  max-width: 1380px;
+  width: 100%;
+  position: relative;
+  box-sizing: border-box;
+}
+
+.divider-glow-line {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(0, 240, 255, 0.45), transparent);
+  box-shadow: 0 0 10px rgba(0, 240, 255, 0.25);
+}
+
+.divider-badge-box {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: rgba(10, 15, 28, 0.9);
+  border: 1px solid rgba(0, 240, 255, 0.35);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  padding: 0.5rem 1.25rem;
+  border-radius: 999px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5), 0 0 15px rgba(0, 240, 255, 0.15);
+}
+
+.divider-index {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: #00F0FF;
+  background: rgba(0, 240, 255, 0.15);
+  padding: 0.15rem 0.55rem;
+  border-radius: 4px;
+}
+
+.divider-title {
+  font-family: var(--font-mono);
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: #FFFFFF;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.divider-tag {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: #00FF88;
+  background: rgba(0, 255, 136, 0.12);
+  border: 1px solid rgba(0, 255, 136, 0.3);
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  letter-spacing: 0.05em;
+}
+
+.divider-tag.pulse {
+  animation: pulseTagGlow 2.4s infinite ease-in-out;
+}
+
+@keyframes pulseTagGlow {
+  0%, 100% { opacity: 1; transform: scale(1); box-shadow: 0 0 10px rgba(0, 255, 136, 0.3); }
+  50% { opacity: 0.7; transform: scale(0.96); box-shadow: 0 0 4px rgba(0, 255, 136, 0.1); }
+}
+
+/* Scroll-Reveal Entrance Animation */
+.scroll-reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+
+.scroll-reveal.is-revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (max-width: 768px) {
+  .quantum-gemini-pill {
+    bottom: 74px;
+    right: 14px;
+    padding: 0.45rem 0.9rem;
+  }
+  .quantum-gemini-text .sub {
+    display: none;
+  }
+  .divider-title {
+    font-size: 0.68rem;
+  }
+}
+
+/* =========================================================================
+   COMPREHENSIVE PROFESSIONAL LIGHT MODE & DARK MODE HARMONY
+   ========================================================================= */
+
+body.theme-light {
+  background-color: #f8fafc !important;
+  color: #0f172a !important;
+}
+
+/* 1. Header & Navigation Switches in Light Mode */
+body.theme-light .main-header {
+  background: rgba(255, 255, 255, 0.92) !important;
+  border-bottom: 1px solid rgba(226, 232, 240, 0.9) !important;
+  box-shadow: 0 4px 20px rgba(15, 23, 42, 0.05) !important;
+}
+
+body.theme-light .brand-text .title {
+  color: #0f172a !important;
+}
+
+body.theme-light .tab-switch {
+  background: #f1f5f9 !important;
+  border: 1px solid #e2e8f0 !important;
+}
+
+body.theme-light .tab-btn {
+  color: #475569 !important;
+}
+
+body.theme-light .tab-btn:hover {
+  color: #0f172a !important;
+  background: rgba(255, 255, 255, 0.6) !important;
+}
+
+body.theme-light .tab-btn.active {
+  background: #ffffff !important;
+  color: #0284c7 !important;
+  border-color: rgba(2, 132, 199, 0.3) !important;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.08) !important;
+}
+
+body.theme-light .hud-stat-pill {
+  background: #ffffff !important;
+  border-color: #cbd5e1 !important;
+  color: #0f172a !important;
+}
+
+body.theme-light select#bgAnimModeSelect {
+  color: #0284c7 !important;
+}
+
+body.theme-light select#bgAnimModeSelect option {
+  background: #ffffff !important;
+  color: #0f172a !important;
+}
+
+/* 2. Cards, Dash Panels & Glass Containers in Light Mode */
+body.theme-light .card,
+body.theme-light .dash-panel,
+body.theme-light .dream-card,
+body.theme-light .living-quick-ribbon,
+body.theme-light .kpi-card,
+body.theme-light .mobile-data-card,
+body.theme-light .living-layer-box {
+  background: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  box-shadow: 0 10px 30px -10px rgba(15, 23, 42, 0.06), 0 0 0 1px rgba(15, 23, 42, 0.04) !important;
+  color: #0f172a !important;
+}
+
+body.theme-light h1,
+body.theme-light h1,
+body.theme-light h2,
+body.theme-light h3,
+body.theme-light h4,
+body.theme-light h5,
+body.theme-light h6,
+body.theme-light .kpi-val,
+body.theme-light .panel-header h3,
+body.theme-light .section-title,
+body.theme-light .card-title,
+body.theme-light .hero-title,
+body.theme-light .feature-title {
+  color: #0f172a !important;
+}
+
+body.theme-light p,
+body.theme-light .kpi-label,
+body.theme-light .text-muted,
+body.theme-light .section-desc,
+body.theme-light .card-desc,
+body.theme-light .hero-subtitle {
+  color: #334155 !important;
+}
+
+/* 2. Header, Navigation & HUD */
+body.theme-light .app-header {
+  background: rgba(255, 255, 255, 0.94) !important;
+  border-bottom: 1px solid #e2e8f0 !important;
+  box-shadow: 0 4px 20px rgba(15, 23, 42, 0.05) !important;
+}
+
+body.theme-light .nav-link,
+body.theme-light .nav-item a {
+  color: #334155 !important;
+}
+
+body.theme-light .nav-link:hover,
+body.theme-light .nav-link.active {
+  color: #2563eb !important;
+}
+
+body.theme-light .session-badge,
+body.theme-light .status-badge,
+body.theme-light .badge-item,
+body.theme-light .stat-badge,
+body.theme-light .hud-badge {
+  background: #f1f5f9 !important;
+  border: 1px solid #cbd5e1 !important;
+  color: #0f172a !important;
+}
+
+body.theme-light .badge-label,
+body.theme-light .hud-label {
+  color: #64748b !important;
+}
+
+body.theme-light .badge-val,
+body.theme-light .hud-val {
+  color: #0f172a !important;
+  font-weight: 700 !important;
+}
+
+/* 3. Section Dividers & Eyebrows in Light Mode */
+body.theme-light .cyber-section-divider .divider-glow-line {
+  background: linear-gradient(90deg, transparent, rgba(37, 99, 235, 0.4), transparent) !important;
+}
+
+body.theme-light .cyber-section-divider .divider-badge-box {
+  background: #ffffff !important;
+  border: 1px solid #cbd5e1 !important;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.06) !important;
+}
+
+body.theme-light .divider-index,
+body.theme-light .section-eyebrow,
+body.theme-light .layer-tag,
+body.theme-light .section-tag {
+  color: #2563eb !important;
+  background: rgba(37, 99, 235, 0.08) !important;
+  border-color: rgba(37, 99, 235, 0.25) !important;
+  font-weight: 700 !important;
+}
+
+body.theme-light .divider-title {
+  color: #0f172a !important;
+}
+
+/* 4. Cards, Panels, & Surfaces */
+body.theme-light .glass-card,
+body.theme-light .card,
+body.theme-light .stat-card,
+body.theme-light .metric-card,
+body.theme-light .suite-card,
+body.theme-light .wizard-card,
+body.theme-light .lab-card,
+body.theme-light .guardian-card,
+body.theme-light .action-card {
+  background: rgba(255, 255, 255, 0.96) !important;
+  border: 1px solid #e2e8f0 !important;
+  box-shadow: 0 10px 30px -5px rgba(15, 23, 42, 0.06), 0 0 0 1px rgba(15, 23, 42, 0.03) !important;
+  color: #0f172a !important;
+}
+
+body.theme-light .glass-card:hover,
+body.theme-light .card:hover,
+body.theme-light .suite-card:hover {
+  background: #ffffff !important;
+  border-color: rgba(37, 99, 235, 0.35) !important;
+  box-shadow: 0 16px 40px -8px rgba(37, 99, 235, 0.12) !important;
+}
+
+/* 5. Form Controls, Inputs & Selects in Light Mode */
+body.theme-light .form-group label,
+body.theme-light .field-label,
+body.theme-light .form-label,
+body.theme-light label {
+  color: #1e293b !important;
+  font-weight: 600 !important;
+}
+
+body.theme-light .form-control,
+body.theme-light .form-select,
+body.theme-light input[type="text"],
+body.theme-light input[type="email"],
+body.theme-light input[type="number"],
+body.theme-light input[type="date"],
+body.theme-light input[type="password"],
+body.theme-light select,
+body.theme-light textarea {
+  background: #ffffff !important;
+  border: 1.5px solid #cbd5e1 !important;
+  color: #0f172a !important;
+}
+
+body.theme-light .form-control:focus,
+body.theme-light input:focus,
+body.theme-light select:focus,
+body.theme-light textarea:focus {
+  background: #ffffff !important;
+  border-color: #2563eb !important;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15) !important;
+  color: #0f172a !important;
+}
+
+body.theme-light .field-hint,
+body.theme-light .help-text {
+  color: #64748b !important;
+}
+
+/* 6. Buttons & Controls in Light Mode */
+body.theme-light .btn-secondary,
+body.theme-light .icon-btn {
+  background: #f1f5f9 !important;
+  border: 1px solid #cbd5e1 !important;
+  color: #0f172a !important;
+}
+
+body.theme-light .btn-secondary:hover,
+body.theme-light .icon-btn:hover {
+  background: #e2e8f0 !important;
+  color: #2563eb !important;
+  border-color: #94a3b8 !important;
+}
+
+body.theme-light .btn-primary {
+  background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%) !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3) !important;
+}
+
+/* 7. Zero Data Loss 404 Simulator Box */
+body.theme-light .sim-callout,
+body.theme-light .chaos-box,
+body.theme-light .alert-box,
+body.theme-light .danger-zone {
+  background: #fff1f2 !important;
+  border: 1.5px solid #fecdd3 !important;
+}
+
+body.theme-light .sim-callout h3,
+body.theme-light .chaos-box h3,
+body.theme-light .sim-callout h4 {
+  color: #e11d48 !important;
+}
+
+body.theme-light .sim-callout p,
+body.theme-light .chaos-box p {
+  color: #475569 !important;
+}
+
+/* 8. Tables & Terminals in Light Mode */
+body.theme-light table,
+body.theme-light th,
+body.theme-light td {
+  border-color: #e2e8f0 !important;
+  color: #1e293b !important;
+}
+
+body.theme-light th {
+  background: #f8fafc !important;
+  color: #475569 !important;
+}
+
+body.theme-light tr:hover {
+  background: rgba(37, 99, 235, 0.04) !important;
+}
+
+body.theme-light pre,
+body.theme-light code,
+body.theme-light .terminal-window,
+body.theme-light .telemetry-monitor {
+  background: #0f172a !important;
+  color: #38bdf8 !important;
+  border: 1px solid #1e293b !important;
+}
+
+/* 9. Modals & Drawers in Light Mode */
+body.theme-light .modal-content,
+body.theme-light .drawer-content,
+body.theme-light .gemini-drawer {
+  background: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  color: #0f172a !important;
+  box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.2) !important;
+}
+
+body.theme-light .gemini-drawer-header {
+  background: #f8fafc !important;
+  border-bottom: 1px solid #e2e8f0 !important;
+}
+
+body.theme-light .gemini-drawer-title,
+body.theme-light .gemini-drawer-header h3 {
+  color: #0f172a !important;
+}
+
+body.theme-light .gemini-chat-area,
+body.theme-light .gemini-messages {
+  background: #f8fafc !important;
+}
+
+body.theme-light .gemini-msg.bot {
+  background: #ffffff !important;
+  color: #0f172a !important;
+  border: 1px solid #e2e8f0 !important;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04) !important;
+}
+
+body.theme-light .gemini-msg.user {
+  background: linear-gradient(135deg, #2563eb, #7c3aed) !important;
+  color: #ffffff !important;
+}
+
+body.theme-light .gemini-input-container {
+  background: #ffffff !important;
+  border-top: 1px solid #e2e8f0 !important;
+}
+
+body.theme-light .gemini-input-box {
+  background: #f1f5f9 !important;
+  border: 1.5px solid #cbd5e1 !important;
+  color: #0f172a !important;
+}
+
+body.theme-light .gemini-input-box:focus {
+  background: #ffffff !important;
+  border-color: #2563eb !important;
+}
+
+body.theme-light .gemini-chip,
+body.theme-light .ai-quick-btn {
+  background: #f1f5f9 !important;
+  color: #334155 !important;
+  border: 1px solid #cbd5e1 !important;
+}
+
+body.theme-light .gemini-chip:hover,
+body.theme-light .ai-quick-btn:hover {
+  background: #e2e8f0 !important;
+  color: #0f172a !important;
+  border-color: #94a3b8 !important;
+}
+
+body.theme-light .mobile-bottom-nav {
+  background: rgba(255, 255, 255, 0.94) !important;
+  border-top: 1px solid #e2e8f0 !important;
+}
+
+body.theme-light .b-nav-item {
+  color: #64748b !important;
+}
+
+body.theme-light .b-nav-item.active {
+  color: #2563eb !important;
+}
+
+/* 10. Unified Floating AI Pill in Light Mode */
+body.theme-light #unifiedGeminiPill,
+body.theme-light .unified-gemini-pill,
+body.theme-light .quantum-gemini-pill {
+  background: rgba(255, 255, 255, 0.96) !important;
+  border: 1.5px solid rgba(99, 102, 241, 0.35) !important;
+  box-shadow: 0 12px 35px rgba(15, 23, 42, 0.12), 0 0 20px rgba(99, 102, 241, 0.15) !important;
+}
+
+body.theme-light #unifiedGeminiPill .pill-title,
+body.theme-light .unified-gemini-pill .pill-title,
+body.theme-light .quantum-gemini-text .main {
+  color: #0f172a !important;
+  font-weight: 700 !important;
+}
+
+body.theme-light #unifiedGeminiPill .pill-sub,
+body.theme-light .unified-gemini-pill .pill-sub,
+body.theme-light .quantum-gemini-text .sub {
+  color: #4f46e5 !important;
+  font-weight: 600 !important;
+}
+
+
+
 

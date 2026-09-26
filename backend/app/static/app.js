@@ -200,10 +200,10 @@ document.addEventListener("DOMContentLoaded", async () => {
   setInterval(updateMobileClock, 1000);
   initDOMMutationRecorder();
 
-  // 2. Initialize 3D Quantum Reactor
-  if (window.quantum3D) {
-    window.quantum3D.init("threeCanvasContainer");
-  }
+  // 2. Background Animation Disabled (Static High-Performance Background Active)
+  // if (window.quantum3D) {
+  //   window.quantum3D.init("threeCanvasContainer");
+  // }
 
   // 3. Setup Audio Visualizer Canvas
   const canvas = document.getElementById("audioVisualizerCanvas");
@@ -241,6 +241,19 @@ document.addEventListener("DOMContentLoaded", async () => {
       openGuideModal();
     }, 600);
   }
+
+  // 9. Continuous Scrolling Web-Application Handlers
+  initScrollSpy();
+  initScrollReveal();
+
+  // 10. Pre-load Live Telemetry & Admin Stats for Seamless Scrolling
+  setTimeout(() => {
+    ensureOperatorAuth().then(() => {
+      loadTelemetryDashboard();
+      loadAdminOverview();
+      loadAdminSnapshots();
+    });
+  }, 400);
 });
 
 /**
@@ -1399,48 +1412,146 @@ function toggleMobileDrawer() {
 function switchView(viewName) {
   if (window.cyberAudio) window.cyberAudio.playChirp(1000, "sine", 0.05);
 
-  const wizTab = document.getElementById("tabWizardBtn");
-  const dashTab = document.getElementById("tabDashboardBtn");
-  const adminTab = document.getElementById("tabAdminBtn");
+  const viewMap = {
+    'overview': 'overviewView',
+    'wizard': 'wizardView',
+    'dashboard': 'dashboardView',
+    'admin': 'adminView'
+  };
 
-  const bWiz = document.getElementById("bNavWizard");
-  const bDash = document.getElementById("bNavDashboard");
-  const bAdmin = document.getElementById("bNavAdmin");
+  const targetId = viewMap[viewName] || 'overviewView';
+  const targetEl = document.getElementById(targetId);
 
-  const wizView = document.getElementById("wizardView");
-  const dashView = document.getElementById("dashboardView");
-  const adminView = document.getElementById("adminView");
+  // Update navbar tab highlight immediately
+  updateActiveNavTabs(viewName);
 
-  // Reset tab active classes
-  [wizTab, dashTab, adminTab].forEach(t => t && t.classList.remove("active"));
-  [bWiz, bDash, bAdmin].forEach(b => b && b.classList.remove("active"));
+  if (targetEl) {
+    const headerOffset = 76;
+    const elPos = targetEl.getBoundingClientRect().top + window.pageYOffset - headerOffset;
+    window.scrollTo({ top: Math.max(0, elPos), behavior: "smooth" });
+  }
 
-  // Hide all main views
-  if (wizView) wizView.style.display = "none";
-  if (dashView) dashView.style.display = "none";
-  if (adminView) adminView.style.display = "none";
-
-  if (viewName === "wizard") {
-    if (wizTab) wizTab.classList.add("active");
-    if (bWiz) bWiz.classList.add("active");
-    if (wizView) wizView.style.display = "block";
-  } else if (viewName === "dashboard") {
-    if (dashTab) dashTab.classList.add("active");
-    if (bDash) bDash.classList.add("active");
-    if (dashView) dashView.style.display = "block";
-
+  // Pre-load telemetry or admin metrics if clicked
+  if (viewName === "dashboard") {
     ensureOperatorAuth().then(() => {
       loadTelemetryDashboard();
     });
   } else if (viewName === "admin") {
-    if (adminTab) adminTab.classList.add("active");
-    if (bAdmin) bAdmin.classList.add("active");
-    if (adminView) adminView.style.display = "flex";
-
     ensureOperatorAuth().then(() => {
       loadAdminOverview();
       loadAdminSnapshots();
     });
+  }
+}
+
+/**
+ * Updates active class on top navigation and mobile bottom nav
+ */
+function updateActiveNavTabs(viewName) {
+  const normalized = viewName;
+
+  const tabMap = {
+    'overview': ['tabOverviewBtn', 'bNavOverview'],
+    'wizard': ['tabWizardBtn', 'bNavWizard'],
+    'dashboard': ['tabDashboardBtn', 'bNavDashboard'],
+    'admin': ['tabAdminBtn', 'bNavAdmin']
+  };
+
+  Object.entries(tabMap).forEach(([k, [btnId, bNavId]]) => {
+    const b = document.getElementById(btnId);
+    const mb = document.getElementById(bNavId);
+    if (k === normalized) {
+      if (b) b.classList.add('active');
+      if (mb) mb.classList.add('active');
+    } else {
+      if (b) b.classList.remove('active');
+      if (mb) mb.classList.remove('active');
+    }
+  });
+}
+
+/**
+ * Live ScrollSpy: Updates active navbar tab as sections scroll into view
+ */
+function initScrollSpy() {
+  const sections = [
+    { id: 'overviewView', key: 'overview' },
+    { id: 'wizardView', key: 'wizard' },
+    { id: 'dashboardView', key: 'dashboard' },
+    { id: 'adminView', key: 'admin' }
+  ];
+
+  let ticking = false;
+
+  window.addEventListener('scroll', () => {
+    if (!ticking) {
+      window.requestAnimationFrame(() => {
+        const scrollPos = window.pageYOffset + 180;
+        let currentKey = 'overview';
+
+        for (let i = 0; i < sections.length; i++) {
+          const el = document.getElementById(sections[i].id);
+          if (el) {
+            const top = el.offsetTop;
+            const height = el.offsetHeight;
+            if (scrollPos >= top && scrollPos < top + height) {
+              currentKey = sections[i].key;
+              break;
+            } else if (scrollPos >= top) {
+              currentKey = sections[i].key;
+            }
+          }
+        }
+
+        updateActiveNavTabs(currentKey);
+        ticking = false;
+      });
+      ticking = true;
+    }
+  }, { passive: true });
+}
+
+/**
+ * Scroll Reveal: Triggers silky entrance animations for cyber sections and cards
+ */
+function initScrollReveal() {
+  const reveals = document.querySelectorAll('.scroll-reveal');
+  if ('IntersectionObserver' in window) {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-revealed');
+        }
+      });
+    }, { threshold: 0.05, rootMargin: '0px 0px -40px 0px' });
+
+    reveals.forEach(r => observer.observe(r));
+  } else {
+    reveals.forEach(r => r.classList.add('is-revealed'));
+  }
+}
+
+// Unified Gemini Drawer Aliases (Ensures only one AI Assistant drawer exists)
+window.toggleGeminiDrawer = function() {
+  if (typeof toggleAiDrawer === 'function') toggleAiDrawer();
+};
+window.sendGeminiPrompt = function() {
+  if (typeof sendAiMessage === 'function') sendAiMessage();
+};
+
+
+function switchBackgroundMode(mode) {
+  if (window.quantum3D && window.quantum3D.setMode) {
+    window.quantum3D.setMode(mode);
+    if (window.showToast) {
+      const modeNames = {
+        'synaptic': 'Synaptic Neural Bus',
+        'hexgrid': 'Hexagonal Quantum Lattice',
+        'streamers': 'High-Velocity Data Streamers',
+        'constellation': 'Deep-Space Constellation'
+      };
+      window.showToast('Background Animation Changed', 'Switched to ' + (modeNames[mode] || mode), 'info', 2500);
+    }
   }
 }
 
@@ -2518,7 +2629,21 @@ let webcamStream = null;
 let currentAttachment = null;
 
 function toggleAiDrawer() {
-  toggleGeminiDrawer();
+  const backdrop = document.getElementById("aiDrawerBackdrop");
+  if (!backdrop) return;
+  const isHidden = backdrop.classList.contains("hidden");
+  if (isHidden) {
+    backdrop.classList.remove("hidden");
+    const input = document.getElementById("aiUserInput");
+    if (input) setTimeout(() => input.focus(), 150);
+    if (window.cyberAudio) window.cyberAudio.playChirp(1200, "sine", 0.06);
+  } else {
+    backdrop.classList.add("hidden");
+    if (webcamStream) {
+      if (typeof toggleInlineCamera === 'function') toggleInlineCamera();
+    }
+    if (window.cyberAudio) window.cyberAudio.playChirp(800, "triangle", 0.05);
+  }
 }
 
 function clearGeminiChat() {

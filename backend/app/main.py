@@ -190,4 +190,11 @@ def read_marketing():
         return FileResponse(marketing_index)
     return {"message": "Marketing website not found."}
 
+@app.get("/admin", status_code=200)
+def read_admin():
+    admin_index = os.path.join(static_dir, "index_admin_console.html")
+    if os.path.exists(admin_index):
+        return FileResponse(admin_index)
+    return {"message": "Admin console interface not found."}
+
 

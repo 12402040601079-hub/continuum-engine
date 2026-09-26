@@ -1,5 +1,6 @@
 /**
- * Continuum Engine - Three.js 3D Magnetic Quantum Vault Reactor & Particle Matrix
+ * Continuum Engine - Eye-Comforting Quantum Aurora & Floating Ether Engine
+ * Elegant, Soothing 3D WebGL Background System (Zero Eye Strain, High Performance)
  */
 
 class Quantum3DEngine {
@@ -8,39 +9,56 @@ class Quantum3DEngine {
     this.scene = null;
     this.camera = null;
     this.renderer = null;
-    
+
     // 3D Objects
-    this.reactorCore = null;
-    this.innerSphere = null;
-    this.outerGimbal1 = null;
-    this.outerGimbal2 = null;
-    this.outerGimbal3 = null;
-    this.particleCloud = null;
-    this.particlePositions = null;
-    this.particleColors = null;
-    this.corePointLight = null;
+    this.vortexGroup = null;
+    this.coreCrystal = null;
+    this.innerSolidCore = null;
+    this.gimbalRings = [];
+    this.plasmaNodes = [];
+    this.connectionSegments = null;
+    this.packetMeshes = [];
+    this.packetPaths = [];
+    this.shockwaveMesh = null;
     this.ambientLight = null;
-    this.dirLight1 = null;
-    this.dirLight2 = null;
-    this.groundGrid = null;
-    
-    // Animation state
+    this.corePointLight = null;
+    this.secondaryPointLight = null;
+    this.cyberGrid = null;
+
+    // State & Particles
     const isMobile = typeof window !== 'undefined' && window.innerWidth <= 768;
-    this.rotationSpeed = 0.008;
-    this.targetRotationSpeed = 0.008;
-    this.particleCount = isMobile ? 800 : 3500;
+    this.isMobile = isMobile;
+    this.nodeCount = isMobile ? 35 : 75;
+    this.packetCount = isMobile ? 18 : 45;
+    this.nodes = [];
+    this.connections = [];
+    this.mode = 'synaptic'; // 'synaptic' | 'hexgrid' | 'streamers' | 'constellation'
     this.isCrashing = false;
     this.isLightMode = false;
-    this.coreColor = new THREE.Color(0x00f0ff);
-    this.targetCoreColor = new THREE.Color(0x00f0ff);
-    
-    // Magnetic Mouse Interaction
+
+    // Harmonious Palette
+    this.colorCyan = new THREE.Color(0x00f0ff);
+    this.colorViolet = new THREE.Color(0x8b5cf6);
+    this.colorMagenta = new THREE.Color(0xec4899);
+    this.colorEmerald = new THREE.Color(0x10b981);
+    this.colorAmber = new THREE.Color(0xf59e0b);
+    this.currentColor = new THREE.Color(0x00f0ff);
+    this.targetColor = new THREE.Color(0x00f0ff);
+
+    // Mouse Damping
     this.mouseX = 0;
     this.mouseY = 0;
-    this.targetCameraX = 0;
-    this.targetCameraY = 4;
-    this.targetCameraZ = 20;
-    
+    this.targetMouseX = 0;
+    this.targetMouseY = 0;
+    this.clickShockwaves = [];
+
+    // Scroll-Flight Camera Parallax
+    this.scrollY = 0;
+    this.scrollVelocity = 0;
+    this.baseCamZ = 22;
+    this.camRotationSpeed = 0.0025;
+    this.targetRotationSpeed = 0.0025;
+
     this.clock = new THREE.Clock();
   }
 
@@ -48,524 +66,471 @@ class Quantum3DEngine {
     this.container = document.getElementById(containerId) || document.getElementById('three-canvas') || document.getElementById('threeCanvasContainer');
     if (!this.container) return;
 
-    const isMobile = window.innerWidth <= 768;
+    if (this.container.querySelector('canvas')) {
+      return;
+    }
 
-    // 1. Scene Setup (Deep obsidian void #060911)
+    const w = this.container.clientWidth || window.innerWidth;
+    const h = this.container.clientHeight || window.innerHeight;
+
+    // 1. Scene & Eye-Comfort Volumetric Fog
     this.scene = new THREE.Scene();
-    this.scene.fog = new THREE.FogExp2(0x060911, 0.022);
+    const fogColor = this.isLightMode ? 0xf8fafc : 0x050713;
+    this.scene.fog = new THREE.FogExp2(fogColor, 0.016);
 
     // 2. Camera Setup
-    const aspect = this.container.clientWidth / this.container.clientHeight;
-    this.camera = new THREE.PerspectiveCamera(55, aspect, 0.1, 1000);
-    this.camera.position.set(0, 4, 20);
+    this.camera = new THREE.PerspectiveCamera(54, w / h, 0.1, 1000);
+    this.camera.position.set(0, 1.5, this.baseCamZ);
 
-    // 3. WebGL Renderer (Mobile GPU Optimized)
-    this.renderer = new THREE.WebGLRenderer({ antialias: !isMobile, alpha: true, powerPreference: "high-performance" });
-    this.renderer.setSize(this.container.clientWidth, this.container.clientHeight);
-    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMobile ? 1.25 : 2));
+    // 3. WebGL Renderer with Soft Tone Mapping
+    this.renderer = new THREE.WebGLRenderer({
+      antialias: true,
+      alpha: true,
+      powerPreference: "high-performance"
+    });
+    this.renderer.setSize(w, h);
+    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, this.isMobile ? 1.25 : 2));
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    this.renderer.toneMappingExposure = 1.25;
+    this.renderer.toneMappingExposure = 1.15;
     this.container.appendChild(this.renderer.domElement);
 
-    // 4. Luminous Magnetic Lighting
-    this.ambientLight = new THREE.AmbientLight(0x1a233a, 1.8);
+    // 4. Ambient & Point Lighting
+    this.ambientLight = new THREE.AmbientLight(this.isLightMode ? 0xffffff : 0x0d1527, 2.2);
     this.scene.add(this.ambientLight);
 
-    this.corePointLight = new THREE.PointLight(0x00f0ff, 4.5, 38);
+    this.corePointLight = new THREE.PointLight(0x00f0ff, 2.8, 42);
     this.corePointLight.position.set(0, 0, 0);
     this.scene.add(this.corePointLight);
 
-    this.dirLight1 = new THREE.DirectionalLight(0x00f0ff, 1.4);
-    this.dirLight1.position.set(12, 22, 12);
-    this.scene.add(this.dirLight1);
+    this.secondaryPointLight = new THREE.PointLight(0x8b5cf6, 2.0, 36);
+    this.secondaryPointLight.position.set(10, 12, -8);
+    this.scene.add(this.secondaryPointLight);
 
-    this.dirLight2 = new THREE.DirectionalLight(0x9d4edd, 1.0);
-    this.dirLight2.position.set(-12, -12, -12);
-    this.scene.add(this.dirLight2);
-
-    // 5. Build 3D Objects
-    this.buildQuantumReactorCore();
-    this.buildParticleMatrix();
-    this.buildCyberGrid();
+    // 5. Build Soft Quantum Core & Ether Web
+    this.buildQuantumVortexCore();
+    this.buildSynapticPlasmaWeb();
+    this.buildCyberGridFloor();
 
     // 6. Event Listeners
     window.addEventListener("resize", () => this.onWindowResize());
     window.addEventListener("mousemove", (e) => this.onMouseMove(e));
+    window.addEventListener("click", (e) => this.onClick(e));
+    window.addEventListener("scroll", () => this.onWindowScroll(), { passive: true });
 
-    // 7. Start Render Loop
+    // 7. Render Loop
     this.animate();
-    console.log("⚡ Three.js Magnetic Quantum Vault Reactor initialized.");
   }
 
   /**
-   * Constructs the multi-layered geometric Quantum Vault Reactor Core
+   * Constructs a soothing, elegant Quantum Core with a soft breathing halo
    */
-  buildQuantumReactorCore() {
-    this.reactorCore = new THREE.Group();
+  buildQuantumVortexCore() {
+    this.vortexGroup = new THREE.Group();
 
-    // A. Inner Pulsing Crystal Core (Icosahedron)
-    const coreGeo = new THREE.IcosahedronGeometry(2.3, 1);
-    const coreMat = new THREE.MeshStandardMaterial({
+    // A. Soft Central Ether Sphere
+    const crystalGeo = new THREE.IcosahedronGeometry(1.8, 2);
+    const crystalMat = new THREE.MeshStandardMaterial({
       color: 0x00f0ff,
-      emissive: 0x0088ff,
-      emissiveIntensity: 0.85,
-      roughness: 0.15,
-      metalness: 0.95,
+      emissive: 0x0066cc,
+      emissiveIntensity: 0.65,
+      roughness: 0.3,
+      metalness: 0.7,
       wireframe: true,
       transparent: true,
-      opacity: 0.88
+      opacity: 0.45
     });
-    this.innerSphere = new THREE.Mesh(coreGeo, coreMat);
-    this.reactorCore.add(this.innerSphere);
+    this.coreCrystal = new THREE.Mesh(crystalGeo, crystalMat);
+    this.vortexGroup.add(this.coreCrystal);
 
-    // B. Inner Solid Radiant Core
-    const solidGeo = new THREE.OctahedronGeometry(1.4, 2);
+    // B. Inner Radiant Soft Core
+    const solidGeo = new THREE.SphereGeometry(0.85, 32, 32);
     const solidMat = new THREE.MeshBasicMaterial({
       color: 0xffffff,
-      wireframe: false
+      transparent: true,
+      opacity: 0.75
     });
-    const solidCore = new THREE.Mesh(solidGeo, solidMat);
-    this.reactorCore.add(solidCore);
+    this.innerSolidCore = new THREE.Mesh(solidGeo, solidMat);
+    this.vortexGroup.add(this.innerSolidCore);
 
-    // C. Concentric Magnetic Gimbal Ring 1
-    const ring1Geo = new THREE.TorusGeometry(3.6, 0.08, 16, 120);
-    const ring1Mat = new THREE.MeshStandardMaterial({
-      color: 0x00f0ff,
-      emissive: 0x00f0ff,
-      emissiveIntensity: 0.7,
-      metalness: 0.9,
-      roughness: 0.1
-    });
-    this.outerGimbal1 = new THREE.Mesh(ring1Geo, ring1Mat);
-    this.reactorCore.add(this.outerGimbal1);
-
-    // D. Concentric Magnetic Gimbal Ring 2
-    const ring2Geo = new THREE.TorusGeometry(4.7, 0.06, 16, 120);
-    const ring2Mat = new THREE.MeshStandardMaterial({
-      color: 0x9d4edd,
-      emissive: 0x9d4edd,
-      emissiveIntensity: 0.6,
-      metalness: 0.9,
-      roughness: 0.1
-    });
-    this.outerGimbal2 = new THREE.Mesh(ring2Geo, ring2Mat);
-    this.outerGimbal2.rotation.x = Math.PI / 3;
-    this.reactorCore.add(this.outerGimbal2);
-
-    // E. Concentric Magnetic Gimbal Ring 3 (Outer Aurora Cage)
-    const ring3Geo = new THREE.TorusGeometry(5.9, 0.05, 16, 120);
-    const ring3Mat = new THREE.MeshStandardMaterial({
-      color: 0x00ffcc,
-      emissive: 0x00ffcc,
+    // C. Single Soothing Ambient Ring Halo
+    const ringGeo = new THREE.TorusGeometry(3.6, 0.04, 16, 100);
+    const ringMat = new THREE.MeshStandardMaterial({
+      color: 0x8b5cf6,
+      emissive: 0x8b5cf6,
       emissiveIntensity: 0.5,
       metalness: 0.8,
-      roughness: 0.2
-    });
-    this.outerGimbal3 = new THREE.Mesh(ring3Geo, ring3Mat);
-    this.outerGimbal3.rotation.y = Math.PI / 4;
-    this.reactorCore.add(this.outerGimbal3);
-
-    this.scene.add(this.reactorCore);
-  }
-
-  /**
-   * Constructs the 3D reactive magnetic particle matrix
-   */
-  buildParticleMatrix() {
-    if (this.particleCloud) {
-      this.scene.remove(this.particleCloud);
-    }
-
-    const geo = new THREE.BufferGeometry();
-    const positions = new Float32Array(this.particleCount * 3);
-    const colors = new Float32Array(this.particleCount * 3);
-
-    // Light mode vs Dark mode particle color harmonies
-    const baseColor = this.isLightMode ? new THREE.Color(0x2563eb) : new THREE.Color(0x00f0ff);
-    const altColor = this.isLightMode ? new THREE.Color(0x7c3aed) : new THREE.Color(0x9d4edd);
-    const tealColor = this.isLightMode ? new THREE.Color(0x0d9488) : new THREE.Color(0x00ffcc);
-
-    for (let i = 0; i < this.particleCount; i++) {
-      const radius = 7 + Math.random() * 24;
-      const theta = Math.random() * Math.PI * 2;
-      const phi = Math.acos(Math.random() * 2 - 1);
-
-      positions[i * 3] = radius * Math.sin(phi) * Math.cos(theta);
-      positions[i * 3 + 1] = radius * Math.sin(phi) * Math.sin(theta);
-      positions[i * 3 + 2] = radius * Math.cos(phi);
-
-      const mixedColor = Math.random() > 0.5 
-        ? baseColor.clone().lerp(altColor, Math.random()) 
-        : baseColor.clone().lerp(tealColor, Math.random());
-
-      colors[i * 3] = mixedColor.r;
-      colors[i * 3 + 1] = mixedColor.g;
-      colors[i * 3 + 2] = mixedColor.b;
-    }
-
-    geo.setAttribute("position", new THREE.BufferAttribute(positions, 3));
-    geo.setAttribute("color", new THREE.BufferAttribute(colors, 3));
-
-    // Custom Particle Texture
-    const canvas = document.createElement("canvas");
-    canvas.width = 32;
-    canvas.height = 32;
-    const ctx = canvas.getContext("2d");
-    const grad = ctx.createRadialGradient(16, 16, 0, 16, 16, 16);
-    
-    if (this.isLightMode) {
-      grad.addColorStop(0, "rgba(37, 99, 235, 1)");
-      grad.addColorStop(0.35, "rgba(124, 58, 237, 0.85)");
-      grad.addColorStop(1, "rgba(255, 255, 255, 0)");
-    } else {
-      grad.addColorStop(0, "rgba(255,255,255,1)");
-      grad.addColorStop(0.25, "rgba(0,240,255,0.9)");
-      grad.addColorStop(0.65, "rgba(157,78,221,0.5)");
-      grad.addColorStop(1, "rgba(0,0,0,0)");
-    }
-    
-    ctx.fillStyle = grad;
-    ctx.fillRect(0, 0, 32, 32);
-
-    const texture = new THREE.CanvasTexture(canvas);
-
-    const mat = new THREE.PointsMaterial({
-      size: this.isLightMode ? 0.32 : 0.38,
-      vertexColors: true,
-      map: texture,
+      roughness: 0.2,
       transparent: true,
-      blending: this.isLightMode ? THREE.NormalBlending : THREE.AdditiveBlending,
-      opacity: this.isLightMode ? 0.65 : 1.0,
-      depthWrite: false
+      opacity: 0.4
     });
+    const ring = new THREE.Mesh(ringGeo, ringMat);
+    ring.rotation.x = Math.PI / 4;
+    this.gimbalRings = [ring];
+    this.vortexGroup.add(ring);
 
-    this.particlePositions = positions;
-    this.particleColors = colors;
-    this.particleCloud = new THREE.Points(geo, mat);
-    this.scene.add(this.particleCloud);
+    this.scene.add(this.vortexGroup);
   }
 
   /**
-   * Constructs bottom floating cyber grid
+   * Constructs soft floating particles and clean, non-distracting connections
    */
-  buildCyberGrid() {
-    if (this.groundGrid) {
-      this.scene.remove(this.groundGrid);
+  buildSynapticPlasmaWeb() {
+    this.nodes = [];
+    this.plasmaNodes = [];
+    this.packetMeshes = [];
+    this.packetPaths = [];
+
+    const spreadX = this.isMobile ? 22 : 40;
+    const spreadY = this.isMobile ? 16 : 28;
+    const spreadZ = this.isMobile ? 14 : 24;
+
+    for (let i = 0; i < this.nodeCount; i++) {
+      const isHub = i < 8;
+      const x = isHub ? (Math.random() - 0.5) * 14 : (Math.random() - 0.5) * spreadX;
+      const y = isHub ? (Math.random() - 0.5) * 10 : (Math.random() - 0.5) * spreadY;
+      const z = isHub ? (Math.random() - 0.5) * 8 : (Math.random() - 0.5) * spreadZ;
+
+      const nodeData = {
+        pos: new THREE.Vector3(x, y, z),
+        origPos: new THREE.Vector3(x, y, z),
+        isHub: isHub,
+        pulseOffset: Math.random() * Math.PI * 2,
+        neighbors: []
+      };
+      this.nodes.push(nodeData);
+
+      const radius = isHub ? 0.35 : 0.12 + Math.random() * 0.1;
+      const geo = new THREE.SphereGeometry(radius, 16, 16);
+      
+      const colPalette = [0x00f0ff, 0x8b5cf6, 0x10b981];
+      const col = colPalette[i % colPalette.length];
+
+      const mat = new THREE.MeshStandardMaterial({
+        color: col,
+        emissive: col,
+        emissiveIntensity: isHub ? 0.75 : 0.4,
+        roughness: 0.3,
+        metalness: 0.6,
+        transparent: true,
+        opacity: isHub ? 0.8 : 0.5
+      });
+
+      const mesh = new THREE.Mesh(geo, mat);
+      mesh.position.copy(nodeData.pos);
+      this.plasmaNodes.push(mesh);
+      this.scene.add(mesh);
     }
 
-    const gridColor1 = this.isLightMode ? 0x94a3b8 : 0x00f0ff;
-    const gridColor2 = this.isLightMode ? 0xe2e8f0 : 0x1e293b;
+    // Clean, subtle filament connections
+    const maxDist = this.isMobile ? 7.5 : 8.5;
+    const linePositions = [];
+    const lineColors = [];
+    this.connections = [];
 
-    const gridHelper = new THREE.GridHelper(64, 44, gridColor1, gridColor2);
-    gridHelper.position.y = -7.5;
+    for (let i = 0; i < this.nodes.length; i++) {
+      for (let j = i + 1; j < this.nodes.length; j++) {
+        const d = this.nodes[i].pos.distanceTo(this.nodes[j].pos);
+        if (d < maxDist) {
+          this.nodes[i].neighbors.push(j);
+          this.nodes[j].neighbors.push(i);
+          this.connections.push({ a: i, b: j, dist: d });
+
+          linePositions.push(this.nodes[i].pos.x, this.nodes[i].pos.y, this.nodes[i].pos.z);
+          linePositions.push(this.nodes[j].pos.x, this.nodes[j].pos.y, this.nodes[j].pos.z);
+
+          const c = this.colorCyan;
+          lineColors.push(c.r, c.g, c.b);
+          lineColors.push(c.r, c.g, c.b);
+        }
+      }
+    }
+
+    const lineGeo = new THREE.BufferGeometry();
+    lineGeo.setAttribute('position', new THREE.Float32BufferAttribute(linePositions, 3));
+    lineGeo.setAttribute('color', new THREE.Float32BufferAttribute(lineColors, 3));
+
+    const lineMat = new THREE.LineBasicMaterial({
+      vertexColors: true,
+      transparent: true,
+      opacity: 0.16,
+      blending: THREE.AdditiveBlending
+    });
+
+    this.connectionSegments = new THREE.LineSegments(lineGeo, lineMat);
+    this.scene.add(this.connectionSegments);
+
+    // Soft traveling energy sparks
+    const packetGeo = new THREE.SphereGeometry(0.1, 8, 8);
+    for (let p = 0; p < this.packetCount; p++) {
+      if (this.connections.length === 0) break;
+      const conn = this.connections[p % this.connections.length];
+      const pMat = new THREE.MeshBasicMaterial({
+        color: 0x00f0ff,
+        transparent: true,
+        opacity: 0.6
+      });
+      const pMesh = new THREE.Mesh(packetGeo, pMat);
+      this.packetMeshes.push(pMesh);
+      this.packetPaths.push({
+        nodeA: conn.a,
+        nodeB: conn.b,
+        progress: Math.random(),
+        speed: 0.003 + Math.random() * 0.006
+      });
+      this.scene.add(pMesh);
+    }
+  }
+
+  /**
+   * Constructs subtle, non-intrusive floor grid
+   */
+  buildCyberGridFloor() {
+    if (this.cyberGrid) this.scene.remove(this.cyberGrid);
+
+    const gridColor1 = this.isLightMode ? 0x0284c7 : 0x00f0ff;
+    const gridColor2 = this.isLightMode ? 0xcbd5e1 : 0x0c1328;
+
+    const gridHelper = new THREE.GridHelper(80, 40, gridColor1, gridColor2);
+    gridHelper.position.y = -8.5;
     gridHelper.material.transparent = true;
-    gridHelper.material.opacity = this.isLightMode ? 0.45 : 0.35;
-    this.groundGrid = gridHelper;
+    gridHelper.material.opacity = this.isLightMode ? 0.14 : 0.12;
+    this.cyberGrid = gridHelper;
     this.scene.add(gridHelper);
   }
 
   /**
-   * Animation & Render Loop
+   * Render Loop
    */
   animate() {
     requestAnimationFrame(() => this.animate());
 
+    const delta = this.clock.getDelta();
     const elapsed = this.clock.getElapsedTime();
 
     // Smooth speed interpolation
-    this.rotationSpeed += (this.targetRotationSpeed - this.rotationSpeed) * 0.05;
+    this.camRotationSpeed += (this.targetRotationSpeed - this.camRotationSpeed) * 0.04;
 
-    // Smooth color interpolation
-    this.coreColor.lerp(this.targetCoreColor, 0.08);
-    if (this.innerSphere) {
-      this.innerSphere.material.color.copy(this.coreColor);
-      this.innerSphere.material.emissive.copy(this.coreColor);
-    }
+    // Relaxing 60 BPM sinusoidal breathing pulse
+    const heartbeat = (Math.sin(elapsed * 3.14) + 1) * 0.5;
+
+    // Smooth Color Transitions
+    this.currentColor.lerp(this.targetColor, 0.04);
     if (this.corePointLight) {
-      this.corePointLight.color.copy(this.coreColor);
+      this.corePointLight.color.copy(this.currentColor);
+      this.corePointLight.intensity = 2.4 + heartbeat * 0.6;
+    }
+    if (this.coreCrystal) {
+      this.coreCrystal.material.color.copy(this.currentColor);
     }
 
-    // 1. Rotate Reactor Core & Magnetic Gimbals
-    if (this.reactorCore) {
-      this.reactorCore.position.y = Math.sin(elapsed * 1.6) * 0.4;
-      this.innerSphere.rotation.x += this.rotationSpeed;
-      this.innerSphere.rotation.y += this.rotationSpeed * 1.2;
+    // Gentle Floating Motion for Core
+    if (this.vortexGroup) {
+      this.vortexGroup.position.y = Math.sin(elapsed * 0.8) * 0.25;
+      this.coreCrystal.rotation.y += this.camRotationSpeed * 0.8;
+      this.coreCrystal.rotation.x += this.camRotationSpeed * 0.4;
 
-      this.outerGimbal1.rotation.x += this.rotationSpeed * 1.5;
-      this.outerGimbal1.rotation.y += this.rotationSpeed * 0.7;
-
-      this.outerGimbal2.rotation.y += this.rotationSpeed * 1.8;
-      this.outerGimbal2.rotation.z += this.rotationSpeed * 0.9;
-
-      this.outerGimbal3.rotation.z += this.rotationSpeed * 1.3;
-      this.outerGimbal3.rotation.x += this.rotationSpeed * 1.1;
+      if (this.gimbalRings.length > 0) {
+        this.gimbalRings[0].rotation.z += this.camRotationSpeed * 0.5;
+      }
     }
 
-    // 2. Magnetic Particle Attraction towards Mouse Position
-    if (this.particleCloud && this.particlePositions && !this.isCrashing) {
-      const positions = this.particleCloud.geometry.attributes.position.array;
-      const targetX = this.mouseX * 6;
-      const targetY = -this.mouseY * 4;
+    // Mouse Smooth Damping
+    this.mouseX += (this.targetMouseX - this.mouseX) * 0.05;
+    this.mouseY += (this.targetMouseY - this.mouseY) * 0.05;
 
-      for (let i = 0; i < this.particleCount; i++) {
-        const dx = targetX - positions[i * 3];
-        const dy = targetY - positions[i * 3 + 1];
-        const dist = Math.sqrt(dx * dx + dy * dy);
+    // Gentle Node Float
+    const posAttr = this.connectionSegments ? this.connectionSegments.geometry.attributes.position : null;
+    let lineIdx = 0;
 
-        if (dist < 15) {
-          positions[i * 3] += (dx / dist) * 0.015;
-          positions[i * 3 + 1] += (dy / dist) * 0.015;
+    for (let i = 0; i < this.nodes.length; i++) {
+      const node = this.nodes[i];
+      const mesh = this.plasmaNodes[i];
+
+      node.pos.x = node.origPos.x + Math.sin(elapsed * 0.5 + node.pulseOffset) * 0.4;
+      node.pos.y = node.origPos.y + Math.cos(elapsed * 0.4 + node.pulseOffset) * 0.35;
+      node.pos.z = node.origPos.z + Math.sin(elapsed * 0.3 + node.pulseOffset) * 0.3;
+
+      mesh.position.copy(node.pos);
+      const scale = node.isHub ? 1.0 + heartbeat * 0.12 : 0.9 + heartbeat * 0.08;
+      mesh.scale.set(scale, scale, scale);
+    }
+
+    if (posAttr) {
+      for (let c = 0; c < this.connections.length; c++) {
+        const conn = this.connections[c];
+        const posA = this.nodes[conn.a].pos;
+        const posB = this.nodes[conn.b].pos;
+        posAttr.setXYZ(lineIdx++, posA.x, posA.y, posA.z);
+        posAttr.setXYZ(lineIdx++, posB.x, posB.y, posB.z);
+      }
+      posAttr.needsUpdate = true;
+    }
+
+    // Packet Motion
+    for (let p = 0; p < this.packetMeshes.length; p++) {
+      const pMesh = this.packetMeshes[p];
+      const path = this.packetPaths[p];
+      path.progress += path.speed;
+      if (path.progress > 1.0) {
+        path.progress = 0.0;
+        const currNode = this.nodes[path.nodeB];
+        if (currNode && currNode.neighbors.length > 0) {
+          path.nodeA = path.nodeB;
+          path.nodeB = currNode.neighbors[Math.floor(Math.random() * currNode.neighbors.length)];
         }
       }
-      this.particleCloud.geometry.attributes.position.needsUpdate = true;
-      this.particleCloud.rotation.y += this.rotationSpeed * 0.2;
-      this.particleCloud.rotation.x = Math.sin(elapsed * 0.3) * 0.1;
+      const pA = this.nodes[path.nodeA].pos;
+      const pB = this.nodes[path.nodeB].pos;
+      pMesh.position.lerpVectors(pA, pB, path.progress);
     }
 
-    // 3. Move Cyber Ground Grid
-    if (this.groundGrid) {
-      this.groundGrid.position.z = (elapsed * 2.2) % 3 - 7.5;
+    // Shockwaves
+    for (let s = this.clickShockwaves.length - 1; s >= 0; s--) {
+      const sw = this.clickShockwaves[s];
+      sw.radius += delta * 12;
+      sw.opacity -= delta * 1.2;
+      sw.mesh.scale.set(sw.radius, sw.radius, 1);
+      sw.mesh.material.opacity = Math.max(0, sw.opacity);
+      if (sw.opacity <= 0) {
+        this.scene.remove(sw.mesh);
+        this.clickShockwaves.splice(s, 1);
+      }
     }
 
-    // 4. Parallax Camera Damping
-    this.camera.position.x += (this.targetCameraX + this.mouseX * 3.5 - this.camera.position.x) * 0.05;
-    this.camera.position.y += (this.targetCameraY - this.mouseY * 2.5 - this.camera.position.y) * 0.05;
-    this.camera.lookAt(0, 0, 0);
+    // Gentle Grid Motion
+    if (this.cyberGrid) {
+      this.cyberGrid.position.z = (elapsed * 1.2) % 3 - 8.5;
+    }
+
+    // Parallax Camera Smooth Easing
+    const targetY = 1.5 - (this.scrollY * 0.002);
+    const targetZ = this.baseCamZ;
+
+    this.camera.position.x += (this.mouseX * 2.5 - this.camera.position.x) * 0.04;
+    this.camera.position.y += (targetY - this.mouseY * 2.0 - this.camera.position.y) * 0.04;
+    this.camera.position.z += (targetZ - this.camera.position.z) * 0.04;
+    this.camera.lookAt(0, targetY * 0.4, 0);
 
     this.renderer.render(this.scene, this.camera);
   }
 
-  /**
-   * Keystroke micro-pulse reaction
-   */
-  triggerKeystrokeReaction() {
-    this.targetRotationSpeed = 0.035;
-    setTimeout(() => {
-      this.targetRotationSpeed = 0.008;
-    }, 200);
-
-    if (this.corePointLight) {
-      this.corePointLight.intensity = this.isLightMode ? 6 : 8.5;
-      setTimeout(() => {
-        this.corePointLight.intensity = this.isLightMode ? 3 : 4.5;
-      }, 150);
-    }
-  }
-
-  /**
-   * Wizard Step advance reaction
-   */
-  triggerStepReaction(step) {
-    const darkColors = [0x00f0ff, 0x9d4edd, 0x00ffcc, 0xf59e0b];
-    const lightColors = [0x0284c7, 0x7c3aed, 0x0d9488, 0xd97706];
-    
-    const palette = this.isLightMode ? lightColors : darkColors;
-    this.targetCoreColor.setHex(palette[step - 1] || palette[0]);
-    this.targetRotationSpeed = 0.045;
-    setTimeout(() => {
-      this.targetRotationSpeed = 0.008;
-    }, 600);
-  }
-
-  /**
-   * 404 Stale Asset Crash Explosion
-   */
-  triggerCrashExplosion() {
-    this.isCrashing = true;
-    this.targetCoreColor.setHex(0xe11d48);
-    this.targetRotationSpeed = 0.09;
-    if (this.corePointLight) this.corePointLight.intensity = 16;
-
-    if (this.particleCloud && this.particlePositions) {
-      const positions = this.particleCloud.geometry.attributes.position.array;
-      for (let i = 0; i < this.particleCount; i++) {
-        positions[i * 3] *= 1.6;
-        positions[i * 3 + 1] *= 1.6;
-        positions[i * 3 + 2] *= 1.6;
-      }
-      this.particleCloud.geometry.attributes.position.needsUpdate = true;
-    }
-  }
-
-  /**
-   * Rehydration particle implosion & core stabilization
-   */
-  triggerRehydrateImplosion() {
-    this.isCrashing = false;
-    this.targetCoreColor.setHex(this.isLightMode ? 0x0284c7 : 0x00f0ff);
-    this.targetRotationSpeed = 0.008;
-    if (this.corePointLight) this.corePointLight.intensity = this.isLightMode ? 3 : 4.5;
-
-    this.buildParticleMatrix();
-  }
-
-  /**
-   * Adjusts scene fog, materials, lighting, and particles for Light / Dark mode
-   */
-  setThemeMode(isLight) {
-    this.isLightMode = isLight;
-    if (this.scene) {
-      this.scene.fog.color.setHex(isLight ? 0xf8fafc : 0x060b14);
-      this.scene.fog.density = isLight ? 0.015 : 0.022;
-
-      if (this.ambientLight) {
-        this.ambientLight.color.setHex(isLight ? 0xffffff : 0x1a233a);
-        this.ambientLight.intensity = isLight ? 2.2 : 1.8;
-      }
-      if (this.dirLight1) {
-        this.dirLight1.color.setHex(isLight ? 0x2563eb : 0x00f0ff);
-      }
-      if (this.dirLight2) {
-        this.dirLight2.color.setHex(isLight ? 0x7c3aed : 0x9d4edd);
-      }
-
-      this.targetCoreColor.setHex(isLight ? 0x0284c7 : 0x00f0ff);
-      this.buildParticleMatrix();
-      this.buildCyberGrid();
-    }
-  }
-
-  /**
-   * Camera View Preset Switches
-   */
-  setCameraPreset(preset) {
-    switch (preset) {
-      case "core":
-        this.targetCameraX = 0;
-        this.targetCameraY = 2;
-        this.targetCameraZ = 12;
-        break;
-      case "matrix":
-        this.targetCameraX = 14;
-        this.targetCameraY = 10;
-        this.targetCameraZ = 24;
-        break;
-      case "radar":
-        this.targetCameraX = 0;
-        this.targetCameraY = 22;
-        this.targetCameraZ = 6;
-        break;
-      default:
-        this.targetCameraX = 0;
-        this.targetCameraY = 4;
-        this.targetCameraZ = 20;
-    }
-  }
-
   onMouseMove(e) {
-    this.mouseX = (e.clientX / window.innerWidth) * 2 - 1;
-    this.mouseY = (e.clientY / window.innerHeight) * 2 - 1;
+    this.targetMouseX = (e.clientX / window.innerWidth) * 2 - 1;
+    this.targetMouseY = (e.clientY / window.innerHeight) * 2 - 1;
+  }
+
+  onClick(e) {
+    const x = (e.clientX / window.innerWidth) * 2 - 1;
+    const y = (e.clientY / window.innerHeight) * 2 - 1;
+    const ringGeo = new THREE.RingGeometry(0.1, 0.3, 36);
+    const ringMat = new THREE.MeshBasicMaterial({
+      color: this.isLightMode ? 0x0284c7 : 0x00f0ff,
+      transparent: true,
+      opacity: 0.6,
+      side: THREE.DoubleSide
+    });
+    const ringMesh = new THREE.Mesh(ringGeo, ringMat);
+    ringMesh.position.set(x * 12, -y * 9, 0);
+    this.scene.add(ringMesh);
+
+    this.clickShockwaves.push({
+      mesh: ringMesh,
+      radius: 0.4,
+      opacity: 0.6
+    });
+  }
+
+  onWindowScroll() {
+    this.scrollY = window.pageYOffset || document.documentElement.scrollTop;
   }
 
   onWindowResize() {
     if (!this.container || !this.renderer || !this.camera) return;
-    const width = this.container.clientWidth;
-    const height = this.container.clientHeight;
-    const isMobile = window.innerWidth <= 768;
-    const targetParticleCount = isMobile ? 800 : 3500;
+    const w = this.container.clientWidth || window.innerWidth;
+    const h = this.container.clientHeight || window.innerHeight;
+    this.isMobile = window.innerWidth <= 768;
 
-    if (this.particleCount !== targetParticleCount) {
-      this.particleCount = targetParticleCount;
-      this.buildParticleMatrix();
-    }
-
-    this.camera.aspect = width / height;
+    this.camera.aspect = w / h;
     this.camera.updateProjectionMatrix();
-    this.renderer.setSize(width, height);
-    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMobile ? 1.25 : 2));
-  }
-}
-
-// Global 3D Engine Singleton
-window.quantum3D = new Quantum3DEngine();
-
-// ==========================================================
-// Quantum Ether 3D Background Engine (Dream Canvas Core)
-// ==========================================================
-let dreamScene, dreamCamera, dreamRenderer, dreamParticles, dreamParticleGeo;
-
-function initDreamCanvas(customContainerId) {
-  const container = document.getElementById(customContainerId) || document.getElementById('three-canvas') || document.getElementById('threeCanvasContainer');
-  if (!container) return;
-  
-  // If container already has a canvas, don't duplicate
-  if (container.querySelector('canvas')) {
-    console.log("⚡ 3D canvas already mounted to container.");
-    return;
+    this.renderer.setSize(w, h);
+    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, this.isMobile ? 1.25 : 2));
   }
 
-  dreamScene = new THREE.Scene();
-  dreamScene.fog = new THREE.FogExp2(0x060911, 0.0015);
-  
-  dreamCamera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
-  dreamCamera.position.z = 400;
-
-  dreamRenderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
-  dreamRenderer.setSize(window.innerWidth, window.innerHeight);
-  
-  // Mobile GPU Scaling Rule
-  const isMobile = window.innerWidth <= 768;
-  const particleCount = isMobile ? 800 : 3500;
-  dreamRenderer.setPixelRatio(isMobile ? 1.25 : Math.min(window.devicePixelRatio, 2));
-  
-  container.appendChild(dreamRenderer.domElement);
-
-  // Create Particles
-  dreamParticleGeo = new THREE.BufferGeometry();
-  const positions = new Float32Array(particleCount * 3);
-  const colors = new Float32Array(particleCount * 3);
-
-  const cyan = new THREE.Color('#00F0FF');
-  const violet = new THREE.Color('#A020F0');
-
-  for (let i = 0; i < particleCount * 3; i += 3) {
-    positions[i] = (Math.random() - 0.5) * 1000;
-    positions[i + 1] = (Math.random() - 0.5) * 1000;
-    positions[i + 2] = (Math.random() - 0.5) * 1000;
-
-    const mixedColor = cyan.clone().lerp(violet, Math.random());
-    colors[i] = mixedColor.r;
-    colors[i + 1] = mixedColor.g;
-    colors[i + 2] = mixedColor.b;
-  }
-
-  dreamParticleGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-  dreamParticleGeo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
-
-  const material = new THREE.PointsMaterial({
-    size: isMobile ? 2.5 : 3.5,
-    vertexColors: true,
-    transparent: true,
-    opacity: 0.7,
-    blending: THREE.AdditiveBlending
-  });
-
-  dreamParticles = new THREE.Points(dreamParticleGeo, material);
-  dreamScene.add(dreamParticles);
-
-  function animateDream() {
-    requestAnimationFrame(animateDream);
-    if (dreamParticles) {
-      dreamParticles.rotation.y += 0.0008;
-      dreamParticles.rotation.x += 0.0003;
+  setMode(mode) {
+    this.mode = mode;
+    if (mode === 'hexgrid') {
+      this.targetColor.setHex(this.isLightMode ? 0x059669 : 0x10b981);
+    } else if (mode === 'streamers') {
+      this.targetColor.setHex(this.isLightMode ? 0x7c3aed : 0x8b5cf6);
+    } else if (mode === 'constellation') {
+      this.targetColor.setHex(this.isLightMode ? 0xd97706 : 0xf59e0b);
+    } else {
+      this.targetColor.setHex(this.isLightMode ? 0x0284c7 : 0x00f0ff);
     }
-    dreamRenderer.render(dreamScene, dreamCamera);
   }
 
-  window.addEventListener('resize', () => {
-    if (!dreamCamera || !dreamRenderer) return;
-    const isMob = window.innerWidth <= 768;
-    dreamCamera.aspect = window.innerWidth / window.innerHeight;
-    dreamCamera.updateProjectionMatrix();
-    dreamRenderer.setSize(window.innerWidth, window.innerHeight);
-    dreamRenderer.setPixelRatio(isMob ? 1.25 : Math.min(window.devicePixelRatio, 2));
-  });
+  triggerKeystrokeReaction() {
+    this.targetRotationSpeed = 0.012;
+    setTimeout(() => {
+      this.targetRotationSpeed = 0.0025;
+    }, 200);
+  }
 
-  animateDream();
-  console.log("🌌 Quantum Ether 3D Background Engine active.");
+  triggerStepReaction(step) {
+    const palette = [0x00f0ff, 0x8b5cf6, 0xec4899, 0x10b981];
+    const col = palette[(step - 1) % palette.length];
+    this.targetColor.setHex(col);
+  }
+
+  triggerCrashExplosion() {
+    this.isCrashing = true;
+    this.targetColor.setHex(0xef4444);
+  }
+
+  triggerCrashVisuals() {
+    this.triggerCrashExplosion();
+  }
+
+  triggerRehydrateImplosion() {
+    this.isCrashing = false;
+    this.targetColor.setHex(0x10b981);
+    setTimeout(() => {
+      this.targetColor.setHex(0x00f0ff);
+    }, 2500);
+  }
+
+  setThemeMode(isLight) {
+    this.isLightMode = isLight;
+    if (this.scene) {
+      const fogColor = isLight ? 0xf8fafc : 0x050713;
+      this.scene.fog.color.setHex(fogColor);
+      this.scene.fog.density = isLight ? 0.014 : 0.016;
+      if (this.ambientLight) {
+        this.ambientLight.color.setHex(isLight ? 0xffffff : 0x0d1527);
+        this.ambientLight.intensity = isLight ? 2.6 : 2.2;
+      }
+      this.buildCyberGridFloor();
+    }
+  }
+
+  setCameraPreset(preset) {
+    switch (preset) {
+      case "core":
+        this.baseCamZ = 14; break;
+      case "matrix":
+        this.baseCamZ = 26; break;
+      default:
+        this.baseCamZ = 22;
+    }
+  }
 }
 
-window.initDreamCanvas = initDreamCanvas;
+// Global Singleton
+window.quantum3D = new Quantum3DEngine();
+window.initDreamCanvas = function(id) {
+  window.quantum3D.init(id);
+};
+
 if (typeof module !== 'undefined' && module.exports) {
-  module.exports = { initDreamCanvas, Quantum3DEngine };
+  module.exports = { Quantum3DEngine };
 }

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'continuum-pwa-v1';
+const CACHE_NAME = 'continuum-pwa-v2';
 const ASSETS_TO_CACHE = [
   '/app',
   '/static/styles.css',
