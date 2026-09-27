@@ -193,8 +193,9 @@ function toggleMobileSimFrame() {
 
 // Initialize on DOM ready
 document.addEventListener("DOMContentLoaded", async () => {
-  // 1. Initialize Theme & Background Preset
-  initTheme();
+  // 1. Initialize HUD Timer, WebSocket & Background Preset (Permanent Dark Theme)
+  initQuantumHudTimer();
+  connectTelemetryWebSocket();
   initBackgroundPreset();
   updateMobileClock();
   setInterval(updateMobileClock, 1000);
@@ -256,16 +257,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   }, 400);
 });
 
-/**
- * Initializes and toggles Light & Magnetic Theme Mode
- */
-function initTheme() {
-  // Always default to signature Quantum Dark theme
-  const savedTheme = localStorage.getItem("continuum_theme_mode") || "dark";
-  applyTheme(savedTheme === "light");
-  initQuantumHudTimer();
-}
-
 let _qntmElapsedSeconds = 14 * 60 + 32; // Starts from 00:14:32 as in Image 2
 function initQuantumHudTimer() {
   const timerEl = document.getElementById("quantumElapsedTime");
@@ -301,28 +292,6 @@ function connectTelemetryWebSocket() {
     };
   } catch (e) {
     console.log("WebSocket not available:", e);
-  }
-}
-
-function toggleThemeMode() {
-  const isCurrentlyLight = document.body.classList.contains("theme-light");
-  applyTheme(!isCurrentlyLight);
-  if (window.cyberAudio) window.cyberAudio.playChirp(1400, "sine", 0.05);
-}
-
-function applyTheme(isLight) {
-  const btn = document.getElementById("themeToggleBtn");
-  if (isLight) {
-    document.body.classList.add("theme-light");
-    if (btn) btn.textContent = "🌙";
-    localStorage.setItem("continuum_theme_mode", "light");
-  } else {
-    document.body.classList.remove("theme-light");
-    if (btn) btn.textContent = "☀️";
-    localStorage.setItem("continuum_theme_mode", "dark");
-  }
-  if (window.quantum3D) {
-    window.quantum3D.setThemeMode(isLight);
   }
 }
 
@@ -3031,84 +3000,28 @@ function setupAutosavePulseListeners() {
  * ==========================================================
  */
 function toggleGeminiDrawer() {
-  const drawer = document.getElementById('gemini-drawer');
-  if (!drawer) return;
-  
-  drawer.classList.toggle('active');
-  
-  if (drawer.classList.contains('active')) {
-    if (window.cyberAudio) window.cyberAudio.playChirp(1300, "sine", 0.08);
-    const input = document.getElementById('gemini-input');
-    if (input) setTimeout(() => input.focus(), 300);
-  } else {
-    if (window.cyberAudio) window.cyberAudio.playChirp(700, "triangle", 0.05);
-  }
+  toggleAiDrawer();
 }
 
 function sendGeminiPrompt(customText) {
-  const input = document.getElementById('gemini-input');
-  const chatStream = document.getElementById('gemini-chat-stream');
-  const text = customText || (input ? input.value.trim() : "");
-
-  if (!text) return;
-
-  if (input) input.value = "";
-
-  // Append User Message
-  const userMsg = document.createElement('div');
-  userMsg.className = 'user-message';
-  userMsg.style.cssText = 'background: rgba(0, 240, 255, 0.12); border-right: 3px solid #00F0FF; padding: 12px; border-radius: 8px; margin-bottom: 12px; color: #FFF; font-size: 0.9rem; align-self: flex-end; width: 85%;';
-  userMsg.innerHTML = `<p style="margin:0;">👤 <strong>You:</strong> ${text}</p>`;
-  if (chatStream) chatStream.appendChild(userMsg);
-
-  // Generate AI Response
-  setTimeout(() => {
-    const aiResponse = generateLocalIntelligentAiResponse(text, currentAttachment);
-    const aiMsg = document.createElement('div');
-    aiMsg.className = 'ai-message';
-    aiMsg.innerHTML = aiResponse;
-    if (chatStream) {
-      chatStream.appendChild(aiMsg);
-      chatStream.scrollTop = chatStream.scrollHeight;
-    }
-    if (window.cyberAudio) window.cyberAudio.playChirp(1400, "sine", 0.06);
-  }, 400);
+  const backdrop = document.getElementById("aiDrawerBackdrop");
+  if (backdrop && backdrop.classList.contains("hidden")) {
+    toggleAiDrawer();
+  }
+  if (customText) {
+    sendAiQuickQuery(customText);
+  } else {
+    sendAiMessage();
+  }
 }
 
+
 function scanDocumentAI() {
-  const chatStream = document.getElementById('gemini-chat-stream');
-  if (!chatStream) return;
-
-  const scanningMsg = document.createElement('div');
-  scanningMsg.className = 'ai-message';
-  scanningMsg.innerHTML = '<p>📷 <em>Scanning paystub and identity documents via Gemini Vision OCR...</em></p>';
-  chatStream.appendChild(scanningMsg);
-  chatStream.scrollTop = chatStream.scrollHeight;
-
-  setTimeout(() => {
-    // Auto-fill wizard fields
-    const nameInput = document.getElementById('fullName');
-    const incomeInput = document.getElementById('annualIncome');
-    const debtInput = document.getElementById('monthlyDebt');
-
-    if (nameInput && !nameInput.value) nameInput.value = "Johnathan Alexander Doe";
-    if (incomeInput) incomeInput.value = "95000";
-    if (debtInput) debtInput.value = "1100";
-
-    scanningMsg.innerHTML = `
-      <p>✅ <strong>Document OCR Scan Complete!</strong></p>
-      <p>Extracted Financial Parameters:</p>
-      <ul>
-        <li><strong>Legal Name:</strong> Johnathan Alexander Doe</li>
-        <li><strong>Verified Annual Income:</strong> $95,000</li>
-        <li><strong>Monthly Liabilities:</strong> $1,100</li>
-      </ul>
-      <p style="color:#00FF88;">Wizard form fields updated automatically with 100% precision!</p>
-    `;
-    if (chatStream) chatStream.scrollTop = chatStream.scrollHeight;
-    if (window.cyberAudio) window.cyberAudio.playRehydrateChime();
-    setupAutosavePulseListeners();
-  }, 1200);
+  const backdrop = document.getElementById("aiDrawerBackdrop");
+  if (backdrop && backdrop.classList.contains("hidden")) {
+    toggleAiDrawer();
+  }
+  sendAiQuickQuery("Scan KYC identification document and verify paystub income");
 }
 
 function auditRiskAI() {

@@ -34,7 +34,6 @@ class Quantum3DEngine {
     this.connections = [];
     this.mode = 'synaptic'; // 'synaptic' | 'hexgrid' | 'streamers' | 'constellation'
     this.isCrashing = false;
-    this.isLightMode = false;
 
     // Harmonious Palette
     this.colorCyan = new THREE.Color(0x00f0ff);
@@ -73,10 +72,9 @@ class Quantum3DEngine {
     const w = this.container.clientWidth || window.innerWidth;
     const h = this.container.clientHeight || window.innerHeight;
 
-    // 1. Scene & Eye-Comfort Volumetric Fog
+    // 1. Scene & Eye-Comfort Volumetric Fog (Signature Quantum Dark)
     this.scene = new THREE.Scene();
-    const fogColor = this.isLightMode ? 0xf8fafc : 0x050713;
-    this.scene.fog = new THREE.FogExp2(fogColor, 0.016);
+    this.scene.fog = new THREE.FogExp2(0x050713, 0.016);
 
     // 2. Camera Setup
     this.camera = new THREE.PerspectiveCamera(54, w / h, 0.1, 1000);
@@ -95,7 +93,7 @@ class Quantum3DEngine {
     this.container.appendChild(this.renderer.domElement);
 
     // 4. Ambient & Point Lighting
-    this.ambientLight = new THREE.AmbientLight(this.isLightMode ? 0xffffff : 0x0d1527, 2.2);
+    this.ambientLight = new THREE.AmbientLight(0x0d1527, 2.2);
     this.scene.add(this.ambientLight);
 
     this.corePointLight = new THREE.PointLight(0x00f0ff, 2.8, 42);
@@ -287,13 +285,13 @@ class Quantum3DEngine {
   buildCyberGridFloor() {
     if (this.cyberGrid) this.scene.remove(this.cyberGrid);
 
-    const gridColor1 = this.isLightMode ? 0x0284c7 : 0x00f0ff;
-    const gridColor2 = this.isLightMode ? 0xcbd5e1 : 0x0c1328;
+    const gridColor1 = 0x00f0ff;
+    const gridColor2 = 0x0c1328;
 
     const gridHelper = new THREE.GridHelper(80, 40, gridColor1, gridColor2);
     gridHelper.position.y = -8.5;
     gridHelper.material.transparent = true;
-    gridHelper.material.opacity = this.isLightMode ? 0.14 : 0.12;
+    gridHelper.material.opacity = 0.12;
     this.cyberGrid = gridHelper;
     this.scene.add(gridHelper);
   }
@@ -459,13 +457,13 @@ class Quantum3DEngine {
   setMode(mode) {
     this.mode = mode;
     if (mode === 'hexgrid') {
-      this.targetColor.setHex(this.isLightMode ? 0x059669 : 0x10b981);
+      this.targetColor.setHex(0x10b981);
     } else if (mode === 'streamers') {
-      this.targetColor.setHex(this.isLightMode ? 0x7c3aed : 0x8b5cf6);
+      this.targetColor.setHex(0x8b5cf6);
     } else if (mode === 'constellation') {
-      this.targetColor.setHex(this.isLightMode ? 0xd97706 : 0xf59e0b);
+      this.targetColor.setHex(0xf59e0b);
     } else {
-      this.targetColor.setHex(this.isLightMode ? 0x0284c7 : 0x00f0ff);
+      this.targetColor.setHex(0x00f0ff);
     }
   }
 
@@ -499,17 +497,15 @@ class Quantum3DEngine {
     }, 2500);
   }
 
-  setThemeMode(isLight) {
-    this.isLightMode = isLight;
+  setThemeMode(_isLight) {
+    // Permanent Signature Quantum Dark Theme
     if (this.scene) {
-      const fogColor = isLight ? 0xf8fafc : 0x050713;
-      this.scene.fog.color.setHex(fogColor);
-      this.scene.fog.density = isLight ? 0.014 : 0.016;
+      this.scene.fog.color.setHex(0x050713);
+      this.scene.fog.density = 0.016;
       if (this.ambientLight) {
-        this.ambientLight.color.setHex(isLight ? 0xffffff : 0x0d1527);
-        this.ambientLight.intensity = isLight ? 2.6 : 2.2;
+        this.ambientLight.color.setHex(0x0d1527);
+        this.ambientLight.intensity = 2.2;
       }
-      this.buildCyberGridFloor();
     }
   }
 

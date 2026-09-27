@@ -44,6 +44,18 @@ def test_static_assets_serving():
     assert response_three.status_code == 200
     response_audio = client.get("/static/cyber_audio.js")
     assert response_audio.status_code == 200
+    response_manifest = client.get("/static/manifest.json")
+    assert response_manifest.status_code == 200
+    response_icon192 = client.get("/static/icon-192.png")
+    assert response_icon192.status_code == 200
+    response_icon512 = client.get("/static/icon-512.png")
+    assert response_icon512.status_code == 200
+
+def test_marketing_and_admin_pages():
+    response_mkt = client.get("/marketing")
+    assert response_mkt.status_code == 200
+    response_adm = client.get("/admin")
+    assert response_adm.status_code == 200
 
 def test_websocket_telemetry_stream():
     with client.websocket_connect("/api/v1/ws/telemetry") as websocket:

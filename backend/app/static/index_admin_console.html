@@ -83,11 +83,6 @@
 
 
 
-      <!-- Theme Switcher (Light / Dark) -->
-      <button class="icon-btn" id="themeToggleBtn" onclick="toggleThemeMode()" title="Toggle Light / Dark Mode">
-        ☀️
-      </button>
-
       <!-- Dev Ops & Sandbox Tools Side Drawer Toggle -->
       <button class="icon-btn" id="devOpsDrawerBtn" onclick="toggleDevOpsDrawer()" title="Open DevOps & 3D Atmosphere Tools">
         ⚙️
@@ -136,7 +131,7 @@
       <div class="dev-section">
         <label class="dev-label">AUDIO SYNTHESIZER</label>
         <div style="display: flex; align-items: center; gap: 0.75rem;">
-          <button class="btn btn-secondary" onclick="toggleCyberAudio()">🔊 Toggle Cyber Audio</button>
+          <button class="btn btn-secondary" id="audioToggleBtn" onclick="toggleCyberAudio()">🔊 Toggle Cyber Audio</button>
           <canvas id="audioVisualizerCanvas" width="60" height="20" style="background: rgba(0,0,0,0.3); border-radius: 4px;"></canvas>
         </div>
       </div>
@@ -159,16 +154,13 @@
       <button class="btn btn-secondary" onclick="openGuideModal(); toggleMobileDrawer();">
         <span>💡</span> User Guide
       </button>
-      <button class="btn btn-secondary" onclick="toggleThemeMode()">
-        <span>🌓</span> Toggle Theme
-      </button>
       <button class="btn btn-secondary" onclick="openGoogleAuthModal(); toggleMobileDrawer();">
         <span>🔑</span> Google Login
       </button>
       <button class="btn btn-secondary" onclick="openVaultModal(); toggleMobileDrawer();">
         <span>🔐</span> State Vault
       </button>
-      <button class="btn btn-danger" onclick="simulateDeployAndCrash(); toggleMobileDrawer();" style="grid-column: span 2;">
+      <button class="btn btn-danger" onclick="simulateDeployAndCrash(); toggleMobileDrawer();">
         <span>💥</span> 404 Crash Simulator
       </button>
     </div>

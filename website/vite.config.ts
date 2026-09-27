@@ -7,7 +7,8 @@ export default defineConfig({
   plugins: [react()],
   base: '/',
   build: {
-    outDir: path.resolve(__dirname, '../backend/app/static/marketing'),
+    outDir: path.resolve(import.meta.dirname, '../backend/app/static/marketing'),
     emptyOutDir: true,
   }
 })
+

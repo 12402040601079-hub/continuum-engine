@@ -86,11 +86,6 @@
 
 
 
-      <!-- Theme Switcher (Light / Dark) -->
-      <button class="icon-btn" id="themeToggleBtn" onclick="toggleThemeMode()" title="Toggle Light / Dark Mode">
-        ☀️
-      </button>
-
       <!-- Dev Ops & Sandbox Tools Side Drawer Toggle -->
       <button class="icon-btn" id="devOpsDrawerBtn" onclick="toggleDevOpsDrawer()" title="Open DevOps & 3D Atmosphere Tools">
         ⚙️
@@ -139,7 +134,7 @@
       <div class="dev-section">
         <label class="dev-label">AUDIO SYNTHESIZER</label>
         <div style="display: flex; align-items: center; gap: 0.75rem;">
-          <button class="btn btn-secondary" onclick="toggleCyberAudio()">🔊 Toggle Cyber Audio</button>
+          <button class="btn btn-secondary" id="audioToggleBtn" onclick="toggleCyberAudio()">🔊 Toggle Cyber Audio</button>
           <canvas id="audioVisualizerCanvas" width="60" height="20" style="background: rgba(0,0,0,0.3); border-radius: 4px;"></canvas>
         </div>
       </div>
@@ -162,16 +157,13 @@
       <button class="btn btn-secondary" onclick="openGuideModal(); toggleMobileDrawer();">
         <span>💡</span> User Guide
       </button>
-      <button class="btn btn-secondary" onclick="toggleThemeMode()">
-        <span>🌓</span> Toggle Theme
-      </button>
       <button class="btn btn-secondary" onclick="openGoogleAuthModal(); toggleMobileDrawer();">
         <span>🔑</span> Google Login
       </button>
       <button class="btn btn-secondary" onclick="openVaultModal(); toggleMobileDrawer();">
         <span>🔐</span> State Vault
       </button>
-      <button class="btn btn-danger" onclick="simulateDeployAndCrash(); toggleMobileDrawer();" style="grid-column: span 2;">
+      <button class="btn btn-danger" onclick="simulateDeployAndCrash(); toggleMobileDrawer();">
         <span>💥</span> 404 Crash Simulator
       </button>
     </div>
@@ -484,6 +476,123 @@ TTL: 48 Hours | Monotonic Latch: ARMED</div>
             <button class="btn btn-primary" id="btnLivingEkgSimulate" onclick="runLivingEkgSimulation()">
               Simulate deployment →
             </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Layer 05: Architecture & Backend Interactive Workbench -->
+      <div class="living-layer-box" id="layer-5" style="padding: 3rem 0; border-top: 1px solid rgba(143, 184, 255, 0.1);">
+        <div style="font-family: var(--font-mono); font-size: 0.78rem; font-weight: 700; color: #00F0FF; letter-spacing: 0.1em; margin-bottom: 0.75rem;">
+          // LAYER 05 // BACKEND &amp; ARCHITECTURE WORKBENCH
+        </div>
+        <h3 style="font-family: var(--font-mono); font-size: 1.8rem; font-weight: 700; color: #ffffff; margin-bottom: 1rem;">
+          INTERACTIVE CONTROL PLANE &amp; SRE RUNTIME LAB
+        </h3>
+        <p style="color: #94A3B8; font-size: 1rem; line-height: 1.65; max-width: 680px; margin-bottom: 1.5rem;">
+          Execute live REST endpoints, inspect hardware-accelerated AES-256 cipher encryption, test automated schema migrations, and evaluate SRE release gate criteria in real time.
+        </p>
+
+        <!-- Workbench Grid: REST API Terminal & Cryptographic Sandbox -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+          <!-- API Execution Terminal Card -->
+          <div class="card" style="background: rgba(10, 13, 22, 0.95); padding: 1.5rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255, 255, 255, 0.08); padding-bottom: 0.75rem; margin-bottom: 1rem;">
+              <span style="font-family: var(--font-mono); font-size: 0.78rem; font-weight: 700; color: #00F0FF;">⚡ FASTAPI REST SUITE</span>
+              <span id="apiExecStatusBadge" style="font-family: var(--font-mono); font-size: 0.72rem; color: #00FF88; font-weight: 700;">READY</span>
+            </div>
+            
+            <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem;">
+              <button class="btn btn-secondary" onclick="executeApiTest('health')" style="font-size: 0.75rem; padding: 0.35rem 0.7rem;">
+                GET /health <span id="latency-health" style="color: #00F0FF; font-size: 0.68rem; margin-left: 4px;">--</span>
+              </button>
+              <button class="btn btn-secondary" onclick="executeApiTest('version')" style="font-size: 0.75rem; padding: 0.35rem 0.7rem;">
+                GET /version <span id="latency-version" style="color: #00F0FF; font-size: 0.68rem; margin-left: 4px;">--</span>
+              </button>
+              <button class="btn btn-secondary" onclick="executeApiTest('vault')" style="font-size: 0.75rem; padding: 0.35rem 0.7rem;">
+                POST /vault <span id="latency-vault" style="color: #00F0FF; font-size: 0.68rem; margin-left: 4px;">--</span>
+              </button>
+              <button class="btn btn-secondary" onclick="executeApiTest('rehydrate')" style="font-size: 0.75rem; padding: 0.35rem 0.7rem;">
+                GET /rehydrate <span id="latency-rehydrate" style="color: #00F0FF; font-size: 0.68rem; margin-left: 4px;">--</span>
+              </button>
+              <button class="btn btn-primary" onclick="runAllBackendDiagnostics()" style="font-size: 0.75rem; padding: 0.35rem 0.7rem;">
+                ▶ Run All Diagnostics
+              </button>
+            </div>
+
+            <pre id="apiTerminalOutput" style="background: rgba(6, 8, 14, 0.95); border: 1px solid rgba(0, 240, 255, 0.15); border-radius: 6px; padding: 1rem; font-family: var(--font-mono); font-size: 0.74rem; color: #00FF88; max-height: 180px; overflow-y: auto; white-space: pre-wrap; word-break: break-all;">// Click any endpoint above to execute live request against FastAPI backend</pre>
+          </div>
+
+          <!-- AES-256 & UUID Cryptographic Sandbox Card -->
+          <div class="card" style="background: rgba(10, 13, 22, 0.95); padding: 1.5rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255, 255, 255, 0.08); padding-bottom: 0.75rem; margin-bottom: 1rem;">
+              <span style="font-family: var(--font-mono); font-size: 0.78rem; font-weight: 700; color: #00F0FF;">🔐 AES-256 CRYPTO ENGINE</span>
+              <span style="font-family: var(--font-mono); font-size: 0.72rem; color: #00FF88;">PKCS7 / 256-BIT</span>
+            </div>
+
+            <div style="margin-bottom: 0.75rem;">
+              <input type="text" id="aesTestInput" value='{"fullName":"Jane Doe","loanAmount":250000,"ssn":"***-**-4912"}' style="width: 100%; background: rgba(13, 18, 30, 0.8); border: 1px solid rgba(0, 240, 255, 0.2); border-radius: 4px; padding: 0.5rem; color: #ffffff; font-family: var(--font-mono); font-size: 0.75rem;">
+            </div>
+
+            <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1rem;">
+              <button class="btn btn-primary" onclick="testLiveAesEncrypt()" style="font-size: 0.75rem; padding: 0.35rem 0.7rem;">Encrypt State</button>
+              <button class="btn btn-secondary" onclick="testLiveAesDecrypt()" style="font-size: 0.75rem; padding: 0.35rem 0.7rem;">Decrypt State</button>
+              <button class="btn btn-secondary" onclick="generateLiveUuidToken()" style="font-size: 0.75rem; padding: 0.35rem 0.7rem;">New UUID v4</button>
+            </div>
+
+            <div style="font-family: var(--font-mono); font-size: 0.72rem; color: #94A3B8; background: rgba(6, 8, 14, 0.95); padding: 0.75rem; border-radius: 4px; border: 1px solid rgba(255, 255, 255, 0.06); line-height: 1.6;">
+              <div>IV: <span id="aesLiveIv" style="color: #00F0FF;">7f8b9a102c34d5e6f7a8b9c0d1e2f3a4</span></div>
+              <div style="margin-top: 4px;">Cipher: <span id="aesLiveCipher" style="color: #00FF88; word-break: break-all;">c8f13b4e99a14d2e7b0c3d9a1f4b8e2d7c1a9f0e2b4d8a6c...</span></div>
+              <div style="margin-top: 4px;">UUID: <input id="liveUuidDisplay" readonly value="a3b8e9c1-5d2f-4a8b-9e3c-7f1a2b3c4d5e" style="background: transparent; border: none; color: #A020F0; font-family: inherit; font-size: inherit; width: 230px;"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Schema Drift & SRE Governance Row -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem;">
+          <!-- Schema Migration Transform -->
+          <div class="card" style="background: rgba(10, 13, 22, 0.95); padding: 1.5rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255, 255, 255, 0.08); padding-bottom: 0.75rem; margin-bottom: 1rem;">
+              <span style="font-family: var(--font-mono); font-size: 0.78rem; font-weight: 700; color: #00F0FF;">🔄 SCHEMA DRIFT MIGRATOR</span>
+              <button class="btn btn-secondary" onclick="runSchemaMigrationTest()" style="font-size: 0.72rem; padding: 0.25rem 0.6rem;">Test Migration v1.0.0 → v1.0.1</button>
+            </div>
+            <pre id="schemaMigratedOutput" style="background: rgba(6, 8, 14, 0.95); border: 1px solid rgba(0, 240, 255, 0.15); border-radius: 6px; padding: 0.75rem; font-family: var(--font-mono); font-size: 0.72rem; color: #00F0FF; max-height: 160px; overflow-y: auto; white-space: pre-wrap; word-break: break-all;">// Click 'Test Migration' to simulate payload transformation between schema versions</pre>
+          </div>
+
+          <!-- SRE Governance & RACI Release Matrix -->
+          <div class="card" style="background: rgba(10, 13, 22, 0.95); padding: 1.5rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255, 255, 255, 0.08); padding-bottom: 0.75rem; margin-bottom: 1rem;">
+              <span style="font-family: var(--font-mono); font-size: 0.78rem; font-weight: 700; color: #00F0FF;">🛡️ SRE RELEASE GATES &amp; RACI</span>
+              <div style="display: flex; gap: 0.35rem;">
+                <button class="btn btn-secondary" onclick="filterRaciRole('all')" style="font-size: 0.68rem; padding: 0.2rem 0.45rem;">All</button>
+                <button class="btn btn-secondary" onclick="filterRaciRole('security')" style="font-size: 0.68rem; padding: 0.2rem 0.45rem;">Security</button>
+                <button class="btn btn-secondary" onclick="filterRaciRole('sre')" style="font-size: 0.68rem; padding: 0.2rem 0.45rem;">SRE</button>
+              </div>
+            </div>
+
+            <div style="max-height: 120px; overflow-y: auto; font-size: 0.72rem; margin-bottom: 0.75rem;">
+              <table style="width: 100%; border-collapse: collapse; font-family: var(--font-mono);">
+                <thead>
+                  <tr style="color: #64748B; border-bottom: 1px solid rgba(255,255,255,0.08);">
+                    <th style="text-align: left; padding: 4px;">Milestone</th>
+                    <th style="padding: 4px;">PO</th>
+                    <th style="padding: 4px;">Arch</th>
+                    <th style="padding: 4px;">Sec</th>
+                    <th style="padding: 4px;">SRE</th>
+                  </tr>
+                </thead>
+                <tbody id="raciTableBody">
+                  <tr style="border-bottom: 1px solid rgba(255,255,255,0.04);"><td style="padding: 4px;">01 STRIDE Threat Model</td><td style="text-align:center;">I</td><td style="text-align:center;">R</td><td style="text-align:center; color:#00FF88;">A</td><td style="text-align:center;">C</td></tr>
+                  <tr style="border-bottom: 1px solid rgba(255,255,255,0.04);"><td style="padding: 4px;">02 AES-256 Envelope Key Rotation</td><td style="text-align:center;">I</td><td style="text-align:center;">C</td><td style="text-align:center; color:#00FF88;">A</td><td style="text-align:center; color:#00F0FF;">R</td></tr>
+                  <tr style="border-bottom: 1px solid rgba(255,255,255,0.04);"><td style="padding: 4px;">03 404 Recovery SLO (99.95%)</td><td style="text-align:center;">A</td><td style="text-align:center;">C</td><td style="text-align:center;">I</td><td style="text-align:center; color:#00FF88;">R</td></tr>
+                  <tr><td style="padding: 4px;">04 Production Promotion Gate</td><td style="text-align:center;">C</td><td style="text-align:center;">C</td><td style="text-align:center; color:#00FF88;">A</td><td style="text-align:center; color:#00FF88;">A</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div style="display: flex; gap: 0.5rem; justify-content: flex-end;">
+              <button class="btn btn-secondary" onclick="simulatePromotionGateCheck()" style="font-size: 0.72rem; padding: 0.3rem 0.6rem;">Verify Gates ✓</button>
+              <button class="btn btn-primary" onclick="exportBlueprintMarkdown()" style="font-size: 0.72rem; padding: 0.3rem 0.6rem;">Export Blueprint 📋</button>
+            </div>
           </div>
         </div>
       </div>
